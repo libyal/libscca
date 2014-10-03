@@ -1,17 +1,17 @@
 #!/bin/sh
 # Script that synchronizes the local library dependencies
 #
-# Version: 20130330
+# Version: 20141001
 
-GIT_URL_PREFIX="https://code.google.com/p"
-LOCAL_LIBS="libbfio libcdata libcerror libcfile libclocale libcnotify libcpath libcsplit libcstring libcsystem libcthreads libfcache libfdata libfdatetime libuna";
+GIT_URL_PREFIX="https://github.com/libyal";
+LOCAL_LIBS="libbfio libcdata libcerror libcfile libclocale libcnotify libcpath libcsplit libcstring libcsystem libcthreads libfcache libfdata libfdatetime libfvalue libuna";
 
 OLDIFS=$IFS;
 IFS=" ";
 
 for LOCAL_LIB in ${LOCAL_LIBS};
 do
-	git clone ${GIT_URL_PREFIX}/${LOCAL_LIB}/ ${LOCAL_LIB}-$$;
+	git clone ${GIT_URL_PREFIX}/${LOCAL_LIB}.git ${LOCAL_LIB}-$$;
 
 	if [ -d ${LOCAL_LIB}-$$ ];
 	then
@@ -39,15 +39,21 @@ SED_SCRIPT="
 
 /${LOCAL_LIB}_la_LIBADD/ {
 :loop1
-        /${LOCAL_LIB}_la_LDFLAGS/ {
-                N
+	/${LOCAL_LIB}_la_LDFLAGS/ {
+		N
 		i endif
-                d
-        }
-        /${LOCAL_LIB}_la_LDFLAGS/ !{
-                N
-                b loop1
-        }
+		d
+	}
+	/${LOCAL_LIB}_la_LDFLAGS/ !{
+		N
+		b loop1
+	}
+}
+
+/${LOCAL_LIB}_la_LDFLAGS/ {
+	N
+	i endif
+	d
 }
 
 /EXTRA_DIST = / {
@@ -67,16 +73,21 @@ SED_SCRIPT="
 
 SED_SCRIPT="
 /^$/ {
-        x
-        N
-        /endif$/ {
-                a \
+	x
+	N
+	/endif$/ {
+		a \
 
-                D
-        }
+		D
+	}
 }";
 			sed "${SED_SCRIPT}" -i ${LOCAL_LIB}/Makefile.am;
 
+			if [ ${LOCAL_LIB} = "libfvalue" ];
+			then
+				sed "/@LIBFGUID_CPPFLAGS@/d" -i ${LOCAL_LIB}/Makefile.am;
+				sed "/@LIBFWNT_CPPFLAGS@/d" -i ${LOCAL_LIB}/Makefile.am;
+			fi
 			rm -f ${LOCAL_LIB}/${LOCAL_LIB}.c;
 
 			cp ${LOCAL_LIB}-$$/${LOCAL_LIB}/${LOCAL_LIB}_definitions.h.in ${LOCAL_LIB}/${LOCAL_LIB}_definitions.h;

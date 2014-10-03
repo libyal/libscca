@@ -14,12 +14,12 @@ TODO:
     - get file references
   - functions to calcalate hashes?
 * add python bindings
-* add dpkg files
-* add macosx files
 * update manuals
 
 20141003
 * removed README.macosx
+* added dpkg files
+* changes for project site move
 
 20140629
 * Worked on format support
