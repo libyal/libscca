@@ -1,0 +1,74 @@
+TODO:
+* handle directory names correctly
+* add API functions
+  - get executable name
+  - get file size ?
+  - get run count
+  - get number of last run times
+  - get last run times
+  - get filename string
+  - get volume information
+    - get volume name
+    - get volume creation time (add to API and info handle)
+    - get directory strings
+    - get file references
+  - functions to calcalate hashes?
+* add python bindings
+* add dpkg files
+* add macosx files
+* update manuals
+
+20141003
+* removed README.macosx
+
+20140629
+* Worked on format support
+
+20140614
+* Worked on format support
+
+20140423
+* worked on API functions
+
+20140421
+* Worked on format support
+
+20140412
+* Worked on format support
+
+20140411
+* Worked on format support
+
+20140410
+* worked on API functions
+
+20140402
+* updated dependencies
+
+20140324
+* 2014 update
+* updated dependencies
+
+20131020
+* renamed to libscca
+
+20130922
+* updated dependencies
+
+20130609
+* 2013 update
+* updated dependencies
+
+20121112
+* 2012 update
+* updated dependencies
+* code clean up
+* updated pc file
+* updated spec file
+
+20111113
+* worked on initial version
+
+20111112
+* Initial version based on libexe
+

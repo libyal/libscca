@@ -1,0 +1,146 @@
+.Dd April 23, 2014
+.Dt libscca 3
+.Os libscca
+.Sh NAME
+.Nm libscca.h
+.Nd Library to access the Windows Prefetch File (PF) format
+.Sh LIBRARY
+.Lb libscca
+.Sh SYNOPSIS
+.In libscca.h
+.Pp
+Support functions
+.Ft const char *
+.Fn libscca_get_version "void"
+.Ft int
+.Fn libscca_get_access_flags_read
+.Ft int
+.Fn libscca_get_codepage "int *codepage, libscca_error_t **error"
+.Ft int
+.Fn libscca_set_codepage "int codepage, libscca_error_t **error"
+.Ft int
+.Fn libscca_check_file_signature "const char *filename, libscca_error_t **error"
+.Pp
+Available when compiled with wide character string support:
+.Ft int
+.Fn libscca_check_file_signature_wide "const wchar_t *filename, libscca_error_t **error"
+.Pp
+Available when compiled with libbfio support:
+.Ft int
+.Fn libscca_check_file_signature_file_io_handle "libbfio_handle_t *file_io_handle, libscca_error_t **error"
+.Pp
+Notify functions
+.Ft void
+.Fn libscca_notify_set_verbose "int verbose"
+.Ft int
+.Fn libscca_notify_set_stream "FILE *stream, libscca_error_t **error"
+.Ft int
+.Fn libscca_notify_stream_open "const char *filename, libscca_error_t **error"
+.Ft int
+.Fn libscca_notify_stream_close "libscca_error_t **error"
+.Pp
+Error functions
+.Ft void 
+.Fn libscca_error_free "libscca_error_t **error"
+.Ft int
+.Fn libscca_error_fprint "libscca_error_t *error, FILE *stream"
+.Ft int
+.Fn libscca_error_sprint "libscca_error_t *error, char *string, size_t size"
+.Ft int 
+.Fn libscca_error_backtrace_fprint "libscca_error_t *error, FILE *stream"
+.Ft int
+.Fn libscca_error_backtrace_sprint "libscca_error_t *error, char *string, size_t size"
+.Pp
+File functions
+.Ft int
+.Fn libscca_file_initialize "libscca_file_t **file, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_free "libscca_file_t **file, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_open "libscca_file_t *file, const char *filename, int access_flags, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_close "libscca_file_t *file, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_format_version "libscca_file_t *file, uint32_t *format_version, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_prefetch_hash "libscca_file_t *file, uint32_t *prefetch_hash, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_number_of_filenames "libscca_file_t *file, int *number_of_filenames, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_utf8_filename_size "libscca_file_t *file, int filename_index, size_t *utf8_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_utf8_filename "libscca_file_t *file, int filename_index, uint8_t *utf8_string, size_t utf8_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_utf16_filename_size "libscca_file_t *file, int filename_index, size_t *utf16_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_utf16_filename "libscca_file_t *file, int filename_index, uint16_t *utf16_string, size_t utf16_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_number_of_volumes "libscca_file_t *file, int *number_of_volumes, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_volume_information "libscca_file_t *file, int volume_index, libscca_volume_information_t **volume_information, libscca_error_t **error"
+.Pp
+Available when compiled with wide character string support:
+.Ft int
+.Fn libscca_file_open_wide "libscca_file_t *file, const wchar_t *filename, int access_flags, libscca_error_t **error"
+.Pp
+Available when compiled with libbfio support:
+.Ft int
+.Fn libscca_file_open_file_io_handle "libscca_file_t *file, libbfio_handle_t *file_io_handle, int access_flags, libscca_error_t **error"
+.Pp
+Volume information functions
+.Ft int
+.Fn libscca_volume_information_free "libscca_volume_information_t **volume_information, libscca_error_t **error"
+.Ft int
+.Fn libscca_volume_information_get_creation_time "libscca_volume_information_t *volume_information, uint64_t *creation_time, libscca_error_t **error"
+.Ft int
+.Fn libscca_volume_information_get_serial_number "libscca_volume_information_t *volume_information, uint32_t *serial_number, libscca_error_t **error"
+.Ft int
+.Fn libscca_volume_information_get_utf8_device_path_size "libscca_volume_information_t *volume_information, size_t *utf8_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_volume_information_get_utf8_device_path "libscca_volume_information_t *volume_information, uint8_t *utf8_string, size_t utf8_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_volume_information_get_utf16_device_path_size "libscca_volume_information_t *volume_information, size_t *utf16_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_volume_information_get_utf16_device_path "libscca_volume_information_t *volume_information, uint16_t *utf16_string, size_t utf16_string_size, libscca_error_t **error"
+.Sh DESCRIPTION
+The
+.Fn libscca_get_version
+function is used to retrieve the library version.
+.Sh RETURN VALUES
+Most of the functions return NULL or \-1 on error, dependent on the return type. For the actual return values refer to libscca.h
+.Sh ENVIRONMENT
+None
+.Sh FILES
+None
+.Sh NOTES
+Libscca uses either the system specific narrow or wide character strings for filenames.
+To compile libscca with wide character support use
+.Ar ./configure --enable-wide-character-type=yes
+ or on Windows define
+.Ar WINAPI
+ and either
+.Ar _UNICODE
+ or
+.Ar UNICODE
+
+To have other code to determine if libscca was compiled with wide character support it defines
+.Ar LIBSCCA_HAVE_WIDE_CHARACTER_TYPE
+ in libscca/features.h.
+
+libscca allows to be compiled with chained IO support using libbfio.
+The libscca configure script will automatically detect if a compatible version of libbfio is available.
+
+To have other code to determine if libscca was compiled with libbfio support it defines
+.Ar LIBSCCA_HAVE_BFIO
+ in libscca/features.h.
+
+.Sh BUGS
+Please report bugs of any kind to <joachim.metz@gmail.com> or on the project website:
+https://code.google.com/p/libscca/
+.Sh AUTHOR
+These man pages were written by Joachim Metz.
+.Sh COPYRIGHT
+Copyright 2011-2014, Joachim Metz <joachim.metz@gmail.com>.
+This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.Sh SEE ALSO
+the libscca.h include file
