@@ -68,10 +68,6 @@
 #define HAVE_MULTI_THREAD_SUPPORT	1
 #endif
 
-/* Enable the v1 API
-#define HAVE_V1_API			1
- */
-
 #endif /* defined( WINAPI ) */
 
 #endif /* !defined( _CONFIG_WINAPI_H ) */

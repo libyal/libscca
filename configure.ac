@@ -2,13 +2,13 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libscca],
- [20141003],
+ [20141019],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
  [include/libscca.h.in])
 
-AM_INIT_AUTOMAKE([gnu 1.6])
+AM_INIT_AUTOMAKE([gnu 1.6 tar-ustar])
 
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -210,6 +210,8 @@ AC_CONFIG_FILES([include/libscca/types.h])
 AC_CONFIG_FILES([libscca/libscca_definitions.h])
 dnl Have configure make distribution specific files
 AC_CONFIG_FILES([common/types.h])
+AC_CONFIG_FILES([dpkg/changelog])
+AC_CONFIG_FILES([dpkg/copyright])
 AC_CONFIG_FILES([libscca/libscca.rc])
 AC_CONFIG_FILES([libscca.pc])
 AC_CONFIG_FILES([libscca.spec])

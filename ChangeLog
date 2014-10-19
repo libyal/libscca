@@ -16,6 +16,9 @@ TODO:
 * add python bindings
 * update manuals
 
+20141019
+* changes for deployment
+
 20141003
 * removed README.macosx
 * added dpkg files
