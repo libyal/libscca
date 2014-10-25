@@ -1,5 +1,9 @@
 libscca is a library to access the Windows Prefetch File (SCCA) format.
 
+Project information:
+* Status: alpha
+* Licence: LGPLv3+
+
 Planned:
 * Python bindings
 * Multi-threading support
