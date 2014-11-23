@@ -210,6 +210,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\sccatools\sccatools_libbfio.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\sccatools\sccatools_libcerror.h"
 				>
 			</File>

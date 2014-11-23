@@ -25,6 +25,7 @@ sccainfo_SOURCES = \
 	sccainfo.c \
 	sccainput.c sccainput.h \
 	sccaoutput.c sccaoutput.h \
+	sccatools_libbfio.h \
 	sccatools_libcerror.h \
 	sccatools_libclocale.h \
 	sccatools_libcnotify.h \
