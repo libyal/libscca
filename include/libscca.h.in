@@ -73,7 +73,7 @@ int libscca_set_codepage(
      int codepage,
      libscca_error_t **error );
 
-/* Determines if a file is a Nickfile (check for the EXE file signature)
+/* Determines if a file contains a SCCA file signature
  * Returns 1 if true, 0 if not or -1 on error
  */
 LIBSCCA_EXTERN \
@@ -82,24 +82,28 @@ int libscca_check_file_signature(
      libscca_error_t **error );
 
 #if defined( LIBSCCA_HAVE_WIDE_CHARACTER_TYPE )
-/* Determines if a file is a Nickfile (check for the EXE file signature)
+
+/* Determines if a file contains a SCCA file signature
  * Returns 1 if true, 0 if not or -1 on error
  */
 LIBSCCA_EXTERN \
 int libscca_check_file_signature_wide(
      const wchar_t *filename,
      libscca_error_t **error );
-#endif
+
+#endif /* defined( LIBSCCA_HAVE_WIDE_CHARACTER_TYPE ) */
 
 #if defined( LIBSCCA_HAVE_BFIO )
-/* Determines if a file is a Nickfile (check for the EXE file signature) using a Basic File IO (bfio) handle
+
+/* Determines if a file contains a SCCA file signature using a Basic File IO (bfio) handle
  * Returns 1 if true, 0 if not or -1 on error
  */
 LIBSCCA_EXTERN \
 int libscca_check_file_signature_file_io_handle(
      libbfio_handle_t *file_io_handle,
      libscca_error_t **error );
-#endif
+
+#endif /* defined( LIBSCCA_HAVE_BFIO ) */
 
 /* -------------------------------------------------------------------------
  * Notify functions
@@ -221,6 +225,7 @@ int libscca_file_open(
      libscca_error_t **error );
 
 #if defined( LIBSCCA_HAVE_WIDE_CHARACTER_TYPE )
+
 /* Opens a file
  * Returns 1 if successful or -1 on error
  */
@@ -230,9 +235,11 @@ int libscca_file_open_wide(
      const wchar_t *filename,
      int access_flags,
      libscca_error_t **error );
-#endif
+
+#endif /* defined( LIBSCCA_HAVE_WIDE_CHARACTER_TYPE ) */
 
 #if defined( LIBSCCA_HAVE_BFIO )
+
 /* Opens a file using a Basic File IO (bfio) handle
  * Returns 1 if successful or -1 on error
  */
@@ -242,7 +249,8 @@ int libscca_file_open_file_io_handle(
      libbfio_handle_t *file_io_handle,
      int access_flags,
      libscca_error_t **error );
-#endif
+
+#endif /* defined( LIBSCCA_HAVE_BFIO ) */
 
 /* Closes a file
  * Returns 0 if successful or -1 on error

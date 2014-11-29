@@ -536,7 +536,7 @@ on_error:
 	return( -1 );
 }
 
-#endif
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 /* Opens a file using a Basic File IO (bfio) handle
  * Returns 1 if successful or -1 on error
@@ -551,6 +551,7 @@ int libscca_file_open_file_io_handle(
 	static char *function                  = "libscca_file_open_file_io_handle";
 	int bfio_access_flags                  = 0;
 	int file_io_handle_is_open             = 0;
+	int file_io_handle_opened_in_library   = 0;
 
 	if( file == NULL )
 	{
@@ -647,7 +648,7 @@ int libscca_file_open_file_io_handle(
 
 			goto on_error;
 		}
-		internal_file->file_io_handle_opened_in_library = 1;
+		file_io_handle_opened_in_library = 1;
 	}
 	if( libscca_file_open_read(
 	     internal_file,
@@ -663,22 +664,18 @@ int libscca_file_open_file_io_handle(
 
 		goto on_error;
 	}
-	internal_file->file_io_handle = file_io_handle;
+	internal_file->file_io_handle                   = file_io_handle;
+	internal_file->file_io_handle_opened_in_library = file_io_handle_opened_in_library;
 
 	return( 1 );
 
 on_error:
-	if( ( file_io_handle_is_open == 0 )
-	 && ( internal_file->file_io_handle_opened_in_library != 0 ) )
+	if( file_io_handle_opened_in_library != 0 )
 	{
 		libbfio_handle_close(
 		 file_io_handle,
 		 error );
-
-		internal_file->file_io_handle_opened_in_library = 0;
 	}
-	internal_file->file_io_handle = NULL;
-
 	return( -1 );
 }
 

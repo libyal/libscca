@@ -26,6 +26,7 @@
 
 #include "sccaoutput.h"
 #include "sccatools_libbfio.h"
+#include "sccatools_libcsystem.h"
 #include "sccatools_libscca.h"
 #include "sccatools_libuna.h"
 
@@ -38,11 +39,26 @@ void sccaoutput_copyright_fprint(
 	{
 		return;
 	}
+	/* TRANSLATORS: This is a proper name.
+	 */
 	fprintf(
 	 stream,
-	 "Copyright (C) 2011-2014, Joachim Metz <%s>.\n"
-	 "This is free software; see the source for copying conditions. There is NO\n"
-	 "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n",
+	 _( "Copyright (c) 2011-2014, %s.\n" ),
+	 _( "Joachim Metz" ) );
+
+	fprintf(
+	 stream,
+	 _( "This is free software; see the source for copying conditions. There is NO\n"
+	    "warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n" ) );
+
+	/* TRANSLATORS: The placeholder indicates the bug-reporting address
+	 * for this package.  Please add _another line_ saying
+	 * "Report translation bugs to <...>\n" with the address for translation
+	 * bugs (typically your translation team's web or email address).
+	 */
+	fprintf(
+	 stream,
+	 _( "Report bugs to <%s>.\n" ),
 	 PACKAGE_BUGREPORT );
 }
 

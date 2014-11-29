@@ -37,11 +37,11 @@
  * for local use of libscca
  */
 #else
-#define LIBSCCA_VERSION					20141026
+#define LIBSCCA_VERSION					20141129
 
 /* The version string
  */
-#define LIBSCCA_VERSION_STRING				"20141026"
+#define LIBSCCA_VERSION_STRING				"20141129"
 
 /* The access flags definitions
  * bit 1        set to 1 for read access
