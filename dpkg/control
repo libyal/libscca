@@ -1,13 +1,12 @@
 Source: libscca
-Section: unknown
+Section: libs
 Priority: extra
 Maintainer: Joachim Metz <joachim.metz@gmail.com>
 Build-Depends: debhelper (>= 7), autotools-dev
-Standards-Version: 3.8.3
+Standards-Version: 3.9.5
 Homepage: https://github.com/libyal/libscca/
 
 Package: libscca
-Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Suggests: libscca-dbg
@@ -17,21 +16,21 @@ Description: Library to access the Windows Prefetch File (PF) format
 Package: libscca-dbg
 Architecture: any
 Section: debug
-Depends: libscca (= ${Source-Version}), ${misc:Depends}
+Depends: libscca (= ${binary:Version}), ${misc:Depends}
 Description: Debugging symbols for libscca
  Debugging symbols for libscca.
 
 Package: libscca-dev
 Section: libdevel
 Architecture: any
-Depends: libscca (= ${Source-Version})
+Depends: libscca (= ${binary:Version}), ${misc:Depends}
 Description: Header files and libraries for developing applications for libscca
  Header files and libraries for developing applications for libscca.
 
 Package: libscca-tools
 Section: utils
 Architecture: any
-Depends: libscca (= ${Source-Version}), ${shlibs:Depends}
+Depends: libscca (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Several tools for reading Windows Prefetch Files (PF)
  Several tools for reading Windows Prefetch Files (PF).
 

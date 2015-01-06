@@ -1,7 +1,7 @@
 /*
  * The internal definitions
  *
- * Copyright (C) 2011-2014, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -37,11 +37,11 @@
  * for local use of libscca
  */
 #else
-#define LIBSCCA_VERSION					20141129
+#define LIBSCCA_VERSION					20150106
 
 /* The version string
  */
-#define LIBSCCA_VERSION_STRING				"20141129"
+#define LIBSCCA_VERSION_STRING				"20150106"
 
 /* The access flags definitions
  * bit 1        set to 1 for read access
