@@ -37,6 +37,7 @@ sccainfo_SOURCES = \
 
 sccainfo_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
+	@LIBFDATETIME_LIBADD@ \
 	../libscca/libscca.la \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
