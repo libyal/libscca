@@ -175,7 +175,8 @@ used in the Compressed SuperFetch database - MEM0 file format. The stream
 variant can refer to uncompressed data stored in the previous compressed block. 
 The compressed blocks are essentially a single compressed stream.
 
-== File header
+== Uncompressed Prefetch file
+=== File header
 The file header is 84 bytes of size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -201,7 +202,7 @@ The executable filename will store a maximum of 29 characters. Dependent on the
 Windows version the unused bytes of the executable filename can contain remnant 
 data. Windows 8.1 seems to fill the unused bytes with 0-byte values.
 
-=== Format version
+==== Format version
 
 [cols="1,5",options="header"]
 |===
@@ -212,13 +213,13 @@ data. Windows 8.1 seems to fill the unused bytes with 0-byte values.
 | 30 | Used in: Windows 10
 |===
 
-== File information
+=== File information
 [NOTE]
 In this document it is assumed that the file information is not part of the 
 file header. In other documentation you might see this structure as part of the 
 file header.
 
-=== File information - version 17
+==== File information - version 17
 The file information - version 17 is 68 bytes of size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -243,7 +244,7 @@ Contains a FILETIME
 | 64 | 4 | | [yellow-background]*Unknown*
 |===
 
-=== File information - version 23
+==== File information - version 23
 The file information - version 23 is 156 bytes of size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -272,7 +273,7 @@ Contains a FILETIME
 
 The entries with a bold offset and size were changed since version 17.
 
-=== File information - version 26
+==== File information - version 26
 The file information - version 26 is 224 bytes of size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -307,7 +308,7 @@ Contains a FILETIME, or 0 if not set
 
 The entries with a bold offset and size were changed since version 23.
 
-== Metrics array
+=== Metrics array
 The metrics array consists of metrics array entries. The entries in the metrics 
 array correspond with the entries in the filename strings.
 
@@ -315,7 +316,7 @@ array correspond with the entries in the filename strings.
 This part of the file currently is referred to as metrics array largely because
 of a lack of a better term.
 
-=== Metrics array entry - version 17
+==== Metrics array entry - version 17
 The metrics array entry - version 17 is 20 bytes in size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -332,7 +333,7 @@ Does not include the end-of-string character
 | 16 | 4 | | [yellow-background]*Unknown (Flags?)*
 |===
 
-=== Metrics array entry - version 23
+==== Metrics array entry - version 23
 The metrics array entry - version 23 is 32 bytes in size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -356,11 +357,11 @@ See section: <<ntfs_file_reference,The NTFS file reference>>
 
 The entries with a bold offset and size were changed since version 17.
 
-=== Metrics array entry - version 26
+==== Metrics array entry - version 26
 The metrics array entry - version 26 appears to be similar to the metrics array 
 entry - version 23.
 
-== Trace chains array
+=== Trace chains array
 A trace chain is similar to a File Allocation Table (FAT) chain where the array 
 entries form chains and -1 (0xffffffff) is used to mark the end-of-chain. The 
 chains in the trace chains array correspond with the entries in the metrics 
@@ -391,7 +392,7 @@ The block size 512k (512 x 1024) bytes
 The size of a trace chain array entry seems to be consistent across the 
 different versions.
 
-== Filename strings
+=== Filename strings
 The directory strings consists of:
 
 * an array of filename strings
@@ -401,7 +402,7 @@ A filename string is an UTF-16 little-endian strings with end-of-string characte
 [yellow-background]*Is the the array followed by alignment padding? If so what 
 is the size of the alignment,16-byte? Seen values ranging from 6 to 2 bytes.*
 
-== Volumes information
+=== Volumes information
 The volumes information consists of:
 
 * an array of volume information entries
@@ -411,8 +412,8 @@ The volumes information consists of:
   * directory strings
 * [yellow-background]*Alignment padding? (16-byte alignment? Can contain remnant data?)*
 
-=== Volume information entry
-==== Volume information entry - version 17
+==== Volume information entry
+===== Volume information entry - version 17
 The volume information entry - version 17 is 40 bytes in size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -431,7 +432,7 @@ Contains a FILETIME
 | 36 | 4 | | [yellow-background]*Unknown*
 |===
 
-==== Volume information entry - version 23
+===== Volume information entry - version 23
 The volume information entry - version 23 is 104 bytes in size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -459,14 +460,14 @@ I[yellow-background]*Does this value relate to the remnant data in the file refe
 
 The entries with a bold offset and size were changed since version 17.
 
-==== Volume information entry - version 26
+===== Volume information entry - version 26
 The volume information entry - version 26 appears to be similar to the volume information entry - version 23.
 
-=== Volume device path
+==== Volume device path
 The volume device path is a UTF-16 little-endian string with end-of-string character.
 
-== File references
-=== File references - version 17
+=== File references
+==== File references - version 17
 The file references - version 17 are variable of size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -484,7 +485,7 @@ See section: <<ntfs_file_reference,The NTFS file reference>>
 [yellow-background]*Note: do the file references represent file handles used by 
 the executable? They seem to refer to files e.g. DLL*
 
-==== File references - version 23
+===== File references - version 23
 The file references - version 23 are variable of size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -499,11 +500,11 @@ See section: <<ntfs_file_reference,The NTFS file reference>>
 
 [yellow-background]*First X bytes of the array not used? Remnant data?*
 
-==== File references - version 26
+===== File references - version 26
 The file references - version 26 appears to be similar to the file references - 
 version 23.
 
-=== Directory strings
+==== Directory strings
 The directory strings consists of:
 
 * an array of directory string entries
