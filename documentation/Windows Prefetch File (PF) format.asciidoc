@@ -161,7 +161,7 @@ The compressed data is variable of size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | .. | | Compressed data
+| 0 | ... | | Compressed data
 |===
 
 [NOTE]
