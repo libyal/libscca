@@ -58,8 +58,8 @@ toc::[]
 | 0.0.8 | J.B. Metz | June 2014 | Thanks to M. Seyer providing a sample that indicates that the v23 and v26 metrics entry are the same.
 | 0.0.9 | J.B. Metz | June 2014 | Revisited the v17 metrics entry with thanks to T. Olson.
 | 0.0.10 | J.B. Metz | June 2015 | Switched to asccidoc format.
+| 0.0.11 | J.B. Metz | June 2015 | Additional information regarding Windows 10 compressed Prefetch files with thanks to F. Picasso.
 |===
-
 
 :numbered:
 == Overview
@@ -78,6 +78,11 @@ A PF consist of the following distinguishable elements:
   * file references
   * directory names
   * [yellow-background]*trailing data (alignment padding?)*
+
+As of Windows 10 the PF is stored in compressed form in a MAM file similar to 
+SuperFetch. Also see: 
+https://github.com/libyal/libagdb/blob/master/documentation/Windows%20SuperFetch
+%20(DB)%20format.asciidoc[[LIBAGDB\]].
 
 [cols="1,5",options="header"]
 |===
@@ -99,7 +104,7 @@ information within this document:
 * [yellow-background]*TODO: Windows 8*
 * [yellow-background]*TODO: Windows 2012*
 * Windows 8.1
-* [yellow-background]*TODO: Windows 10*
+* Windows 10
 
 === Prefetch files
 The Prefetch files can be found in:
@@ -128,6 +133,47 @@ The NTFS file reference is 8 bytes of size and consists of:
 | 0 | 6 | | MFT entry index
 | 6 | 2 | | Sequence number
 |===
+
+== Compressed Prefetch file - MAM file format
+A compressed Prefetch file - MAM file consist of the following distinguishable
+elements:
+
+* file header
+* compressed data
+
+The compression method is Microsoft XPRESS Huffman (or LZXPRESS). Note that 
+this is a different compression method as Microsoft XPRESS (LZ77+DIRECT2).
+
+=== File header
+The file header is 8 bytes of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | "MAM\x04" | Signature +
+0x4d, 0x41, 0x4d, 0x04
+| 4 | 4 | | Total uncompressed data size
+|===
+
+=== Compressed data
+The compressed data is variable of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | .. | | Compressed data
+|===
+
+[NOTE]
+Currently it is assumed that the compressed data is remainder of the file data 
+and that no block-based storage is used, as e.g. in the Compressed SuperFetch 
+database - MAM file format.
+
+=== LZExpress Huffman stream variant
+The LZExpress Huffman stream variant differs from the LZExpress Huffman, as 
+used in the Compressed SuperFetch database - MEM0 file format. The stream 
+variant can refer to uncompressed data stored in the previous compressed block. 
+The compressed blocks are essentially a single compressed stream.
 
 == File header
 The file header is 84 bytes of size and consists of:
@@ -163,6 +209,7 @@ data. Windows 8.1 seems to fill the unused bytes with 0-byte values.
 | 17 | Used in: Windows XP, Windows 2003
 | 23 | Used in: Windows Vista, Windows 7
 | 26 | Used in: Windows 8.1
+| 30 | Used in: Windows 10
 |===
 
 == File information
