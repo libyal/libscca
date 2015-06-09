@@ -1,0 +1,1110 @@
+= Windows Prefetch File (PF) format
+Analysis of SCCA
+
+:toc:
+:toc-placement: manual
+:toc-title: 
+:toclevels: 4
+
+:numbered!:
+[abstract]
+== Summary
+A Windows Prefetch File (PF) is used by Microsoft Windows to improve Windows 
+and application start-up performance by loading application data into memory 
+before it is demanded. This specification is based on earlier work on the 
+format and was complimented by reverse engineering.
+
+This document is intended as a working document for the Windows Prefetch File 
+(PF) format specification. Which should allow existing Open Source forensic 
+tooling to be able to process this file type.
+
+[preface]
+== Document information
+[cols="1,5"]
+|===
+| Author(s): | Joachim Metz <joachim.metz@gmail.com>
+| Abstract: | This document contains information about the Windows Prefetch File (PF) format
+| Classification: | Public
+| Keywords: | Prefetch File, PF, SCCA
+|===
+
+[preface]
+== License
+....
+Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>.
+Permission is granted to copy, distribute and/or modify this document under the 
+terms of the GNU Free Documentation License, Version 1.3 or any later version 
+published by the Free Software Foundation; with no Invariant Sections, no 
+Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included 
+in the section entitled "GNU Free Documentation License".
+....
+
+[preface]
+== Table of contents
+toc::[]
+
+[preface]
+== Revision history
+[cols="1,1,1,5",options="header"]
+|===
+| Version | Author | Date | Comments
+| 0.0.1 | J.B. Metz | November 2011 | Initial version.
+| 0.0.2 | J.B. Metz | October 2013 | Updates and additional information.
+| 0.0.3 | J.B. Metz | March 2014 | Fixed error in total number of bytes of file information - version 26.
+| 0.0.4 | J.B. Metz | April 2014 | Additional information regarding volumes and directory strings.
+| 0.0.5 | J.B. Metz | April 2014 | Additional information regarding volumes information and file references.
+| 0.0.6 | J.B. Metz | June 2014 | Additional information regarding the metrics array section with thanks to J. Schneider for pointing me to additional values in the X-Ways output.
+| 0.0.7 | J.B. Metz | June 2014 | Additional information regarding the metrics section. Added information about the trace chains array.
+| 0.0.8 | J.B. Metz | June 2014 | Thanks to M. Seyer providing a sample that indicates that the v23 and v26 metrics entry are the same.
+| 0.0.9 | J.B. Metz | June 2014 | Revisited the v17 metrics entry with thanks to T. Olson.
+| 0.0.10 | J.B. Metz | June 2015 | Switched to asccidoc format.
+|===
+
+
+:numbered:
+== Overview
+A Windows Prefetch File (PF) is used by Microsoft Windows to improve Windows 
+and application start-up performance by loading application data into memory 
+before it is demanded.
+
+A PF consist of the following distinguishable elements:
+
+* file header
+* metrics array
+* trace chains array
+* filename strings
+* [yellow-background]*trailing data (alignment padding?)*
+  * volume information
+  * file references
+  * directory names
+  * [yellow-background]*trailing data (alignment padding?)*
+
+[cols="1,5",options="header"]
+|===
+| Characteristics | Description
+| Byte order | little-endian
+| Date and time values | Filetime in UTC
+| Character strings | Unicode strings are stored in UTF-16 little-endian without the byte order mark (BOM).
+|===
+
+=== Test version
+Files created by the following version of programs were used to test the 
+information within this document:
+
+* Windows XP
+* Windows 2003
+* Windows Vista (SP0)
+* [yellow-background]*TODO: Windows 2008*
+* Windows 7 (SP0)
+* [yellow-background]*TODO: Windows 8*
+* [yellow-background]*TODO: Windows 2012*
+* Windows 8.1
+* [yellow-background]*TODO: Windows 10*
+
+=== Prefetch files
+The Prefetch files can be found in:
+....
+C:\Windows\Prefetch\
+....
+
+The prefetch filename, except for the extension, is commonly in upper case and 
+structured as:
+....
+<executable filename>-<prefetch hash>.pf
+....
+
+Where "executable filename" is the filename of the original executable 
+truncated to 29 characters, and "prefetch hash" is calculated based on the 
+original filename. For more information on calculating the prefetch hash see 
+section: <<calculating_prefetch_hash,Calculating the prefetch hash>>.
+
+== Common data structures
+=== [[ntfs_file_reference]]The NTFS file reference
+The NTFS file reference is 8 bytes of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 6 | | MFT entry index
+| 6 | 2 | | Sequence number
+|===
+
+== File header
+The file header is 84 bytes of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | | Format version +
+See section: <<format_version,Format version>>
+| 4 | 4 | "SCCA" | Signature
+| 8 | 4 | | [yellow-background]*Unknown* +
+[yellow-background]*Seen: 0x0000000f, 0x00000011*
+| 12 | 4 | | File size
+| 16 | 60 | | Executable filename +
+UTF-16 little-endian string with end-of-string character
+| 76 | 4 | | Prefetch hash +
+This value should correspond with the hash in the Prefetch filename
+| 80 | 4 | | [yellow-background]*Unknown (flags?)* +
+[yellow-background]*0x01 => is boot prefetch* +
+[yellow-background]*(Seen in: NTOSBOOT-B00DFAAD.pf, Op-EXPLORER.EXE-A80E4F97-000000F5.pf)*
+|===
+
+[NOTE]
+The executable filename will store a maximum of 29 characters. Dependent on the 
+Windows version the unused bytes of the executable filename can contain remnant 
+data. Windows 8.1 seems to fill the unused bytes with 0-byte values.
+
+=== Format version
+
+[cols="1,5",options="header"]
+|===
+| Value | Description
+| 17 | Used in: Windows XP, Windows 2003
+| 23 | Used in: Windows Vista, Windows 7
+| 26 | Used in: Windows 8.1
+|===
+
+== File information
+[NOTE]
+In this document it is assumed that the file information is not part of the 
+file header. In other documentation you might see this structure as part of the 
+file header.
+
+=== File information - version 17
+The file information - version 17 is 68 bytes of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | 0x00000098 | Metrics array offset +
+The offset is relative to the start of the file
+| 4 | 4 | | Number of metrics entries
+| 8 | 4 | | Trace chains array offset +
+The offset is relative to the start of the file
+| 12 | 4 | | Number of trace chains array entries
+| 16 | 4 | | Filename strings offset
+| 20 | 4 | | Filename strings size
+| 24 | 4 | | Volumes information offset
+| 28 | 4 | | Number of volumes
+| 32 | 4 | | Volumes information size
+| 36 | 8 | | Last run time +
+Contains a FILETIME
+| 44 | 16 | | [yellow-background]*Unknown (Empty values)* +
+[yellow-background]*Sometimes contains remnant data?*
+| 60 | 4 | | Run count
+| 64 | 4 | | [yellow-background]*Unknown*
+|===
+
+=== File information - version 23
+The file information - version 23 is 156 bytes of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | 0x000000f0 | Metrics array offset +
+The offset is relative to the start of the file
+| 4 | 4 | | Number of metrics entries
+| 8 | 4 | | Trace chains array offset +
+The offset is relative to the start of the file
+| 12 | 4 | | Number of trace chains array entries
+| 16 | 4 | | Filename strings offset
+| 20 | 4 | | Filename strings size
+| 24 | 4 | | Volumes information offset
+| 28 | 4 | | Number of volumes
+| 32 | 4 | | Volumes information size
+| *36* | *8* | | [yellow-background]*Unknown (Empty values)*
+| 44 | 8 | | Last run time +
+Contains a FILETIME
+| 52 | 16 | | [yellow-background]*Unknown (Empty values)*
+| 68 | 4 | | Run count
+| 72 | 4 | | [yellow-background]*Unknown* +
+[yellow-background]*Seen: 0x01*
+| *76* | *80* | | [yellow-background]*Unknown (Empty values)*
+|===
+
+The entries with a bold offset and size were changed since version 17.
+
+=== File information - version 26
+The file information - version 26 is 224 bytes of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | 0x000000f0 | Metrics array offset +
+The offset is relative to the start of the file
+| 4 | 4 | | Number of metrics entries
+| 8 | 4 | | Trace chains array offset +
+The offset is relative to the start of the file
+| 12 | 4 | | Number of trace chains array entries
+| 16 | 4 | | Filename strings offset
+| 20 | 4 | | Filename strings size
+| 24 | 4 | | Volumes information offset
+| 28 | 4 | | Number of volumes
+| 32 | 4 | | Volumes information size
+| 36 | 8 | | [yellow-background]*Unknown (Empty values)*
+| 44 | 8 | | (Most recent) Last run time +
+Contains a FILETIME
+| *52* | *7 x 8 = 56* | | [yellow-background]*Older (most recent) last run times* +
+Contains a FILETIME, or 0 if not set
+| *108* | *16* | | [yellow-background]*Unknown* +
+[yellow-background]*Mostly empty values but seem to get filled the run after the 8 last run times have been filled.* +
+[yellow-background]*Could be remnant values.*
+| 124 | 4 | | Run count
+| *128* | *4* | | [yellow-background]*Unknown (number of older last run times?)* +
+[yellow-background]*Seen: 1, 2, 7*
+| *132* | *4* | | [yellow-background]*Unknown* +
+[yellow-background]*Seen: 0, 3*
+| *136* | *88* | | [yellow-background]*Unknown (Empty values)*
+|===
+
+The entries with a bold offset and size were changed since version 23.
+
+== Metrics array
+The metrics array consists of metrics array entries. The entries in the metrics 
+array correspond with the entries in the filename strings.
+
+[NOTE]
+This part of the file currently is referred to as metrics array largely because
+of a lack of a better term.
+
+=== Metrics array entry - version 17
+The metrics array entry - version 17 is 20 bytes in size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | | [yellow-background]*Unknown (Prefetch start time in ms?)* +
+[yellow-background]*Could be the index into the trace chain array as well, is this relationship implicit or explicit?*
+| 4 | 4 | | [yellow-background]*Unknown (Prefetch duration in ms?)* +
+[yellow-background]*Could be the number of entries in the trace chain as well, is this relationship implicit or explicit?*
+| 8 | 4 | | Filename string offset +
+The offset is relative to the start of the filename strings
+| 12 | 4 | | Filename string number of characters +
+Does not include the end-of-string character
+| 16 | 4 | | [yellow-background]*Unknown (Flags?)*
+|===
+
+=== Metrics array entry - version 23
+The metrics array entry - version 23 is 32 bytes in size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | | [yellow-background]*Unknown (Prefetch start time in ms?)* +
+[yellow-background]*Could be the index into the trace chain array as well, is this relationship implicit or explicit?*
+| 4 | 4 | | [yellow-background]*Unknown (Prefetch duration in ms?)* +
+[yellow-background]*Could be the number of entries in the trace chain as well, is this relationship implicit or explicit?*
+| *8* | *4* | | [yellow-background]*Unknown (Average prefetch duration in ms?)*
+| 12 | 4 | | Filename string offset +
+The offset is relative to the start of the filename strings
+| 16 | 4 | | Filename string number of characters +
+Does not include the end-of-string character
+| 20 | 4 | | [yellow-background]*Unknown (Flags?)* +
+[yellow-background]*Seen: 0x00000001, 0x00000002, 0x00000003, 0x00000200, 0x00000202*
+| 24 | 8 | | File reference +
+Contains an NTFS file reference of the file corresponding to the filename string or 0 if not set +
+See section: <<ntfs_file_reference,The NTFS file reference>>
+|===
+
+The entries with a bold offset and size were changed since version 17.
+
+=== Metrics array entry - version 26
+The metrics array entry - version 26 appears to be similar to the metrics array 
+entry - version 23.
+
+== Trace chains array
+A trace chain is similar to a File Allocation Table (FAT) chain where the array 
+entries form chains and -1 (0xffffffff) is used to mark the end-of-chain. The 
+chains in the trace chains array correspond with the entries in the metrics 
+array, meaning the first trace chain relates to the first metrics array entry.
+
+[NOTE]
+This part of the file currently is referred to as trace chains array largely 
+because of a lack of a better term.
+
+The trace chain array entry is 12 bytes in size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | | Next array entry index +
+Contains the next trace chain array entry index in the chain, where the first entry index starts with 0, or -1 (0xffffffff) for the end-of-chain.
+| 4 | 4 | | Total block load count +
+Total number of blocks loaded (or fetched) +
+The block size 512k (512 x 1024) bytes
+| 8 | 1 | | [yellow-background]*Unknown* +
+[yellow-background]*Seen: 0x02, 0x03, 0x04, 0x08, 0x0a*
+| 9 | 1 | | [yellow-background]*Unknown (Sample duration in ms?)* +
+[yellow-background]*Seen: 1*
+| 10 | 2 | | [yellow-background]*Unknown* +
+[yellow-background]*Seen: 0x0001, 0xffff, etc.*
+|===
+
+The size of a trace chain array entry seems to be consistent across the 
+different versions.
+
+== Filename strings
+The directory strings consists of:
+
+* an array of filename strings
+
+A filename string is an UTF-16 little-endian strings with end-of-string character.
+
+[yellow-background]*Is the the array followed by alignment padding? If so what 
+is the size of the alignment,16-byte? Seen values ranging from 6 to 2 bytes.*
+
+== Volumes information
+The volumes information consists of:
+
+* an array of volume information entries
+* volume information data
+  * volume device path
+  * file references
+  * directory strings
+* [yellow-background]*Alignment padding? (16-byte alignment? Can contain remnant data?)*
+
+=== Volume information entry
+==== Volume information entry - version 17
+The volume information entry - version 17 is 40 bytes in size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | | Volume device path offset +
+The offset is relative from the start of the volume information
+| 4 | 4 | | Volume device path number of characters
+| 8 | 8 | | Volume creation time +
+Contains a FILETIME
+| 16 | 4 | | Volume serial number
+| 20 | 4 | | File references offset
+| 24 | 4 | | Number of file references
+| 28 | 4 | | Directory strings offset
+| 32 | 4 | | Number of directory strings
+| 36 | 4 | | [yellow-background]*Unknown*
+|===
+
+==== Volume information entry - version 23
+The volume information entry - version 23 is 104 bytes in size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | | Volume device path offset +
+The offset is relative from the start of the volume information
+| 4 | 4 | | Volume device path number of characters
+| 8 | 8 | | Volume creation time +
+Contains a FILETIME
+| 16 | 4 | | Volume serial number
+| 20 | 4 | | File references offset
+| 24 | 4 | | Number of file references
+| 28 | 4 | | Directory strings offset
+| 32 | 4 | | Number of directory strings
+| 36 | 4 | | [yellow-background]*Unknown* +
+I[yellow-background]*Does this value relate to the remnant data in the file references array?*
+| *40* | *28* | | [yellow-background]*Unknown (empty values)*
+| *68* | *4* | | [yellow-background]*Unknown* +
+[yellow-background]*Copy of the number of directory strings?*
+| *72* | *28* | | [yellow-background]*Unknown (empty values)*
+| *100* | *4* | | [yellow-background]*Unknown (alignment padding?)* +
+[yellow-background]*Can contain remnant data*
+|===
+
+The entries with a bold offset and size were changed since version 17.
+
+==== Volume information entry - version 26
+The volume information entry - version 26 appears to be similar to the volume information entry - version 23.
+
+=== Volume device path
+The volume device path is a UTF-16 little-endian string with end-of-string character.
+
+== File references
+=== File references - version 17
+The file references - version 17 are variable of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | 1 | [yellow-background]*Unknown (Version?)*
+| 4 | 4 | | Number of file references
+| 8 | ... | | Array of file references +
+Contains an NTFS file reference or 0 if not set +
+See section: <<ntfs_file_reference,The NTFS file reference>>
+|===
+
+[yellow-background]*First 8 bytes of the array not used? Remnant data?*
+
+[yellow-background]*Note: do the file references represent file handles used by 
+the executable? They seem to refer to files e.g. DLL*
+
+==== File references - version 23
+The file references - version 23 are variable of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | 3 | [yellow-background]*Unknown (Version?)*
+| 4 | 4 | | Number of file references
+| 8 | ... | | Array of file references +
+Contains an NTFS file reference or 0 if not set +
+See section: <<ntfs_file_reference,The NTFS file reference>>
+|===
+
+[yellow-background]*First X bytes of the array not used? Remnant data?*
+
+==== File references - version 26
+The file references - version 26 appears to be similar to the file references - 
+version 23.
+
+=== Directory strings
+The directory strings consists of:
+
+* an array of directory string entries
+
+The directory string entry is variable of size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 2 | | String number of characters +
+The value does not include the end-of-string character.
+| 2 | ... | | Array of UTF-16 little-endian strings with end-of-string character
+|===
+
+== [[calculating_prefetch_hash]]Calculating the prefetch hash
+There are multiple known hashing functions to be used for prefetch filename 
+hashing, namely:
+
+* SCCA XP hash function; used on Windows XP and Windows 2003
+* SCCA Vista hash function; used on Windows Vista
+* SCCA 2008 hash function; used on Windows 2008, Windows 7, [yellow-background]*Windows 2012* and Windows 8 (including 8.1)
+
+=== SCCA XP hash function
+A Python implementation of the SCCA XP hash function:
+....
+def ssca_xp_hash_function(filename):
+    hash_value = 0
+    for character in filename:
+        hash_value = ((hash_value * 37) + ord(character)) % 0x100000000
+
+    hash_value = (hash_value * 314159269) % 0x100000000
+
+    if hash_value > 0x80000000:
+        hash_value = 0x100000000 - hash_value
+
+    return (abs(hash_value) % 1000000007) % 0x100000000
+....
+
+=== SCCA Vista hash function
+A Python implementation of the SCCA Vista hash function:
+....
+def ssca_vista_hash_function(filename):
+    hash_value = 314159
+
+    for character in filename:
+        hash_value = ((hash_value * 37) + ord(character)) % 0x100000000
+
+    return hash_value
+....
+
+=== SCCA 2008 hash function
+A Python implementation of the SCCA 2008 hash function:
+....
+def ssca_2008_hash_function(filename):
+    hash_value = 314159
+    filename_index = 0
+    filename_length = len(filename)
+
+    while filename_index + 8 < filename_length:
+        character_value = ord(filename[filename_index + 1]) * 37
+        character_value += ord(filename[filename_index + 2])
+        character_value *= 37
+        character_value += ord(filename[filename_index + 3])
+        character_value *= 37
+        character_value += ord(filename[filename_index + 4])
+        character_value *= 37
+        character_value += ord(filename[filename_index + 5])
+        character_value *= 37
+        character_value += ord(filename[filename_index + 6])
+        character_value *= 37
+        character_value += ord(filename[filename_index]) * 442596621
+        character_value += ord(filename[filename_index + 7])
+
+        hash_value = ((character_value - (hash_value * 803794207)) %
+                      0x100000000)
+
+        filename_index += 8
+
+    while filename_index < filename_length:
+        hash_value = (((37 * hash_value) + ord(filename[filename_index])) %
+                      0x100000000)
+
+        filename_index += 1
+
+    return hash_value
+....
+
+=== Hashing the executable filename
+The steps to hash the executable filename are:
+
+1. Determine the full path for the executable, e.g. let's assume the full path for "notepad.exe" is "C:\Windows\notepad.exe".
+2. Convert the full path into an upper-case Windows device path: "\DEVICE\HARDDISKVOLUME1\WINDOWS\NOTEPAD.EXE"
+3. Convert the string into an UTF-16 little-endian stream without a byte-order-mark or an end-of-string character (2x 0-bytes)
+4. Apply the appropriate hash function.
+
+E.g. on Windows XP (32-bit) calculating the prefetch hash of 
+"\DEVICE\HARDDISKVOLUME1\WINDOWS\NOTEPAD.EXE" should generate the value 
+0x189578da. Which should correspond to the prefetch hash value in the prefetch 
+filename e.g. "C:\Windows\Prefetch\NOTEPAD.EXE-189578DA.pf".
+
+[NOTE]
+On Windows Vista and Window 7 the volume indicated by C: is often the second 
+volume (where the boot partition is the first) hence the Windows device path 
+for C: will be "\DEVICE\HARDDISKVOLUME2".
+
+[yellow-background]*TODO: describe command line arguments*
+
+[yellow-background]*TODO: describe /prefetch flag*
+
+[yellow-background]*TODO: describe UNC path*
+
+=== Notes
+....
+#define RNDM_CONSTANT 314159269
+#define RNDM_PRIME 1000000007
+
+ULONG CcPfHashValue (PVOID Key, ULONG Len)
+/ *
+Routine Description:
+Generic hash routine.
+
+Arguments:
+Key - Pointer to data to calculate a hash value for.
+Len - Number of bytes pointed to by key.
+
+Return Value:
+Hash value.
+* /
+{
+char * cp = Key;
+ULONG i, ConvKey = 0;
+
+for (i = 0; i <Len; i + +)
+{
+ConvKey = 37 * ConvKey + (unsigned int) * cp;
+cp + +;
+}
+
+return (abs (RNDM_CONSTANT * ConvKey)% RNDM_PRIME);
+}
+
+
+Scenarios that affect the hash
+the application ran is a so-called hosting application e.g. rundll32.exe, 
+mmc.exe, and newer versions of Windows systems also include dllhost.exe and 
+svchost.exe there is a command line /Prefetch used (I skip this bit in this post)
+http://www.hexacorn.com/blog/2013/07/06/the-argument-about-prefetchx-or-the-other-way-around/
+UNC paths: http://www.hexacorn.com/blog/2012/10/29/prefetch-file-names-and-unc-paths/
+
+Windows XP 32-bit
+sum of hash_xp (on devicename and c: = volume1)+ hash_xp(quoted path+command line)
+
+Windows Vista 32-bit
+sum of hash_vista (on devicename and c: = volume1)+ hash_vista(quoted path+command line)
+
+Windows 7 32-bit
+sum of hash_w7 (on devicename and c: = volume2 )+ hash_w7(quoted path+command line)
+
+Windows 7 64-bit
+sum of hash_w7 (on devicename and c: = volume2 )+ hash_w7(unquoted path+command line prefixed with extra blank character
+
+Windows 8 32-bit
+sum of hash_w7 (on devicename and c: = volume2 )+ hash_w7(unquoted path+command line prefixed with extra blank character
+
+Windows Server 2003 32-bit
+sum of hash_xp (on devicename and c: = volume1 )+ hash_xp(unquoted path+command line)
+
+Windows Server 2008 32-bit
+sum of hash_w7 (on devicename and c: = volume1 )+ hash_w7(unquoted path+command line prefixed with extra blank character)
+....
+
+== Notes
+http://social.technet.microsoft.com/Forums/windowsserver/en-US/ca451db2-762b-44b7-a100-9d0d6a4230d7/server-2008-r2-and-superfetch?forum=windowsserver2008r2general
+
+=== /prefetch flag
+From: http://blogs.msdn.com/b/ryanmy/archive/2005/05/25/421882.aspx
+....
+In the meantime, I want to defuse a long-standing controversy -- the /prefetch 
+flag.
+
+   With modern computing, the absolute worst thing you can ever do for 
+performance is having to touch the hard drive -- or any non-memory storage for 
+that matter.  The fastest hard drives on earth are still horridly slow compared 
+to a PC's main memory; even with solid state drives, in order to access the 
+drive, one has to jump into system code and drivers, and this will push your 
+own program's code out of the CPU's L2 cache.  (This is called a locality 
+loss.)  There's two typical reasons one has to touch the disk -- the first is 
+when the application requests it explicitly (Word asks the OS to load blog.doc 
+into memory), and the other is a "hard fault" -- when the application tries to 
+use memory that has been paged out to disk via "virtual memory" and needs to be 
+paged back in.
+
+   Now, imagine that a DVD player program always starts playback by loading a 
+DLL to decode MPEG-2 video.  Wouldn't it be nice if we could attempt to 
+pre-load the MPEG-2 DLL whenever we loaded the DVD player's EXE?  That way, 
+when it tries to run code on that DLL, one doesn't have to hard fault and go to 
+disk for it!   This is what a prefetcher does: it tracks what code pages are 
+used by an application, and the next time that application loads, it loads 
+those pages in advance as soon as it's got some idle time.  A prefetcher was 
+added to Windows in XP, and is vastly improved in Windows Longhorn.
+
+   XP systems have a Prefetch directory underneath the windows root directory, 
+full of .pf files -- these are lists of pages to load.  The file names are 
+generated from hashing the EXE to load -- whenever you load the EXE, we hash, 
+see if there's a matching (exename)-(hash).pf file in the prefetch directory, 
+and if so we load those pages.  (If it doesn't exist, we track what pages it 
+loads, create that file, and pick a handful of them to save to it.)  So, first 
+off, it is a bad idea to periodically clean out that folder as some tech sites 
+suggest.  For one thing, XP will just re-create that data anyways; secondly, it 
+trims the files anyways if there's ever more than 128 of them so that it 
+doesn't needlessly consume space.  So not only is deleting the directory 
+totally unnecessary, but you're also putting a temporary dent in your PC's 
+performance.
+
+   Secondly, one can specify a /prefetch:# flag when launching an app.  Many 
+people have noticed that auto-generated shortcuts to Windows Media Player do 
+this, and the number varies depending on what it does.  For example, the 
+shortcut used by the shell when you double-click a WMV file to play it has one 
+prefetch number; the auto-run shortcut to play or rip music that appears when 
+you insert a music CD have other numbers.  Some sites have guessed that this 
+switch turns on prefetching, and suggest that you add that to every executable 
+you care about -- this has appeared on so many, many, many sites to be urban 
+legend.  Other sites write this off as garbage and guess that it's a switch 
+specific to Media Player, guessing from references to prefetching in the 
+Windows driver subsystem.  Both guesses are incorrect.
+
+   The /prefetch:# flag is looked at by the OS when we create the process -- 
+however, it has one (and only one) purpose.  We add the passed number to the 
+hash.  Why?  WMP is a multipurpose application and may do many different 
+things.  The DLLs and code that it touches will be very different when playing 
+a WMV than when playing a DVD, or when ripping a CD, or when listening to a 
+Shoutcast stream, or any of the other things that WMP can do.  If we only had 
+one hash for WMP, then the prefetch would only be correct for one such use.  
+Having incorrect prefetch data would not be a fatal error -- it'd just load 
+pages into memory that'd never get used, and then get swapped back out to disk 
+as soon as possible.  Still, it's counterproductive.  By specifying a 
+/prefetch:# flag with a different number for each "mode" that WMP can do, each 
+mode gets its own separate hash file, and thus we properly prefetch.  (This 
+behavior isn't specific to WMP -- it does the same for any app.)
+   This flag is looked at when we create the first thread in the process, but 
+it is not removed by CreateProcess from the command line, so any app that 
+chokes on unrecognized command line parameters will not work with it.  This is 
+why so many people notice that Kazaa and other apps crash or otherwise refuse 
+to start when it's added.  Of course, WMP knows that it may be there, and just 
+silently ignores its existence.
+
+   I suspect that the "add /prefetch:1 to make rocket go now" urban legend will 
+never die, though.  I know that at least one major company ships products with 
+it in their shortcuts, without ever asking us... just for good measure, I 
+guess.  :-P  All it does is change your hash number -- the OS is doing exactly 
+the same thing it did before, and just saving the prefetch pages to a different 
+file.
+....
+
+:numbered!:
+[appendix]
+== References
+
+`[FORENSICWIKI]`
+
+[cols="1,5",options="header"]
+|===
+| Title: | Prefetch
+| URL: | http://www.forensicswiki.org/wiki/Prefetch
+|===
+
+`[HEXACORN12]`
+
+[cols="1,5",options="header"]
+|===
+| Title: | Prefetch Hash Calculator + a hash lookup table xp/vista/w7/w2k3/w2k8
+| URL: | http://www.hexacorn.com/blog/2012/06/13/prefetch-hash-calculator-a-hash-lookup-table-xpvistaw7w2k3w2k8/
+|===
+
+[appendix]
+== GNU Free Documentation License
+Version 1.3, 3 November 2008
+Copyright © 2000, 2001, 2002, 2007, 2008 Free Software Foundation, Inc. 
+<http://fsf.org/>
+
+Everyone is permitted to copy and distribute verbatim copies of this license 
+document, but changing it is not allowed.
+
+=== 0. PREAMBLE
+The purpose of this License is to make a manual, textbook, or other functional 
+and useful document "free" in the sense of freedom: to assure everyone the 
+effective freedom to copy and redistribute it, with or without modifying it, 
+either commercially or noncommercially. Secondarily, this License preserves for 
+the author and publisher a way to get credit for their work, while not being 
+considered responsible for modifications made by others.
+
+This License is a kind of "copyleft", which means that derivative works of the 
+document must themselves be free in the same sense. It complements the GNU 
+General Public License, which is a copyleft license designed for free software.
+
+We have designed this License in order to use it for manuals for free software, 
+because free software needs free documentation: a free program should come with 
+manuals providing the same freedoms that the software does. But this License is 
+not limited to software manuals; it can be used for any textual work, 
+regardless of subject matter or whether it is published as a printed book. We 
+recommend this License principally for works whose purpose is instruction or 
+reference.
+
+=== 1. APPLICABILITY AND DEFINITIONS
+This License applies to any manual or other work, in any medium, that contains 
+a notice placed by the copyright holder saying it can be distributed under the 
+terms of this License. Such a notice grants a world-wide, royalty-free license, 
+unlimited in duration, to use that work under the conditions stated herein. The 
+"Document", below, refers to any such manual or work. Any member of the public 
+is a licensee, and is addressed as "you". You accept the license if you copy, 
+modify or distribute the work in a way requiring permission under copyright law.
+
+A "Modified Version" of the Document means any work containing the Document or 
+a portion of it, either copied verbatim, or with modifications and/or 
+translated into another language.
+
+A "Secondary Section" is a named appendix or a front-matter section of the 
+Document that deals exclusively with the relationship of the publishers or 
+authors of the Document to the Document's overall subject (or to related 
+matters) and contains nothing that could fall directly within that overall 
+subject. (Thus, if the Document is in part a textbook of mathematics, a 
+Secondary Section may not explain any mathematics.) The relationship could be a 
+matter of historical connection with the subject or with related matters, or of 
+legal, commercial, philosophical, ethical or political position regarding them.
+
+The "Invariant Sections" are certain Secondary Sections whose titles are 
+designated, as being those of Invariant Sections, in the notice that says that 
+the Document is released under this License. If a section does not fit the 
+above definition of Secondary then it is not allowed to be designated as 
+Invariant. The Document may contain zero Invariant Sections. If the Document 
+does not identify any Invariant Sections then there are none.
+
+The "Cover Texts" are certain short passages of text that are listed, as 
+Front-Cover Texts or Back-Cover Texts, in the notice that says that the 
+Document is released under this License. A Front-Cover Text may be at most 5 
+words, and a Back-Cover Text may be at most 25 words.
+
+A "Transparent" copy of the Document means a machine-readable copy, represented 
+in a format whose specification is available to the general public, that is 
+suitable for revising the document straightforwardly with generic text editors 
+or (for images composed of pixels) generic paint programs or (for drawings) 
+some widely available drawing editor, and that is suitable for input to text 
+formatters or for automatic translation to a variety of formats suitable for 
+input to text formatters. A copy made in an otherwise Transparent file format 
+whose markup, or absence of markup, has been arranged to thwart or discourage 
+subsequent modification by readers is not Transparent. An image format is not 
+Transparent if used for any substantial amount of text. A copy that is not 
+"Transparent" is called "Opaque".
+
+Examples of suitable formats for Transparent copies include plain ASCII without 
+markup, Texinfo input format, LaTeX input format, SGML or XML using a publicly 
+available DTD, and standard-conforming simple HTML, PostScript or PDF designed 
+for human modification. Examples of transparent image formats include PNG, XCF 
+and JPG. Opaque formats include proprietary formats that can be read and edited 
+only by proprietary word processors, SGML or XML for which the DTD and/or 
+processing tools are not generally available, and the machine-generated HTML, 
+PostScript or PDF produced by some word processors for output purposes only.
+
+The "Title Page" means, for a printed book, the title page itself, plus such 
+following pages as are needed to hold, legibly, the material this License 
+requires to appear in the title page. For works in formats which do not have 
+any title page as such, "Title Page" means the text near the most prominent 
+appearance of the work's title, preceding the beginning of the body of the text.
+
+The "publisher" means any person or entity that distributes copies of the 
+Document to the public.
+
+A section "Entitled XYZ" means a named subunit of the Document whose title 
+either is precisely XYZ or contains XYZ in parentheses following text that 
+translates XYZ in another language. (Here XYZ stands for a specific section 
+name mentioned below, such as "Acknowledgements", "Dedications", 
+"Endorsements", or "History".) To "Preserve the Title" of such a section when 
+you modify the Document means that it remains a section "Entitled XYZ" 
+according to this definition.
+
+The Document may include Warranty Disclaimers next to the notice which states 
+that this License applies to the Document. These Warranty Disclaimers are 
+considered to be included by reference in this License, but only as regards 
+disclaiming warranties: any other implication that these Warranty Disclaimers 
+may have is void and has no effect on the meaning of this License.
+
+=== 2. VERBATIM COPYING
+You may copy and distribute the Document in any medium, either commercially or 
+noncommercially, provided that this License, the copyright notices, and the 
+license notice saying this License applies to the Document are reproduced in 
+all copies, and that you add no other conditions whatsoever to those of this 
+License. You may not use technical measures to obstruct or control the reading 
+or further copying of the copies you make or distribute. However, you may 
+accept compensation in exchange for copies. If you distribute a large enough 
+number of copies you must also follow the conditions in section 3.
+
+You may also lend copies, under the same conditions stated above, and you may 
+publicly display copies.
+
+=== 3. COPYING IN QUANTITY
+If you publish printed copies (or copies in media that commonly have printed 
+covers) of the Document, numbering more than 100, and the Document's license 
+notice requires Cover Texts, you must enclose the copies in covers that carry, 
+clearly and legibly, all these Cover Texts: Front-Cover Texts on the front 
+cover, and Back-Cover Texts on the back cover. Both covers must also clearly 
+and legibly identify you as the publisher of these copies. The front cover must 
+present the full title with all words of the title equally prominent and 
+visible. You may add other material on the covers in addition. Copying with 
+changes limited to the covers, as long as they preserve the title of the 
+Document and satisfy these conditions, can be treated as verbatim copying in 
+other respects.
+
+If the required texts for either cover are too voluminous to fit legibly, you 
+should put the first ones listed (as many as fit reasonably) on the actual 
+cover, and continue the rest onto adjacent pages.
+
+If you publish or distribute Opaque copies of the Document numbering more than 
+100, you must either include a machine-readable Transparent copy along with 
+each Opaque copy, or state in or with each Opaque copy a computer-network 
+location from which the general network-using public has access to download 
+using public-standard network protocols a complete Transparent copy of the 
+Document, free of added material. If you use the latter option, you must take 
+reasonably prudent steps, when you begin distribution of Opaque copies in 
+quantity, to ensure that this Transparent copy will remain thus accessible at 
+the stated location until at least one year after the last time you distribute 
+an Opaque copy (directly or through your agents or retailers) of that edition 
+to the public.
+
+It is requested, but not required, that you contact the authors of the Document 
+well before redistributing any large number of copies, to give them a chance to 
+provide you with an updated version of the Document.
+
+=== 4. MODIFICATIONS
+You may copy and distribute a Modified Version of the Document under the 
+conditions of sections 2 and 3 above, provided that you release the Modified 
+Version under precisely this License, with the Modified Version filling the 
+role of the Document, thus licensing distribution and modification of the 
+Modified Version to whoever possesses a copy of it. In addition, you must do 
+these things in the Modified Version:
+
+A. Use in the Title Page (and on the covers, if any) a title distinct from that 
+of the Document, and from those of previous versions (which should, if there 
+were any, be listed in the History section of the Document). You may use the 
+same title as a previous version if the original publisher of that version 
+gives permission. 
+
+B. List on the Title Page, as authors, one or more persons or entities 
+responsible for authorship of the modifications in the Modified Version, 
+together with at least five of the principal authors of the Document (all of 
+its principal authors, if it has fewer than five), unless they release you from 
+this requirement. 
+
+C. State on the Title page the name of the publisher of the Modified Version, 
+as the publisher. 
+
+D. Preserve all the copyright notices of the Document. 
+
+E. Add an appropriate copyright notice for your modifications adjacent to the 
+other copyright notices. 
+
+F. Include, immediately after the copyright notices, a license notice giving 
+the public permission to use the Modified Version under the terms of this 
+License, in the form shown in the Addendum below. 
+
+G. Preserve in that license notice the full lists of Invariant Sections and 
+required Cover Texts given in the Document's license notice. 
+
+H. Include an unaltered copy of this License. 
+
+I. Preserve the section Entitled "History", Preserve its Title, and add to it 
+an item stating at least the title, year, new authors, and publisher of the 
+Modified Version as given on the Title Page. If there is no section Entitled 
+"History" in the Document, create one stating the title, year, authors, and 
+publisher of the Document as given on its Title Page, then add an item 
+describing the Modified Version as stated in the previous sentence. 
+
+J. Preserve the network location, if any, given in the Document for public 
+access to a Transparent copy of the Document, and likewise the network 
+locations given in the Document for previous versions it was based on. These 
+may be placed in the "History" section. You may omit a network location for a 
+work that was published at least four years before the Document itself, or if 
+the original publisher of the version it refers to gives permission. 
+
+K. For any section Entitled "Acknowledgements" or "Dedications", Preserve the 
+Title of the section, and preserve in the section all the substance and tone of 
+each of the contributor acknowledgements and/or dedications given therein. 
+
+L. Preserve all the Invariant Sections of the Document, unaltered in their text 
+and in their titles. Section numbers or the equivalent are not considered part 
+of the section titles. 
+
+M. Delete any section Entitled "Endorsements". Such a section may not be 
+included in the Modified Version. 
+
+N. Do not retitle any existing section to be Entitled "Endorsements" or to 
+conflict in title with any Invariant Section. 
+
+O. Preserve any Warranty Disclaimers. 
+
+If the Modified Version includes new front-matter sections or appendices that 
+qualify as Secondary Sections and contain no material copied from the Document, 
+you may at your option designate some or all of these sections as invariant. To 
+do this, add their titles to the list of Invariant Sections in the Modified 
+Version's license notice. These titles must be distinct from any other section 
+titles.
+
+You may add a section Entitled "Endorsements", provided it contains nothing but 
+endorsements of your Modified Version by various parties—for example, 
+statements of peer review or that the text has been approved by an organization 
+as the authoritative definition of a standard.
+
+You may add a passage of up to five words as a Front-Cover Text, and a passage 
+of up to 25 words as a Back-Cover Text, to the end of the list of Cover Texts 
+in the Modified Version. Only one passage of Front-Cover Text and one of 
+Back-Cover Text may be added by (or through arrangements made by) any one 
+entity. If the Document already includes a cover text for the same cover, 
+previously added by you or by arrangement made by the same entity you are 
+acting on behalf of, you may not add another; but you may replace the old one, 
+on explicit permission from the previous publisher that added the old one.
+
+The author(s) and publisher(s) of the Document do not by this License give 
+permission to use their names for publicity for or to assert or imply 
+endorsement of any Modified Version.
+
+=== 5. COMBINING DOCUMENTS
+You may combine the Document with other documents released under this License, 
+under the terms defined in section 4 above for modified versions, provided that 
+you include in the combination all of the Invariant Sections of all of the 
+original documents, unmodified, and list them all as Invariant Sections of your 
+combined work in its license notice, and that you preserve all their Warranty 
+Disclaimers.
+
+The combined work need only contain one copy of this License, and multiple 
+identical Invariant Sections may be replaced with a single copy. If there are 
+multiple Invariant Sections with the same name but different contents, make the 
+title of each such section unique by adding at the end of it, in parentheses, 
+the name of the original author or publisher of that section if known, or else 
+a unique number. Make the same adjustment to the section titles in the list of 
+Invariant Sections in the license notice of the combined work.
+
+In the combination, you must combine any sections Entitled "History" in the 
+various original documents, forming one section Entitled "History"; likewise 
+combine any sections Entitled "Acknowledgements", and any sections Entitled 
+"Dedications". You must delete all sections Entitled "Endorsements".
+
+=== 6. COLLECTIONS OF DOCUMENTS
+You may make a collection consisting of the Document and other documents 
+released under this License, and replace the individual copies of this License 
+in the various documents with a single copy that is included in the collection, 
+provided that you follow the rules of this License for verbatim copying of each 
+of the documents in all other respects.
+
+You may extract a single document from such a collection, and distribute it 
+individually under this License, provided you insert a copy of this License 
+into the extracted document, and follow this License in all other respects 
+regarding verbatim copying of that document.
+
+=== 7. AGGREGATION WITH INDEPENDENT WORKS
+A compilation of the Document or its derivatives with other separate and 
+independent documents or works, in or on a volume of a storage or distribution 
+medium, is called an "aggregate" if the copyright resulting from the 
+compilation is not used to limit the legal rights of the compilation's users 
+beyond what the individual works permit. When the Document is included in an 
+aggregate, this License does not apply to the other works in the aggregate 
+which are not themselves derivative works of the Document.
+
+If the Cover Text requirement of section 3 is applicable to these copies of the 
+Document, then if the Document is less than one half of the entire aggregate, 
+the Document's Cover Texts may be placed on covers that bracket the Document 
+within the aggregate, or the electronic equivalent of covers if the Document is 
+in electronic form. Otherwise they must appear on printed covers that bracket 
+the whole aggregate.
+
+=== 8. TRANSLATION
+Translation is considered a kind of modification, so you may distribute 
+translations of the Document under the terms of section 4. Replacing Invariant 
+Sections with translations requires special permission from their copyright 
+holders, but you may include translations of some or all Invariant Sections in 
+addition to the original versions of these Invariant Sections. You may include 
+a translation of this License, and all the license notices in the Document, and 
+any Warranty Disclaimers, provided that you also include the original English 
+version of this License and the original versions of those notices and 
+disclaimers. In case of a disagreement between the translation and the original 
+version of this License or a notice or disclaimer, the original version will 
+prevail.
+
+If a section in the Document is Entitled "Acknowledgements", "Dedications", or 
+"History", the requirement (section 4) to Preserve its Title (section 1) will 
+typically require changing the actual title.
+
+=== 9. TERMINATION
+You may not copy, modify, sublicense, or distribute the Document except as 
+expressly provided under this License. Any attempt otherwise to copy, modify, 
+sublicense, or distribute it is void, and will automatically terminate your 
+rights under this License.
+
+However, if you cease all violation of this License, then your license from a 
+particular copyright holder is reinstated (a) provisionally, unless and until 
+the copyright holder explicitly and finally terminates your license, and (b) 
+permanently, if the copyright holder fails to notify you of the violation by 
+some reasonable means prior to 60 days after the cessation.
+
+Moreover, your license from a particular copyright holder is reinstated 
+permanently if the copyright holder notifies you of the violation by some 
+reasonable means, this is the first time you have received notice of violation 
+of this License (for any work) from that copyright holder, and you cure the 
+violation prior to 30 days after your receipt of the notice.
+
+Termination of your rights under this section does not terminate the licenses 
+of parties who have received copies or rights from you under this License. If 
+your rights have been terminated and not permanently reinstated, receipt of a 
+copy of some or all of the same material does not give you any rights to use it.
+
+=== 10. FUTURE REVISIONS OF THIS LICENSE
+The Free Software Foundation may publish new, revised versions of the GNU Free 
+Documentation License from time to time. Such new versions will be similar in 
+spirit to the present version, but may differ in detail to address new problems 
+or concerns. See http://www.gnu.org/copyleft/.
+
+Each version of the License is given a distinguishing version number. If the 
+Document specifies that a particular numbered version of this License "or any 
+later version" applies to it, you have the option of following the terms and 
+conditions either of that specified version or of any later version that has 
+been published (not as a draft) by the Free Software Foundation. If the 
+Document does not specify a version number of this License, you may choose any 
+version ever published (not as a draft) by the Free Software Foundation. If the 
+Document specifies that a proxy can decide which future versions of this 
+License can be used, that proxy's public statement of acceptance of a version 
+permanently authorizes you to choose that version for the Document.
+
+=== 11. RELICENSING
+"Massive Multiauthor Collaboration Site" (or "MMC Site") means any World Wide 
+Web server that publishes copyrightable works and also provides prominent 
+facilities for anybody to edit those works. A public wiki that anybody can edit 
+is an example of such a server. A "Massive Multiauthor Collaboration" (or 
+"MMC") contained in the site means any set of copyrightable works thus 
+published on the MMC site.
+
+"CC-BY-SA" means the Creative Commons Attribution-Share Alike 3.0 license 
+published by Creative Commons Corporation, a not-for-profit corporation with a 
+principal place of business in San Francisco, California, as well as future 
+copyleft versions of that license published by that same organization.
+
+"Incorporate" means to publish or republish a Document, in whole or in part, as 
+part of another Document.
+
+An MMC is "eligible for relicensing" if it is licensed under this License, and 
+if all works that were first published under this License somewhere other than 
+this MMC, and subsequently incorporated in whole or in part into the MMC, (1) 
+had no cover texts or invariant sections, and (2) were thus incorporated prior 
+to November 1, 2008.
+
+The operator of an MMC Site may republish an MMC contained in the site under 
+CC-BY-SA on the same site at any time before August 1, 2009, provided the MMC 
+is eligible for relicensing.
+

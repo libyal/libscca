@@ -109,8 +109,9 @@ stamp-h[1-9]
 /include/libscca/features.h
 /include/libscca/types.h
 /libscca/libscca.rc
-/libscca/libscca_definition.h
+/libscca/libscca_definitions.h
 /pyscca/setup.py
+/sccatools/sccainfo
 /tests/input
 /tests/tmp
 /tests/scca_test_open_close
