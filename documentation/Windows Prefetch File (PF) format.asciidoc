@@ -80,9 +80,7 @@ A PF consist of the following distinguishable elements:
 ** [yellow-background]*trailing data (alignment padding?)*
 
 As of Windows 10 the PF is stored in compressed form in a MAM file similar to 
-SuperFetch. Also see: 
-https://github.com/libyal/libagdb/blob/master/documentation/Windows%20SuperFetch
-%20(DB)%20format.asciidoc[[LIBAGDB\]].
+SuperFetch. Also see: https://github.com/libyal/libagdb/blob/master/documentation/Windows%20SuperFetch%20(DB)%20format.asciidoc[[LIBAGDB\]].
 
 [cols="1,5",options="header"]
 |===
