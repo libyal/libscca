@@ -307,8 +307,8 @@ Contains a FILETIME, or 0 if not set
 The entries with a bold offset and size were changed since version 23.
 
 ==== File information - version 30
-The file information - version 30 appears to be similar to the metrics array 
-entry - version 26.
+The file information - version 30 appears to be similar to the file information
+- version 26.
 
 === Metrics array
 The metrics array consists of metrics array entries. The entries in the metrics 
@@ -377,7 +377,7 @@ array, meaning the first trace chain relates to the first metrics array entry.
 This part of the file currently is referred to as trace chains array largely 
 because of a lack of a better term.
 
-==== Trache chain array entry - version 17
+==== Trace chain array entry - version 17
 The trace chain array entry - version 17 is 12 bytes in size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -396,15 +396,15 @@ The block size 512k (512 x 1024) bytes
 [yellow-background]*Seen: 0x0001, 0xffff, etc.*
 |===
 
-==== Trache chain array entry - version 23
-The trace chain array entry - version 23 appears to be similar to the metrics array 
-entry - version 17.
+==== Trace chain array entry - version 23
+The trace chain array entry - version 23 appears to be similar to the trace 
+chain array entry - version 17.
 
-==== Trache chain array entry - version 26
-The trace chain array entry - version 26 appears to be similar to the metrics array 
-entry - version 17.
+==== Trace chain array entry - version 26
+The trace chain array entry - version 26 appears to be similar to the trace 
+chain array entry - version 17.
 
-==== Trache chain array entry - version 30
+==== Trace chain array entry - version 30
 The trace chain array entry - version 30 is 8 bytes in size and consists of:
 
 [cols="1,1,1,5",options="header"]
@@ -493,7 +493,7 @@ Contains a FILETIME
 | 28 | 4 | | Directory strings offset
 | 32 | 4 | | Number of directory strings
 | 36 | 4 | | [yellow-background]*Unknown* +
-I[yellow-background]*Does this value relate to the remnant data in the file references array?*
+[yellow-background]*Does this value relate to the remnant data in the file references array?*
 | *40* | *28* | | [yellow-background]*Unknown (empty values)*
 | *68* | *4* | | [yellow-background]*Unknown* +
 [yellow-background]*Copy of the number of directory strings?*
