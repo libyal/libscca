@@ -28,6 +28,7 @@
 #include "libscca_io_handle.h"
 #include "libscca_libbfio.h"
 #include "libscca_libcerror.h"
+#include "libscca_libfdata.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -84,6 +85,7 @@ int libscca_file_information_free(
 
 int libscca_file_information_read(
      libscca_file_information_t *file_information,
+     libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,
      libscca_io_handle_t *io_handle,
      libcerror_error_t **error );

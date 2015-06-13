@@ -2,7 +2,7 @@ AC_PREREQ( 2.59 )
 
 AC_INIT(
  [libscca],
- [20150106],
+ [20150613],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -87,11 +87,20 @@ AX_LIBCPATH_CHECK_ENABLE
 dnl Check for enabling libbfio for basic file IO support
 AX_LIBBFIO_CHECK_ENABLE
 
+dnl Check for enabling libfcache for file value cache support
+AX_LIBFCACHE_CHECK_ENABLE
+
+dnl Check for enabling libfdata for file data types support
+AX_LIBFDATA_CHECK_ENABLE
+
 dnl Check for enabling libfdatetime for file date and time support
 AX_LIBFDATETIME_CHECK_ENABLE
 
 dnl Check for enabling libfvalue for file value support
 AX_LIBFVALUE_CHECK_ENABLE
+
+dnl Check for enabling libfwnt for file Windows NT type support
+AX_LIBFWNT_CHECK_ENABLE
 
 dnl Check for library function support
 AX_LIBSCCA_CHECK_LOCAL
@@ -107,6 +116,9 @@ AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
 
 dnl Check if libscca should be build with debug output
 AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
+
+dnl Check if libevt python bindings (pyssca) should be build
+AX_PYTHON_CHECK_ENABLE
 
 dnl Headers included in various places
 AC_CHECK_HEADERS([stdarg.h varargs.h])
@@ -146,7 +158,7 @@ CFLAGS="$CFLAGS -Wall";
 
 dnl Check if requires and build requires should be set in spec file
 AS_IF(
- [test "x$ac_cv_libcstring" = xyes || test "x$ac_cv_libcerror" = xyes || test "x$ac_cv_libthreads" = xyes || test "x$ac_cv_libcdata" = xyes || test "x$ac_cv_libclocale" = xyes || test "x$ac_cv_libcnotify" = xyes || test "x$ac_cv_libcsplit" = xyes || test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libcfile" = xyes || test "x$ac_cv_libcpath" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfdatetime" = xyes || test "x$ac_cv_libfvalue" = xyes],
+ [test "x$ac_cv_libcstring" = xyes || test "x$ac_cv_libcerror" = xyes || test "x$ac_cv_libthreads" = xyes || test "x$ac_cv_libcdata" = xyes || test "x$ac_cv_libclocale" = xyes || test "x$ac_cv_libcnotify" = xyes || test "x$ac_cv_libcsplit" = xyes || test "x$ac_cv_libuna" = xyes || test "x$ac_cv_libcfile" = xyes || test "x$ac_cv_libcpath" = xyes || test "x$ac_cv_libbfio" = xyes || test "x$ac_cv_libfcache" = xyes || test "x$ac_cv_libfdata" = xyes || test "x$ac_cv_libfdatetime" = xyes || test "x$ac_cv_libfvalue" = xyes || test "x$ac_cv_libfwnt" = xyes],
  [AC_SUBST(
   [libscca_spec_requires],
   [Requires:])
@@ -192,11 +204,15 @@ AC_CONFIG_FILES([libuna/Makefile])
 AC_CONFIG_FILES([libcfile/Makefile])
 AC_CONFIG_FILES([libcpath/Makefile])
 AC_CONFIG_FILES([libbfio/Makefile])
+AC_CONFIG_FILES([libfcache/Makefile])
+AC_CONFIG_FILES([libfdata/Makefile])
 AC_CONFIG_FILES([libfdatetime/Makefile])
 AC_CONFIG_FILES([libfvalue/Makefile])
+AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libscca/Makefile])
 AC_CONFIG_FILES([libcsystem/Makefile])
 AC_CONFIG_FILES([sccatools/Makefile])
+AC_CONFIG_FILES([pyscca/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([po/Makevars])
 AC_CONFIG_FILES([manuals/Makefile])
@@ -234,14 +250,18 @@ Building:
    libcfile support:                          $ac_cv_libcfile
    libcpath support:                          $ac_cv_libcpath
    libbfio support:                           $ac_cv_libbfio
+   libfcache support:                         $ac_cv_libfcache
+   libfdata support:                          $ac_cv_libfdata
    libfdatetime support:                      $ac_cv_libfdatetime
    libfvalue support:                         $ac_cv_libfvalue
+   libfwnt support:                           $ac_cv_libfwnt
    libcsystem support:                        $ac_cv_libcsystem
 
 Features:
    Multi-threading support:                   $ac_cv_libcthreads_multi_threading
    Wide character type support:               $ac_cv_enable_wide_character_type
    sccatools are build as static executables: $ac_cv_enable_static_executables
+   Python (pyscca) support:                   $ac_cv_enable_python
    Verbose output:                            $ac_cv_enable_verbose_output
    Debug output:                              $ac_cv_enable_debug_output
 ]);

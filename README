@@ -4,10 +4,11 @@ Project information:
 * Status: alpha
 * Licence: LGPLv3+
 
-Planned:
-* Python bindings
-* Multi-threading support
+Work in progress:
 * Python 3 support
+
+Planned:
+* Multi-threading support
 
 For more information see:
 * Project documentation: https://github.com/libyal/libscca/wiki/Home

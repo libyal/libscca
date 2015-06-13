@@ -1,4 +1,5 @@
 TODO:
+* complete python bindings
 * handle directory names correctly
 * add API functions
   - get executable name
@@ -13,8 +14,20 @@ TODO:
     - get directory strings
     - get file references
   - functions to calcalate hashes?
-* add python bindings
 * update manuals
+* check signature
+  - add check for mam file header?
+
+20150613
+* worked on Windows 10 compressed file support
+* worked on Python bindings
+
+20150612
+* worked on Windows 10 compressed file support
+
+20150610
+* fix in check signature
+* worked on Windows 10 compressed file support
 
 20150106
 * 2015 update

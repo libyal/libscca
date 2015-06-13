@@ -89,7 +89,6 @@ SED_SCRIPT="/^$/ {
 			if test ${LOCAL_LIB} = "libfvalue";
 			then
 				sed -i'~' '/@LIBFGUID_CPPFLAGS@/d' ${LOCAL_LIB}/Makefile.am;
-				sed -i'~' '/@LIBFWNT_CPPFLAGS@/d' ${LOCAL_LIB}/Makefile.am;
 			fi
 
 			rm -f ${LOCAL_LIB}/${LOCAL_LIB}.c;

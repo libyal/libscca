@@ -24,6 +24,7 @@
 #include <memory.h>
 #include <types.h>
 
+#include "libscca_compressed_block.h"
 #include "libscca_definitions.h"
 #include "libscca_io_handle.h"
 #include "libscca_libbfio.h"
@@ -33,13 +34,16 @@
 #include "libscca_libfdatetime.h"
 #include "libscca_libfvalue.h"
 #include "libscca_libuna.h"
+#include "libscca_unused.h"
 #include "libscca_volume_information.h"
 
 #include "scca_file_header.h"
 #include "scca_metrics_array.h"
+#include "scca_trace_chain_array.h"
 #include "scca_volume_information.h"
 
-const char *scca_file_signature = "SCCA";
+const char *scca_file_signature           = "SCCA";
+const char *scca_mam_file_signature_win10 = "MAM\x04";
 
 /* Creates an IO handle
  * Make sure the value io_handle is referencing, is set to NULL
@@ -181,24 +185,19 @@ int libscca_io_handle_clear(
 	return( 1 );
 }
 
-/* Reads the file header
+/* Reads the compressed file header
  * Returns 1 if successful or -1 on error
  */
-int libscca_io_handle_read_file_header(
+int libscca_io_handle_read_compressed_file_header(
      libscca_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
-     uint32_t *prefetch_hash,
      libcerror_error_t **error )
 {
-	scca_file_header_t file_header;
+	uint8_t file_header_data[ 8 ];
 
-	static char *function = "libscca_io_handle_read_file_header";
+	static char *function = "libscca_io_handle_read_compressed_file_header";
 	size64_t file_size    = 0;
 	ssize_t read_count    = 0;
-
-#if defined( HAVE_DEBUG_OUTPUT )
-	uint32_t value_32bit  = 0;
-#endif
 
 	if( io_handle == NULL )
 	{
@@ -225,11 +224,25 @@ int libscca_io_handle_read_file_header(
 
 		return( -1 );
 	}
+	if( ( file_size < 8 )
+	 || ( file_size > (size64_t) UINT32_MAX ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid file size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	io_handle->file_size = (uint32_t) file_size;
+
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: reading file header at offset: 0 (0x00000000)\n",
+		 "%s: reading compressed file header at offset: 0 (0x00000000)\n",
 		 function );
 	}
 #endif
@@ -250,8 +263,320 @@ int libscca_io_handle_read_file_header(
 	}
 	read_count = libbfio_handle_read_buffer(
 	              file_io_handle,
+	              file_header_data,
+	              8,
+	              error );
+
+	if( read_count != (ssize_t) 8 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read file header data.",
+		 function );
+
+		return( -1 );
+	}
+	if( memory_compare(
+	     &( file_header_data[ 4 ] ),
+	     scca_file_signature,
+	     4 ) == 0 )
+	{
+		io_handle->file_type= LIBSCCA_FILE_TYPE_UNCOMPRESSED;
+	}
+	else if( memory_compare(
+	          file_header_data,
+	          scca_mam_file_signature_win10,
+	          4 ) == 0 )
+	{
+		io_handle->file_type = LIBSCCA_FILE_TYPE_COMPRESSED_WINDOWS10;
+	}
+	else
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported signature.",
+		 function );
+
+		return( -1 );
+	}
+	if( io_handle->file_type == LIBSCCA_FILE_TYPE_UNCOMPRESSED )
+	{
+		io_handle->uncompressed_block_size = 0;
+		io_handle->uncompressed_data_size  = io_handle->file_size;
+	}
+	else if( io_handle->file_type == LIBSCCA_FILE_TYPE_COMPRESSED_WINDOWS10 )
+	{
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: signature\t\t: %c%c%c\\x%02x\n",
+			 function,
+			 file_header_data[ 0 ],
+			 file_header_data[ 1 ],
+			 file_header_data[ 2 ],
+			 file_header_data[ 3 ] );
+		}
+#endif
+		io_handle->uncompressed_block_size = 65536;
+
+		byte_stream_copy_to_uint32_little_endian(
+		 &( file_header_data[ 4 ] ),
+		 io_handle->uncompressed_data_size );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: uncompressed data size\t: %" PRIu32 "\n",
+			 function,
+			 io_handle->uncompressed_data_size );
+		}
+#endif
+		if( io_handle->uncompressed_data_size != ( io_handle->file_size - 8 )  )
+		{
+/* TODO flag mismatch and file as corrupted? */
+		}
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
+	return( 1 );
+}
+
+/* Reads the compressed blocks
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_io_handle_read_compressed_blocks(
+     libscca_io_handle_t *io_handle,
+     libbfio_handle_t *file_io_handle,
+     libfdata_list_t *compressed_blocks_list,
+     libfcache_cache_t *compressed_blocks_cache,
+     libcerror_error_t **error )
+{
+	libscca_compressed_block_t *compressed_block = NULL;
+	static char *function                        = "libscca_io_handle_read_compressed_blocks";
+	off64_t file_offset                          = 0;
+	size64_t compressed_data_size                = 0;
+	ssize_t read_count                           = 0;
+	uint32_t uncompressed_data_size              = 0;
+	uint32_t uncompressed_block_size             = 0;
+	int compressed_block_index                   = 0;
+	int element_index                            = 0;
+
+	if( io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( io_handle->file_type != LIBSCCA_FILE_TYPE_COMPRESSED_WINDOWS10 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
+		 "%s: invalid IO handle - unsupported file type.",
+		 function );
+
+		return( -1 );
+	}
+	file_offset = 8;
+
+	uncompressed_data_size = io_handle->uncompressed_data_size;
+	compressed_data_size   = io_handle->file_size - 8;
+
+	while( compressed_data_size > 2 )
+	{
+		/* It is assumed here that the compressed data is always smaller
+		 * than the uncompressed data
+		 */
+		if( uncompressed_data_size < io_handle->uncompressed_block_size )
+		{
+			uncompressed_block_size = uncompressed_data_size;
+		}
+		else
+		{
+			uncompressed_block_size = io_handle->uncompressed_block_size;
+		}
+		if( libscca_compressed_block_initialize(
+		     &compressed_block,
+		     uncompressed_block_size,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create compressed block.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: reading compressed data block at offset: %" PRIi64 " (0x%08" PRIx64 ")\n",
+			 function,
+			 file_offset,
+			 file_offset );
+		}
+#endif
+		read_count = libscca_compressed_block_read(
+		              compressed_block,
+		              file_io_handle,
+		              file_offset,
+		              (size_t) io_handle->uncompressed_block_size,
+		              error );
+
+		if( read_count == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read compressed block data.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: compressed block: %d size\t: %" PRIu32 "\n",
+			 function,
+			 compressed_block_index,
+			 compressed_block->data_size );
+		}
+#endif
+		if( libfdata_list_append_element_with_mapped_size(
+		     compressed_blocks_list,
+		     &element_index,
+		     0,
+		     file_offset,
+		     (size64_t) read_count,
+		     LIBFDATA_RANGE_FLAG_IS_COMPRESSED,
+		     compressed_block->data_size,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+			 "%s: unable to append compressed block: %d to list.",
+			 function,
+			 compressed_block_index );
+
+			goto on_error;
+		}
+		file_offset            += read_count;
+		compressed_data_size   -= read_count;
+		uncompressed_data_size -= uncompressed_block_size;
+
+/* TODO cache uncompressed block */
+		if( libscca_compressed_block_free(
+		     &compressed_block,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free compressed block.",
+			 function );
+
+			goto on_error;
+		}
+		compressed_block_index++;
+	}
+/* TODO check if terminator is 0x0000 */
+	return( 1 );
+
+on_error:
+	if( compressed_block != NULL )
+	{
+		libscca_compressed_block_free(
+		 &compressed_block,
+		 NULL );
+	}
+	return( -1 );
+}
+
+/* Reads the uncompressed file header
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_io_handle_read_uncompressed_file_header(
+     libscca_io_handle_t *io_handle,
+     libfdata_stream_t *uncompressed_data_stream,
+     libbfio_handle_t *file_io_handle,
+     uint32_t *prefetch_hash,
+     libcerror_error_t **error )
+{
+	scca_file_header_t file_header;
+
+	static char *function = "libscca_io_handle_read_uncompressed_file_header";
+	ssize_t read_count    = 0;
+	uint32_t file_size    = 0;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+	uint32_t value_32bit  = 0;
+#endif
+
+	if( io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: reading uncompressed file header at offset: 0 (0x00000000)\n",
+		 function );
+	}
+#endif
+	if( libfdata_stream_seek_offset(
+	     uncompressed_data_stream,
+	     0,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek file header offset: 0.",
+		 function );
+
+		return( -1 );
+	}
+	read_count = libfdata_stream_read_buffer(
+	              uncompressed_data_stream,
+	              (intptr_t *) file_io_handle,
 	              (uint8_t *) &file_header,
 	              sizeof( scca_file_header_t ),
+	              0,
 	              error );
 
 	if( read_count != (ssize_t) sizeof( scca_file_header_t ) )
@@ -297,7 +622,7 @@ int libscca_io_handle_read_file_header(
 
 	byte_stream_copy_to_uint32_little_endian(
 	 file_header.file_size,
-	 io_handle->file_size );
+	 file_size );
 
 	byte_stream_copy_to_uint32_little_endian(
 	 file_header.prefetch_hash,
@@ -307,12 +632,12 @@ int libscca_io_handle_read_file_header(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: format version\t\t\t: %" PRIu32 "\n",
+		 "%s: format version\t\t: %" PRIu32 "\n",
 		 function,
 		 io_handle->format_version );
 
 		libcnotify_printf(
-		 "%s: signature\t\t\t\t: %c%c%c%c\n",
+		 "%s: signature\t\t: %c%c%c%c\n",
 		 function,
 		 file_header.signature[ 0 ],
 		 file_header.signature[ 1 ],
@@ -323,14 +648,14 @@ int libscca_io_handle_read_file_header(
 		 file_header.unknown1,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: unknown1\t\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: unknown1\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
 		libcnotify_printf(
-		 "%s: file size\t\t\t\t: %" PRIu32 "\n",
+		 "%s: file size\t\t: %" PRIu32 "\n",
 		 function,
-		 io_handle->file_size );
+		 file_size );
 
 		libcnotify_printf(
 		 "%s: executable filename:\n",
@@ -341,7 +666,7 @@ int libscca_io_handle_read_file_header(
 		 0 );
 
 		libcnotify_printf(
-		 "%s: prefetch hash\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: prefetch hash\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 *prefetch_hash );
 
@@ -349,7 +674,7 @@ int libscca_io_handle_read_file_header(
 		 file_header.unknown2,
 		 value_32bit );
 		libcnotify_printf(
-		 "%s: unknown2\t\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: unknown2\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 value_32bit );
 
@@ -357,7 +682,7 @@ int libscca_io_handle_read_file_header(
 		 "\n" );
 	}
 #endif
-	if( file_size != (size64_t) io_handle->file_size )
+	if( io_handle->uncompressed_data_size != file_size )
 	{
 /* TODO flag mismatch and file as corrupted? */
 	}
@@ -369,6 +694,7 @@ int libscca_io_handle_read_file_header(
  */
 int libscca_io_handle_read_metrics_array(
      libscca_io_handle_t *io_handle,
+     libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,
      uint32_t file_offset,
      uint32_t number_of_entries,
@@ -400,7 +726,8 @@ int libscca_io_handle_read_metrics_array(
 	}
 	if( ( io_handle->format_version != 17 )
 	 && ( io_handle->format_version != 23 )
-	 && ( io_handle->format_version != 26 ) )
+	 && ( io_handle->format_version != 26 )
+	 && ( io_handle->format_version != 30 ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -410,15 +737,6 @@ int libscca_io_handle_read_metrics_array(
 		 function );
 
 		return( -1 );
-	}
-	if( io_handle->format_version == 17 )
-	{
-		entry_data_size = sizeof( scca_metrics_array_entry_v17_t );
-	}
-	else if( ( io_handle->format_version == 23 )
-	      || ( io_handle->format_version == 26 ) )
-	{
-		entry_data_size = sizeof( scca_metrics_array_entry_v23_t );
 	}
 #if SIZEOF_SIZE_T <= 4
 	if( (size_t) number_of_entries > (size_t) SSIZE_MAX )
@@ -433,6 +751,16 @@ int libscca_io_handle_read_metrics_array(
 		return( -1 );
 	}
 #endif
+	if( io_handle->format_version == 17 )
+	{
+		entry_data_size = sizeof( scca_metrics_array_entry_v17_t );
+	}
+	else if( ( io_handle->format_version == 23 )
+	      || ( io_handle->format_version == 26 )
+	      || ( io_handle->format_version == 30 ) )
+	{
+		entry_data_size = sizeof( scca_metrics_array_entry_v23_t );
+	}
 /* TODO add bounds check number of entries metrics entry_data_size */
 
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -445,8 +773,8 @@ int libscca_io_handle_read_metrics_array(
 		 file_offset );
 	}
 #endif
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
+	if( libfdata_stream_seek_offset(
+	     uncompressed_data_stream,
 	     (off64_t) file_offset,
 	     SEEK_SET,
 	     error ) == -1 )
@@ -477,10 +805,12 @@ int libscca_io_handle_read_metrics_array(
 
 		goto on_error;
 	}
-	read_count = libbfio_handle_read_buffer(
-	              file_io_handle,
+	read_count = libfdata_stream_read_buffer(
+	              uncompressed_data_stream,
+	              (intptr_t *) file_io_handle,
 	              metrics_array_data,
 	              read_size,
+	              0,
 	              error );
 
 	if( read_count != (ssize_t) read_size )
@@ -572,7 +902,8 @@ int libscca_io_handle_read_metrics_array(
 				 value_32bit );
 			}
 			else if( ( io_handle->format_version == 23 )
-			      || ( io_handle->format_version == 26 ) )
+			      || ( io_handle->format_version == 26 )
+			      || ( io_handle->format_version == 30 ) )
 			{
 				byte_stream_copy_to_uint32_little_endian(
 				 ( (scca_metrics_array_entry_v23_t *) entry_data )->average_duration,
@@ -651,6 +982,7 @@ on_error:
  */
 int libscca_io_handle_read_trace_chain_array(
      libscca_io_handle_t *io_handle,
+     libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,
      uint32_t file_offset,
      uint32_t number_of_entries,
@@ -659,6 +991,7 @@ int libscca_io_handle_read_trace_chain_array(
 	uint8_t *entry_data             = NULL;
 	uint8_t *trace_chain_array_data = NULL;
 	static char *function           = "libscca_io_handle_read_trace_chain_array";
+	size_t entry_data_size          = 0;
 	size_t read_size                = 0;
 	ssize_t read_count              = 0;
 	uint32_t entry_index            = 0;
@@ -680,6 +1013,20 @@ int libscca_io_handle_read_trace_chain_array(
 
 		return( -1 );
 	}
+	if( ( io_handle->format_version != 17 )
+	 && ( io_handle->format_version != 23 )
+	 && ( io_handle->format_version != 26 )
+	 && ( io_handle->format_version != 30 ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: invalid IO handle - unsupported format version.",
+		 function );
+
+		return( -1 );
+	}
 #if SIZEOF_SIZE_T <= 4
 	if( (size_t) number_of_entries > (size_t) SSIZE_MAX )
 	{
@@ -693,6 +1040,16 @@ int libscca_io_handle_read_trace_chain_array(
 		return( -1 );
 	}
 #endif
+	if( ( io_handle->format_version == 17 )
+	 || ( io_handle->format_version == 23 )
+	 || ( io_handle->format_version == 26 ) )
+	{
+		entry_data_size = sizeof( scca_trace_chain_array_entry_v17_t );
+	}
+	else if( io_handle->format_version == 30 )
+	{
+		entry_data_size = sizeof( scca_trace_chain_array_entry_v30_t );
+	}
 /* TODO add bounds check number of entries y entry_data_size */
 
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -705,8 +1062,8 @@ int libscca_io_handle_read_trace_chain_array(
 		 file_offset );
 	}
 #endif
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
+	if( libfdata_stream_seek_offset(
+	     uncompressed_data_stream,
 	     (off64_t) file_offset,
 	     SEEK_SET,
 	     error ) == -1 )
@@ -721,8 +1078,7 @@ int libscca_io_handle_read_trace_chain_array(
 
 		goto on_error;
 	}
-/* TODO replace hardcoded size by sizeof() */
-	read_size = number_of_entries * 12;
+	read_size = number_of_entries * entry_data_size;
 
 	trace_chain_array_data = (uint8_t *) memory_allocate(
 	                                      sizeof( uint8_t ) * read_size );
@@ -738,10 +1094,12 @@ int libscca_io_handle_read_trace_chain_array(
 
 		goto on_error;
 	}
-	read_count = libbfio_handle_read_buffer(
-	              file_io_handle,
+	read_count = libfdata_stream_read_buffer(
+	              uncompressed_data_stream,
+	              (intptr_t *) file_io_handle,
 	              trace_chain_array_data,
 	              read_size,
+	              0,
 	              error );
 
 	if( read_count != (ssize_t) read_size )
@@ -782,64 +1140,104 @@ int libscca_io_handle_read_trace_chain_array(
 			 entry_index );
 			libcnotify_print_data(
 			 entry_data,
-			 12,
+			 entry_data_size,
 			 0 );
 		}
 #endif
-		byte_stream_copy_to_uint32_little_endian(
-		 entry_data,
-		 next_table_index );
+		if( entry_data_size == 8 )
+		{
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->total_block_load_count,
+				 value_32bit );
+				libcnotify_printf(
+				 "%s: total block load count\t: %" PRIu32 " blocks (%" PRIu64 " bytes)\n",
+				 function,
+				 value_32bit,
+				 (uint64_t) value_32bit * 512 * 1024 );
 
+				libcnotify_printf(
+				 "%s: unknown1\t\t\t: 0x%02" PRIx8 "\n",
+				 function,
+				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->unknown1 );
+
+				libcnotify_printf(
+				 "%s: unknown2\t\t\t: 0x%02" PRIx8 "\n",
+				 function,
+				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->unknown2 );
+
+				byte_stream_copy_to_uint16_little_endian(
+				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->unknown3,
+				 value_16bit );
+				libcnotify_printf(
+				 "%s: unknown3\t\t\t: 0x%04" PRIx16 "\n",
+				 function,
+				 value_16bit );
+			}
+#endif
+		}
+		else if( entry_data_size == 12 )
+		{
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->next_array_entry_index,
+			 next_table_index );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				if( next_table_index == 0xffffffffUL )
+				{
+					libcnotify_printf(
+					 "%s: next table index\t\t: 0x%08" PRIx32 "\n",
+					 function,
+					 next_table_index );
+				}
+				else
+				{
+					libcnotify_printf(
+					 "%s: next table index\t\t: %" PRIu32 "\n",
+					 function,
+					 next_table_index );
+				}
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->total_block_load_count,
+				 value_32bit );
+				libcnotify_printf(
+				 "%s: total block load count\t: %" PRIu32 " blocks (%" PRIu64 " bytes)\n",
+				 function,
+				 value_32bit,
+				 (uint64_t) value_32bit * 512 * 1024 );
+
+				libcnotify_printf(
+				 "%s: unknown1\t\t\t: 0x%02" PRIx8 "\n",
+				 function,
+				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->unknown1 );
+
+				libcnotify_printf(
+				 "%s: unknown2\t\t\t: 0x%02" PRIx8 "\n",
+				 function,
+				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->unknown2 );
+
+				byte_stream_copy_to_uint16_little_endian(
+				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->unknown3,
+				 value_16bit );
+				libcnotify_printf(
+				 "%s: unknown3\t\t\t: 0x%04" PRIx16 "\n",
+				 function,
+				 value_16bit );
+			}
+#endif
+		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
-			if( next_table_index == 0xffffffffUL )
-			{
-				libcnotify_printf(
-				 "%s: next table index\t\t: 0x%08" PRIx32 "\n",
-				 function,
-				 next_table_index );
-			}
-			else
-			{
-				libcnotify_printf(
-				 "%s: next table index\t\t: %" PRIu32 "\n",
-				 function,
-				 next_table_index );
-			}
-			byte_stream_copy_to_uint32_little_endian(
-			 &( entry_data[ 4 ] ),
-			 value_32bit );
-			libcnotify_printf(
-			 "%s: block load count\t\t: %" PRIu32 " blocks (%" PRIu64 " bytes)\n",
-			 function,
-			 value_32bit,
-			 (uint64_t) value_32bit * 512 * 1024 );
-
-			libcnotify_printf(
-			 "%s: unknown2\t\t\t: 0x%02" PRIx8 "\n",
-			 function,
-			 entry_data[ 8 ] );
-
-			libcnotify_printf(
-			 "%s: unknown3\t\t\t: 0x%02" PRIx8 "\n",
-			 function,
-			 entry_data[ 9 ] );
-
-			byte_stream_copy_to_uint16_little_endian(
-			 &( entry_data[ 10 ] ),
-			 value_16bit );
-			libcnotify_printf(
-			 "%s: unknown4\t\t\t: 0x%04" PRIx16 "\n",
-			 function,
-			 value_16bit );
-
 			libcnotify_printf(
 			 "\n" );
 		}
 #endif
-/* TODO replace hardcoded size by sizeof() */
-		entry_data += 12;
+		entry_data += entry_data_size;
 	}
 	memory_free(
 	 trace_chain_array_data );
@@ -860,6 +1258,7 @@ on_error:
  */
 int libscca_io_handle_read_filename_strings(
      libscca_io_handle_t *io_handle,
+     libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,
      uint32_t filename_string_offset,
      uint32_t filename_string_size,
@@ -905,8 +1304,8 @@ int libscca_io_handle_read_filename_strings(
 		 filename_string_offset );
 	}
 #endif
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
+	if( libfdata_stream_seek_offset(
+	     uncompressed_data_stream,
 	     (off64_t) filename_string_offset,
 	     SEEK_SET,
 	     error ) == -1 )
@@ -935,10 +1334,12 @@ int libscca_io_handle_read_filename_strings(
 
 		goto on_error;
 	}
-	read_count = libbfio_handle_read_buffer(
-	              file_io_handle,
+	read_count = libfdata_stream_read_buffer(
+	              uncompressed_data_stream,
+	              (intptr_t *) file_io_handle,
 	              filename_strings_data,
 	              (size_t) filename_string_size,
+	              0,
 	              error );
 
 	if( read_count != (ssize_t) filename_string_size )
@@ -989,6 +1390,7 @@ on_error:
  */
 int libscca_io_handle_read_volumes_information(
      libscca_io_handle_t *io_handle,
+     libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,
      uint32_t volumes_information_offset,
      uint32_t volumes_information_size,
@@ -1039,6 +1441,20 @@ int libscca_io_handle_read_volumes_information(
 
 		return( -1 );
 	}
+	if( ( io_handle->format_version != 17 )
+	 && ( io_handle->format_version != 23 )
+	 && ( io_handle->format_version != 26 )
+	 && ( io_handle->format_version != 30 ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: invalid IO handle - unsupported format version.",
+		 function );
+
+		return( -1 );
+	}
 #if SIZEOF_SIZE_T <= 4
 	if( (size_t) volumes_information_size > (size_t) SSIZE_MAX )
 	{
@@ -1073,8 +1489,8 @@ int libscca_io_handle_read_volumes_information(
 		 volumes_information_offset );
 	}
 #endif
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
+	if( libfdata_stream_seek_offset(
+	     uncompressed_data_stream,
 	     (off64_t) volumes_information_offset,
 	     SEEK_SET,
 	     error ) == -1 )
@@ -1104,10 +1520,12 @@ int libscca_io_handle_read_volumes_information(
 
 		goto on_error;
 	}
-	read_count = libbfio_handle_read_buffer(
-	              file_io_handle,
+	read_count = libfdata_stream_read_buffer(
+	              uncompressed_data_stream,
+	              (intptr_t *) file_io_handle,
 	              volumes_information_data,
 	              volumes_information_size,
+	              0,
 	              error );
 
 	if( read_count != (ssize_t) volumes_information_size )
@@ -1125,9 +1543,14 @@ int libscca_io_handle_read_volumes_information(
 	{
 		volume_information_size = sizeof( scca_volume_information_v17_t );
 	}
-	else
+	else if( ( io_handle->format_version == 23 )
+	      || ( io_handle->format_version == 26 ) )
 	{
 		volume_information_size = sizeof( scca_volume_information_v23_t );
+	}
+	else if( io_handle->format_version == 30 )
+	{
+		volume_information_size = sizeof( scca_volume_information_v30_t );
 	}
 	for( volume_index = 0;
 	     volume_index < number_of_volumes;
@@ -1301,7 +1724,8 @@ int libscca_io_handle_read_volumes_information(
 			 function,
 			 value_32bit );
 
-			if( io_handle->format_version >= 23 )
+			if( ( io_handle->format_version == 23 )
+			 || ( io_handle->format_version == 26 ) )
 			{
 				libcnotify_printf(
 				 "%s: unknown2:\n",
@@ -1335,6 +1759,40 @@ int libscca_io_handle_read_volumes_information(
 				 function,
 				 value_32bit );
 			}
+			else if( io_handle->format_version == 30 )
+			{
+				libcnotify_printf(
+				 "%s: unknown2:\n",
+				 function );
+				libcnotify_print_data(
+				 ( (scca_volume_information_v30_t *) volume_information_data )->unknown2,
+				 24,
+				 0 );
+
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (scca_volume_information_v30_t *) volume_information_data )->unknown3,
+				 value_32bit );
+				libcnotify_printf(
+				 "%s: unknown3\t\t\t\t: 0x%08" PRIx32 "\n",
+				 function,
+				 value_32bit );
+
+				libcnotify_printf(
+				 "%s: unknown4:\n",
+				 function );
+				libcnotify_print_data(
+				 ( (scca_volume_information_v30_t *) volume_information_data )->unknown4,
+				 24,
+				 0 );
+
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (scca_volume_information_v30_t *) volume_information_data )->unknown5,
+				 value_32bit );
+				libcnotify_printf(
+				 "%s: unknown5\t\t\t\t: 0x%08" PRIx32 "\n",
+				 function,
+				 value_32bit );
+			}
 			libcnotify_printf(
 			 "\n" );
 
@@ -1355,90 +1813,6 @@ int libscca_io_handle_read_volumes_information(
 #endif
 		volume_information_offset += volume_information_size;
 
-		if( file_references_offset != 0 )
-		{
-/* TODO add bounds check file_references_offset and file_references_size */
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				libcnotify_printf(
-				 "%s: file references data:\n",
-				 function );
-				libcnotify_print_data(
-				 &( volumes_information_data[ file_references_offset ] ),
-				 file_references_size,
-				 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
-			}
-#endif
-			byte_stream_copy_to_uint32_little_endian(
-			 &( volumes_information_data[ file_references_offset ] ),
-			 version );
-
-			byte_stream_copy_to_uint32_little_endian(
-			 &( volumes_information_data[ file_references_offset + 4 ] ),
-			 number_of_file_references );
-
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				libcnotify_printf(
-				 "%s: version\t\t\t: %" PRIu32 "\n",
-				 function,
-				 version );
-
-				libcnotify_printf(
-				 "%s: number of file references\t: %" PRIu32 "\n",
-				 function,
-				 number_of_file_references );
-
-				byte_stream_copy_to_uint64_little_endian(
-				 &( volumes_information_data[ file_references_offset + 8 ] ),
-				 value_64bit );
-				libcnotify_printf(
-				 "%s: unknown1\t\t\t: 0x%08" PRIx64 "\n",
-				 function,
-				 value_64bit );
-			}
-#endif
-			for( file_references_index = 1;
-			     file_references_index < number_of_file_references;
-			     file_references_index++ )
-			{
-#if defined( HAVE_DEBUG_OUTPUT )
-				if( libcnotify_verbose != 0 )
-				{
-					byte_stream_copy_to_uint64_little_endian(
-					 &( volumes_information_data[ file_references_offset + 8 + ( file_references_index * 8 ) ] ),
-					 value_64bit );
-
-					if( value_64bit == 0 )
-					{
-						libcnotify_printf(
-						 "%s: file reference: %d\t\t: %" PRIu64 "\n",
-						 function,
-						 file_references_index,
-						 value_64bit );
-					}
-					else
-					{
-						libcnotify_printf(
-						 "%s: file reference: %d\t\t: MFT entry: %" PRIu64 ", sequence: %" PRIu64 "\n",
-						 function,
-						 file_references_index,
-						 value_64bit & 0xffffffffffffUL,
-						 value_64bit >> 48 );
-					}
-				}
-#endif
-			}
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
-				libcnotify_printf(
-				 "\n" );
-			}
-#endif
-		}
 /* TODO add bounds check device_path_offset and device_path_size */
 		if( ( device_path_offset != 0 )
 		 && ( device_path_size != 0 ) )
@@ -1559,7 +1933,7 @@ int libscca_io_handle_read_volumes_information(
 					goto on_error;
 				}
 				libcnotify_printf(
-				 "%s: volume device path\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+				 "%s: volume device path\t\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
 				 function,
 				 value_string );
 
@@ -1567,6 +1941,90 @@ int libscca_io_handle_read_volumes_information(
 				 value_string );
 
 				value_string = NULL;
+			}
+#endif
+		}
+		if( file_references_offset != 0 )
+		{
+/* TODO add bounds check file_references_offset and file_references_size */
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: file references data:\n",
+				 function );
+				libcnotify_print_data(
+				 &( volumes_information_data[ file_references_offset ] ),
+				 file_references_size,
+				 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
+			}
+#endif
+			byte_stream_copy_to_uint32_little_endian(
+			 &( volumes_information_data[ file_references_offset ] ),
+			 version );
+
+			byte_stream_copy_to_uint32_little_endian(
+			 &( volumes_information_data[ file_references_offset + 4 ] ),
+			 number_of_file_references );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "%s: version\t\t\t\t: %" PRIu32 "\n",
+				 function,
+				 version );
+
+				libcnotify_printf(
+				 "%s: number of file references\t\t: %" PRIu32 "\n",
+				 function,
+				 number_of_file_references );
+
+				byte_stream_copy_to_uint64_little_endian(
+				 &( volumes_information_data[ file_references_offset + 8 ] ),
+				 value_64bit );
+				libcnotify_printf(
+				 "%s: unknown1\t\t\t\t: 0x%08" PRIx64 "\n",
+				 function,
+				 value_64bit );
+			}
+#endif
+			for( file_references_index = 1;
+			     file_references_index < number_of_file_references;
+			     file_references_index++ )
+			{
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					byte_stream_copy_to_uint64_little_endian(
+					 &( volumes_information_data[ file_references_offset + 8 + ( file_references_index * 8 ) ] ),
+					 value_64bit );
+
+					if( value_64bit == 0 )
+					{
+						libcnotify_printf(
+						 "%s: file reference: %d\t\t\t: %" PRIu64 "\n",
+						 function,
+						 file_references_index,
+						 value_64bit );
+					}
+					else
+					{
+						libcnotify_printf(
+						 "%s: file reference: %d\t\t\t: MFT entry: %" PRIu64 ", sequence: %" PRIu64 "\n",
+						 function,
+						 file_references_index,
+						 value_64bit & 0xffffffffffffUL,
+						 value_64bit >> 48 );
+					}
+				}
+#endif
+			}
+#if defined( HAVE_DEBUG_OUTPUT )
+			if( libcnotify_verbose != 0 )
+			{
+				libcnotify_printf(
+				 "\n" );
 			}
 #endif
 		}
@@ -1627,6 +2085,7 @@ int libscca_io_handle_read_volumes_information(
 		}
 		volume_information = NULL;
 	}
+/* TODO print trailing data */
 	memory_free(
 	 volumes_information_data );
 
@@ -1658,5 +2117,97 @@ on_error:
 		 volumes_information_data );
 	}
 	return( -1 );
+}
+
+/* Reads data from the current offset into a buffer
+ * Callback for the uncompressed block stream
+ * Returns the number of bytes read or -1 on error
+ */
+ssize_t libscca_io_handle_read_segment_data(
+         intptr_t *data_handle LIBSCCA_ATTRIBUTE_UNUSED,
+         intptr_t *file_io_handle,
+         int segment_index,
+         int segment_file_index LIBSCCA_ATTRIBUTE_UNUSED,
+         uint8_t *segment_data,
+         size_t segment_data_size,
+         uint32_t segment_flags LIBSCCA_ATTRIBUTE_UNUSED,
+         uint8_t read_flags LIBSCCA_ATTRIBUTE_UNUSED,
+         libcerror_error_t **error )
+{
+	static char *function = "libscca_io_handle_read_segment_data";
+	ssize_t read_count    = 0;
+
+	LIBSCCA_UNREFERENCED_PARAMETER( data_handle )
+	LIBSCCA_UNREFERENCED_PARAMETER( segment_file_index )
+	LIBSCCA_UNREFERENCED_PARAMETER( segment_flags )
+	LIBSCCA_UNREFERENCED_PARAMETER( read_flags )
+
+	if( segment_data_size > (size64_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid segment data size value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	read_count = libbfio_handle_read_buffer(
+	              (libbfio_handle_t *) file_io_handle,
+	              segment_data,
+	              segment_data_size,
+	              error );
+
+	if( read_count != (ssize_t) segment_data_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read segment: %d data.",
+		 function,
+		 segment_index );
+
+		return( -1 );
+	}
+	return( read_count );
+}
+
+/* Seeks a certain offset of the data
+ * Callback for the uncompressed block stream
+ * Returns the offset if seek is successful or -1 on error
+ */
+off64_t libscca_io_handle_seek_segment_offset(
+         intptr_t *data_handle LIBSCCA_ATTRIBUTE_UNUSED,
+         intptr_t *file_io_handle,
+         int segment_index,
+         int segment_file_index LIBSCCA_ATTRIBUTE_UNUSED,
+         off64_t segment_offset,
+         libcerror_error_t **error )
+{
+	static char *function = "libscca_io_handle_seek_segment_offset";
+
+	LIBSCCA_UNREFERENCED_PARAMETER( data_handle )
+	LIBSCCA_UNREFERENCED_PARAMETER( segment_file_index )
+
+	if( libbfio_handle_seek_offset(
+	     (libbfio_handle_t *) file_io_handle,
+	     segment_offset,
+	     SEEK_SET,
+	     error ) == -1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_SEEK_FAILED,
+		 "%s: unable to seek segment: %d offset: %" PRIi64 ".",
+		 function,
+		 segment_index,
+		 segment_offset );
+
+		return( -1 );
+	}
+	return( segment_offset );
 }
 

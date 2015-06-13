@@ -149,6 +149,76 @@ struct scca_volume_information_v23
 	uint8_t unknown5[ 4 ];
 };
 
+typedef struct scca_volume_information_v30 scca_volume_information_v30_t;
+
+struct scca_volume_information_v30
+{
+	/* The (volume) device path offset
+	 * Consists of 4 bytes
+	 */
+	uint8_t device_path_offset[ 4 ];
+
+	/* The (volume) device path number of characters
+	 * Consists of 4 bytes
+	 */
+	uint8_t device_path_number_of_characters[ 4 ];
+
+	/* The (volume) creation time
+	 * Consists of 8 bytes
+	 */
+	uint8_t creation_time[ 8 ];
+
+	/* The (volume) serial number
+	 * Consists of 4 bytes
+	 */
+	uint8_t serial_number[ 4 ];
+
+	/* The file references offset
+	 * Consists of 4 bytes
+	 */
+	uint8_t file_references_offset[ 4 ];
+
+	/* The file references size
+	 * Consists of 4 bytes
+	 */
+	uint8_t file_references_size[ 4 ];
+
+	/* The directory strings array offset
+	 * Consists of 4 bytes
+	 */
+	uint8_t directory_strings_array_offset[ 4 ];
+
+	/* The number of directory strings
+	 * Consists of 4 bytes
+	 */
+	uint8_t number_of_directory_strings[ 4 ];
+
+	/* Unknown
+	 * Consists of 4 bytes
+	 */
+	uint8_t unknown1[ 4 ];
+
+	/* Unknown
+	 * Consists of 24 bytes
+	 */
+	uint8_t unknown2[ 24 ];
+
+	/* Unknown
+	 * Consists of 4 bytes
+	 */
+	uint8_t unknown3[ 4 ];
+
+	/* Unknown
+	 * Consists of 24 bytes
+	 */
+	uint8_t unknown4[ 24 ];
+
+	/* Unknown
+	 * Consists of 4 bytes
+	 */
+	uint8_t unknown5[ 4 ];
+};
+
 #if defined( __cplusplus )
 }
 #endif

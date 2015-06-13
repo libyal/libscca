@@ -24,6 +24,8 @@
 #include <types.h>
 
 #include "libscca_codepage.h"
+#include "libscca_compressed_block.h"
+#include "libscca_compressed_blocks_stream.h"
 #include "libscca_debug.h"
 #include "libscca_definitions.h"
 #include "libscca_io_handle.h"
@@ -34,6 +36,8 @@
 #include "libscca_libcerror.h"
 #include "libscca_libcnotify.h"
 #include "libscca_libcstring.h"
+#include "libscca_libfcache.h"
+#include "libscca_libfdata.h"
 #include "libscca_libfvalue.h"
 #include "libscca_volume_information.h"
 
@@ -786,6 +790,54 @@ int libscca_file_close(
 	}
 	internal_file->prefetch_hash = 0; 
 
+	if( internal_file->compressed_blocks_list != NULL )
+	{
+		if( libfdata_list_free(
+		     &( internal_file->compressed_blocks_list ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free compressed blocks list.",
+			 function );
+
+			result = -1;
+		}
+	}
+	if( internal_file->compressed_blocks_cache != NULL )
+	{
+		if( libfcache_cache_free(
+		     &( internal_file->compressed_blocks_cache ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free compressed blocks cache.",
+			 function );
+
+			result = -1;
+		}
+	}
+	if( internal_file->uncompressed_data_stream != NULL )
+	{
+		if( libfdata_stream_free(
+		     &( internal_file->uncompressed_data_stream ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free uncompressed data strea,.",
+			 function );
+
+			result = -1;
+		}
+	}
 	if( internal_file->file_information != NULL )
 	{
 		if( libscca_file_information_free(
@@ -845,6 +897,7 @@ int libscca_file_open_read(
      libcerror_error_t **error )
 {
 	static char *function = "libscca_file_open_read";
+	int segment_index     = 0;
 
 	if( internal_file == NULL )
 	{
@@ -864,6 +917,28 @@ int libscca_file_open_read(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
 		 "%s: invalid file - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_file->compressed_blocks_list != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid file - compressed blocks list value already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_file->compressed_blocks_cache != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid file - compressed blocks cache value already set.",
 		 function );
 
 		return( -1 );
@@ -901,8 +976,139 @@ int libscca_file_open_read(
 		 "Reading file header:\n" );
 	}
 #endif
-	if( libscca_io_handle_read_file_header(
+	if( libscca_io_handle_read_compressed_file_header(
 	     internal_file->io_handle,
+	     file_io_handle,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read file header.",
+		 function );
+
+		goto on_error;
+	}
+	if( internal_file->io_handle->file_type != LIBSCCA_FILE_TYPE_UNCOMPRESSED )
+	{
+		if( libfdata_list_initialize(
+		     &( internal_file->compressed_blocks_list ),
+		     (intptr_t *) internal_file->io_handle,
+		     NULL,
+		     NULL,
+		     (int (*)(intptr_t *, intptr_t *, libfdata_list_element_t *, libfcache_cache_t *, int, off64_t, size64_t, uint32_t, uint8_t, libcerror_error_t **)) &libscca_compressed_block_read_element_data,
+		     NULL,
+		     LIBFDATA_DATA_HANDLE_FLAG_NON_MANAGED,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create compressed blocks list.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "Reading compressed blocks:\n" );
+		}
+#endif
+		if( libscca_io_handle_read_compressed_blocks(
+		     internal_file->io_handle,
+		     file_io_handle,
+		     internal_file->compressed_blocks_list,
+		     internal_file->compressed_blocks_cache,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read compressed blocks.",
+			 function );
+
+			goto on_error;
+		}
+		if( libfcache_cache_initialize(
+		     &( internal_file->compressed_blocks_cache ),
+		     LIBSCCA_MAXIMUM_CACHE_ENTRIES_COMPRESSED_BLOCKS,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create compressed blocks cache.",
+			 function );
+
+			goto on_error;
+		}
+		if( libscca_compressed_blocks_stream_initialize(
+		     &( internal_file->uncompressed_data_stream ),
+		     internal_file->compressed_blocks_list,
+		     internal_file->compressed_blocks_cache,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create compressed blocks stream.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	else
+	{
+		if( libfdata_stream_initialize(
+		     &( internal_file->uncompressed_data_stream ),
+		     NULL,
+		     NULL,
+		     NULL,
+		     NULL,
+		     (ssize_t (*)(intptr_t *, intptr_t *, int, int, uint8_t *, size_t, uint32_t, uint8_t, libcerror_error_t **)) &libscca_io_handle_read_segment_data,
+		     NULL,
+		     (off64_t (*)(intptr_t *, intptr_t *, int, int, off64_t, libcerror_error_t **)) &libscca_io_handle_seek_segment_offset,
+		     0,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create uncompressed data stream.",
+			 function );
+
+			goto on_error;
+		}
+		if( libfdata_stream_append_segment(
+		     internal_file->uncompressed_data_stream,
+		     &segment_index,
+		     0,
+		     0,
+		     (size64_t) internal_file->io_handle->uncompressed_data_size,
+		     0,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+			 "%s: unable to append uncompressed data stream segment: 0.",
+			 function );
+
+			goto on_error;
+		}
+	}
+	if( libscca_io_handle_read_uncompressed_file_header(
+	     internal_file->io_handle,
+	     internal_file->uncompressed_data_stream,
 	     file_io_handle,
 	     &( internal_file->prefetch_hash ),
 	     error ) != 1 )
@@ -911,7 +1117,7 @@ int libscca_file_open_read(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read file header.",
+		 "%s: unable to read uncompressed file header.",
 		 function );
 
 		goto on_error;
@@ -938,6 +1144,7 @@ int libscca_file_open_read(
 	}
 	if( libscca_file_information_read(
 	     internal_file->file_information,
+	     internal_file->uncompressed_data_stream,
 	     file_io_handle,
 	     internal_file->io_handle,
 	     error ) != 1 )
@@ -959,6 +1166,7 @@ int libscca_file_open_read(
 /* TODO check bounds metrics_array_offset < file_header, metrics_array_offset > trace_chain_array_offset */
 			if( libscca_io_handle_read_metrics_array(
 			     internal_file->io_handle,
+			     internal_file->uncompressed_data_stream,
 			     file_io_handle,
 			     internal_file->file_information->metrics_array_offset,
 			     internal_file->file_information->number_of_metrics_entries,
@@ -979,6 +1187,7 @@ int libscca_file_open_read(
 /* TODO check bounds trace_chain_array_offset < file_header, trace_chain_array_offset > file_size */
 			if( libscca_io_handle_read_trace_chain_array(
 			     internal_file->io_handle,
+			     internal_file->uncompressed_data_stream,
 			     file_io_handle,
 			     internal_file->file_information->trace_chain_array_offset,
 			     internal_file->file_information->number_of_trace_chain_array_entries,
@@ -1016,6 +1225,7 @@ int libscca_file_open_read(
 		}
 		if( libscca_io_handle_read_filename_strings(
 		     internal_file->io_handle,
+		     internal_file->uncompressed_data_stream,
 		     file_io_handle,
 		     internal_file->file_information->filename_strings_offset,
 		     internal_file->file_information->filename_strings_size,
@@ -1036,6 +1246,7 @@ int libscca_file_open_read(
 	{
 		if( libscca_io_handle_read_volumes_information(
 		     internal_file->io_handle,
+		     internal_file->uncompressed_data_stream,
 		     internal_file->file_io_handle,
 		     internal_file->file_information->volumes_information_offset,
 		     internal_file->file_information->volumes_information_size,

@@ -10,10 +10,14 @@ MSVSCPP_FILES = \
 	libcstring/libcstring.vcproj \
 	libcsystem/libcsystem.vcproj \
 	libcthreads/libcthreads.vcproj \
+	libfcache/libfcache.vcproj \
+	libfdata/libfdata.vcproj \
 	libfdatetime/libfdatetime.vcproj \
 	libfvalue/libfvalue.vcproj \
+	libfwnt/libfwnt.vcproj \
 	libscca/libscca.vcproj \
 	libuna/libuna.vcproj \
+	pyscca/pyscca.vcproj \
 	sccainfo/sccainfo.vcproj \
 	libscca.sln
 

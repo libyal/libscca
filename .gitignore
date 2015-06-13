@@ -132,4 +132,5 @@ stamp-h[1-9]
 /libfdata
 /libfdatetime
 /libfvalue
+/libfwnt
 /libuna

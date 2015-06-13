@@ -30,6 +30,7 @@
 #include "libscca_libbfio.h"
 #include "libscca_libcerror.h"
 #include "libscca_libcnotify.h"
+#include "libscca_libfdata.h"
 #include "libscca_libfdatetime.h"
 
 #include "scca_file_information.h"
@@ -142,6 +143,7 @@ int libscca_file_information_free(
  */
 int libscca_file_information_read(
      libscca_file_information_t *file_information,
+     libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,
      libscca_io_handle_t *io_handle,
      libcerror_error_t **error )
@@ -185,7 +187,8 @@ int libscca_file_information_read(
 	}
 	if( ( io_handle->format_version != 17 )
 	 && ( io_handle->format_version != 23 )
-	 && ( io_handle->format_version != 26 ) )
+	 && ( io_handle->format_version != 26 )
+	 && ( io_handle->format_version != 30 ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -204,7 +207,8 @@ int libscca_file_information_read(
 	{
 		read_size = sizeof( scca_file_information_v23_t );
 	}
-	else if( io_handle->format_version == 26 )
+	else if( ( io_handle->format_version == 26 )
+	      || ( io_handle->format_version == 30 ) )
 	{
 		read_size = sizeof( scca_file_information_v26_t );
 	}
@@ -222,10 +226,12 @@ int libscca_file_information_read(
 
 		goto on_error;
 	}
-	read_count = libbfio_handle_read_buffer(
-	              file_io_handle,
+	read_count = libfdata_stream_read_buffer(
+	              uncompressed_data_stream,
+	              (intptr_t *) file_io_handle,
 	              file_information_data,
 	              read_size,
+	              0,
 	              error );
 
 	if( read_count != (ssize_t) read_size )
@@ -376,7 +382,8 @@ int libscca_file_information_read(
 				  LIBFDATETIME_ENDIAN_LITTLE,
 				  error );
 		}
-		else if( io_handle->format_version == 26 )
+		else if( ( io_handle->format_version == 26 )
+		      || ( io_handle->format_version == 30 ) )
 		{
 			result = libfdatetime_filetime_copy_from_byte_stream(
 				  filetime,
@@ -447,7 +454,8 @@ int libscca_file_information_read(
 			 16,
 			 0 );
 		}
-		else if( io_handle->format_version == 26 )
+		else if( ( io_handle->format_version == 26 )
+		      || ( io_handle->format_version == 30 ) )
 		{
 			for( filetime_index = 0;
 			     filetime_index < 7;
@@ -521,7 +529,8 @@ int libscca_file_information_read(
 			 ( (scca_file_information_v23_t *) file_information_data )->run_count,
 			 value_32bit );
 		}
-		else if( io_handle->format_version == 26 )
+		else if( ( io_handle->format_version == 26 )
+		      || ( io_handle->format_version == 30 ) )
 		{
 			byte_stream_copy_to_uint32_little_endian(
 			 ( (scca_file_information_v26_t *) file_information_data )->run_count,
@@ -563,7 +572,8 @@ int libscca_file_information_read(
 			 80,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
-		else if( io_handle->format_version == 26 )
+		else if( ( io_handle->format_version == 26 )
+		      || ( io_handle->format_version == 30 ) )
 		{
 			byte_stream_copy_to_uint32_little_endian(
 			 ( (scca_file_information_v26_t *) file_information_data )->unknown5a,

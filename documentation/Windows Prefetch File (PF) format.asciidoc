@@ -137,7 +137,8 @@ A compressed Prefetch file - MAM file consist of the following distinguishable
 elements:
 
 * file header
-* compressed data
+* compressed blocks
+* [yellow-background]*Block terminator? (2 x 0-byte values)*
 
 The compression method is Microsoft XPRESS Huffman (or LZXPRESS). Note that 
 this is a different compression method as Microsoft XPRESS (LZ77+DIRECT2).
@@ -149,12 +150,13 @@ The file header is 8 bytes of size and consists of:
 |===
 | Offset | Size | Value | Description
 | 0 | 4 | "MAM\x04" | Signature +
-0x4d, 0x41, 0x4d, 0x04
+0x4d, 0x41, 0x4d, 0x04 +
+[yellow-background]*Does 0x80 in the last byte indicate the presence of a checksum?*
 | 4 | 4 | | Total uncompressed data size
 |===
 
-=== Compressed data
-The compressed data is variable of size and consists of:
+=== Compressed block
+The compressed block is variable of size and consists of:
 
 [cols="1,1,1,5",options="header"]
 |===
@@ -162,10 +164,8 @@ The compressed data is variable of size and consists of:
 | 0 | ... | | Compressed data
 |===
 
-[NOTE]
-Currently it is assumed that the compressed data is remainder of the file data 
-and that no block-based storage is used, as e.g. in the Compressed SuperFetch 
-database - MAM file format.
+The uncompressed block size is 65536 (0x10000) or the remaining uncompressed 
+data size for the last block.
 
 === LZExpress Huffman stream variant
 The LZExpress Huffman stream variant differs from the LZExpress Huffman, as 
@@ -277,7 +277,7 @@ The file information - version 26 is 224 bytes of size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | 4 | 0x000000f0 | Metrics array offset +
+| 0 | 4 | 0x00000130 | Metrics array offset +
 The offset is relative to the start of the file
 | 4 | 4 | | Number of metrics entries
 | 8 | 4 | | Trace chains array offset +
@@ -305,6 +305,10 @@ Contains a FILETIME, or 0 if not set
 |===
 
 The entries with a bold offset and size were changed since version 23.
+
+==== File information - version 30
+The file information - version 30 appears to be similar to the metrics array 
+entry - version 26.
 
 === Metrics array
 The metrics array consists of metrics array entries. The entries in the metrics 
@@ -359,6 +363,10 @@ The entries with a bold offset and size were changed since version 17.
 The metrics array entry - version 26 appears to be similar to the metrics array 
 entry - version 23.
 
+==== Metrics array entry - version 30
+The metrics array entry - version 30 appears to be similar to the metrics array 
+entry - version 23.
+
 === Trace chains array
 A trace chain is similar to a File Allocation Table (FAT) chain where the array 
 entries form chains and -1 (0xffffffff) is used to mark the end-of-chain. The 
@@ -369,7 +377,8 @@ array, meaning the first trace chain relates to the first metrics array entry.
 This part of the file currently is referred to as trace chains array largely 
 because of a lack of a better term.
 
-The trace chain array entry is 12 bytes in size and consists of:
+==== Trache chain array entry - version 17
+The trace chain array entry - version 17 is 12 bytes in size and consists of:
 
 [cols="1,1,1,5",options="header"]
 |===
@@ -387,8 +396,30 @@ The block size 512k (512 x 1024) bytes
 [yellow-background]*Seen: 0x0001, 0xffff, etc.*
 |===
 
-The size of a trace chain array entry seems to be consistent across the 
-different versions.
+==== Trache chain array entry - version 23
+The trace chain array entry - version 23 appears to be similar to the metrics array 
+entry - version 17.
+
+==== Trache chain array entry - version 26
+The trace chain array entry - version 26 appears to be similar to the metrics array 
+entry - version 17.
+
+==== Trache chain array entry - version 30
+The trace chain array entry - version 30 is 8 bytes in size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | | Total block load count +
+Total number of blocks loaded (or fetched) +
+The block size 512k (512 x 1024) bytes
+| 4 | 1 | | [yellow-background]*Unknown* +
+[yellow-background]*Seen: 0x02, 0x03, 0x04, 0x08, 0x0a*
+| 5 | 1 | | [yellow-background]*Unknown (Sample duration in ms?)* +
+[yellow-background]*Seen: 1*
+| 6 | 2 | | [yellow-background]*Unknown* +
+[yellow-background]*Seen: 0x0001, 0xffff, etc.*
+|===
 
 === Filename strings
 The directory strings consists of:
@@ -408,7 +439,22 @@ The volumes information consists of:
 ** volume device path
 ** file references
 ** directory strings
-* [yellow-background]*Alignment padding? (16-byte alignment? Can contain remnant data?)*
+* [yellow-background]*Trailing data*
+
+[yellow-background]*Trailing data seen:*
+....
+Version 26
+00001df0  53 00 49 00 47 00 53 00  00 00 ff ff ff ff ff ff  |S.I.G.S.........|
+00001e00  ff ff ff ff ff ff ff ff  ff ff                    |..........|
+
+Version 26
+0000c630  57 00 4f 00 57 00 36 00  34 00 00 00 50 00 43 00  |W.O.W.6.4...P.C.|
+0000c640  4f 00 52 00 45 00                                 |O.R.E.|
+
+Version 30
+00004980: 45 00 4d 00 33 00 32 00  00 00 00 00 00 00 00 00   E.M.3.2. ........
+00004990: 08 09 05 f8                                        ....
+....
 
 ==== Volume information entry
 ===== Volume information entry - version 17
@@ -459,10 +505,40 @@ I[yellow-background]*Does this value relate to the remnant data in the file refe
 The entries with a bold offset and size were changed since version 17.
 
 ===== Volume information entry - version 26
-The volume information entry - version 26 appears to be similar to the volume information entry - version 23.
+The volume information entry - version 26 appears to be similar to the volume 
+information entry - version 23.
+
+===== Volume information entry - version 30
+The volume information entry - version 30 is 96 bytes in size and consists of:
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 4 | | Volume device path offset +
+The offset is relative from the start of the volume information
+| 4 | 4 | | Volume device path number of characters
+| 8 | 8 | | Volume creation time +
+Contains a FILETIME
+| 16 | 4 | | Volume serial number
+| 20 | 4 | | File references offset
+| 24 | 4 | | Number of file references
+| 28 | 4 | | Directory strings offset
+| 32 | 4 | | Number of directory strings
+| 36 | 4 | | [yellow-background]*Unknown* +
+I[yellow-background]*Does this value relate to the remnant data in the file references array?*
+| *40* | *24* | | [yellow-background]*Unknown (empty values)*
+| *64* | 4 | | [yellow-background]*Unknown* +
+[yellow-background]*Copy of the number of directory strings?*
+| *68* | *24* | | [yellow-background]*Unknown (empty values)*
+| *92* | 4 | | [yellow-background]*Unknown (alignment padding?)* +
+[yellow-background]*Can contain remnant data*
+|===
+
+The entries with a bold offset and size were changed since version 23.
 
 ==== Volume device path
-The volume device path is a UTF-16 little-endian string with end-of-string character.
+The volume device path is a UTF-16 little-endian string with end-of-string 
+character.
 
 === File references
 ==== File references - version 17
@@ -478,7 +554,7 @@ Contains an NTFS file reference or 0 if not set +
 See section: <<ntfs_file_reference,The NTFS file reference>>
 |===
 
-[yellow-background]*First 8 bytes of the array not used? Remnant data?*
+[yellow-background]*First 8 bytes of the array not used? Remnant data or volume identifier?*
 
 [yellow-background]*Note: do the file references represent file handles used by 
 the executable? They seem to refer to files e.g. DLL*
@@ -496,10 +572,14 @@ Contains an NTFS file reference or 0 if not set +
 See section: <<ntfs_file_reference,The NTFS file reference>>
 |===
 
-[yellow-background]*First X bytes of the array not used? Remnant data?*
+[yellow-background]*First 8 bytes of the array not used? Remnant data or volume identifier?*
 
 ===== File references - version 26
 The file references - version 26 appears to be similar to the file references - 
+version 23.
+
+===== File references - version 30
+The file references - version 30 appears to be similar to the file references - 
 version 23.
 
 ==== Directory strings

@@ -70,6 +70,22 @@ struct scca_file_header
 	uint8_t unknown2[ 4 ];
 };
 
+typedef struct scca_mam_file_header scca_mam_file_header_t;
+
+struct scca_mam_file_header
+{
+	/* Signature
+	 * Consists of 4 bytes
+	 * "MAM\x04"
+	 */
+	uint8_t signature[ 4 ];
+
+	/* Uncompressed data size
+	 * Consists of 4 bytes
+	 */
+	uint8_t uncompressed_data_size[ 4 ];
+};
+
 #if defined( __cplusplus )
 }
 #endif

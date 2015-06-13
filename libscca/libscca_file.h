@@ -31,6 +31,8 @@
 #include "libscca_libbfio.h"
 #include "libscca_libcdata.h"
 #include "libscca_libcerror.h"
+#include "libscca_libfcache.h"
+#include "libscca_libfdata.h"
 #include "libscca_libfvalue.h"
 #include "libscca_types.h"
 
@@ -57,6 +59,18 @@ struct libscca_internal_file
 	/* Value to indicate if the file IO handle was opened inside the library
 	 */
 	uint8_t file_io_handle_opened_in_library;
+
+	/* The compressed blocks list
+	 */
+	libfdata_list_t *compressed_blocks_list;
+
+	/* The compressed blocks cache
+	 */
+	libfcache_cache_t *compressed_blocks_cache;
+
+	/* The uncompressed data stream
+	 */
+	libfdata_stream_t *uncompressed_data_stream;
 
 	/* The prefetch hash
 	 */
