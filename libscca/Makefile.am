@@ -42,8 +42,8 @@ libscca_la_SOURCES = \
 	libscca_libfcache.h \
 	libscca_libfdata.h \
 	libscca_libfdatetime.h \
-	libscca_libfwnt.h \
 	libscca_libfvalue.h \
+	libscca_libfwnt.h \
 	libscca_libuna.h \
 	libscca_notify.c libscca_notify.h \
 	libscca_support.c libscca_support.h \
