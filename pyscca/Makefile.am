@@ -26,7 +26,8 @@ pyscca_la_SOURCES = \
 	pyscca_libcstring.h \
 	pyscca_libscca.h \
 	pyscca_python.h \
-	pyscca_unused.h
+	pyscca_unused.h \
+	pyscca_volume_information.c pyscca_volume_information.h
 
 pyscca_la_LIBADD = \
 	@LIBCSTRING_LIBADD@ \

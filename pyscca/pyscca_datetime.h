@@ -1,7 +1,7 @@
 /*
  * Date and time functions
  *
- * Copyright (c) 2009-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (c) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *

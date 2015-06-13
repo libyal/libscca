@@ -1,7 +1,7 @@
 /*
  * Python object definition of the libscca file
  *
- * Copyright (C) 2009-2015, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -89,6 +89,26 @@ PyObject *pyscca_file_open_file_object(
 PyObject *pyscca_file_close(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );
+
+PyObject *pyscca_file_get_format_version(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
+
+PyObject *pyscca_file_get_prefetch_hash(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
+
+PyObject *pyscca_file_get_number_of_filenames(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
+
+/* TODO get filename */
+
+PyObject *pyscca_file_get_number_of_volumes(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
+
+/* TODO get filename */
 
 #if defined( __cplusplus )
 }

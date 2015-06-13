@@ -1,7 +1,7 @@
 /*
  * Python bindings module for libscca (pyscca)
  *
- * Copyright (C) 2009-2015, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -35,6 +35,7 @@
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
 #include "pyscca_unused.h"
+#include "pyscca_volume_information.h"
 
 #if !defined( LIBSCCA_HAVE_BFIO )
 LIBSCCA_EXTERN \
@@ -449,9 +450,10 @@ PyMODINIT_FUNC initpyscca(
                 void )
 #endif
 {
-	PyObject *module               = NULL;
-	PyTypeObject *file_type_object = NULL;
-	PyGILState_STATE gil_state     = 0;
+	PyObject *module                             = NULL;
+	PyTypeObject *file_type_object               = NULL;
+	PyTypeObject *volume_information_type_object = NULL;
+	PyGILState_STATE gil_state                   = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libscca_notify_set_stream(
@@ -504,6 +506,25 @@ PyMODINIT_FUNC initpyscca(
 	 module,
 	 "file",
 	 (PyObject *) file_type_object );
+
+	/* Setup the volume information type object
+	 */
+	pyscca_volume_information_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyscca_volume_information_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyscca_volume_information_type_object );
+
+	volume_information_type_object = &pyscca_volume_information_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "volume_information",
+	 (PyObject *) volume_information_type_object );
 
 #if PY_MAJOR_VERSION >= 3
 	return( module );

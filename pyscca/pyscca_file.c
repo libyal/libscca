@@ -1,7 +1,7 @@
 /*
  * Python object definition of the libscca file
  *
- * Copyright (C) 2009-2015, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -82,11 +82,67 @@ PyMethodDef pyscca_file_object_methods[] = {
 
 	/* Functions to access the metadata */
 
+	{ "get_format_version",
+	  (PyCFunction) pyscca_file_get_format_version,
+	  METH_NOARGS,
+	  "get_format_version() -> Integer\n"
+	  "\n"
+	  "Retrieves the format version" },
+
+	{ "get_prefetch_hash",
+	  (PyCFunction) pyscca_file_get_prefetch_hash,
+	  METH_NOARGS,
+	  "get_prefetch_hash() -> Integer\n"
+	  "\n"
+	  "Retrieves the prefetch hash" },
+
+	/* Functions to access the filenames */
+
+	{ "get_number_of_filenames",
+	  (PyCFunction) pyscca_file_get_number_of_filenames,
+	  METH_NOARGS,
+	  "get_number_of_filenames() -> Integer\n"
+	  "\n"
+	  "Retrieves the number of filenames" },
+
+	/* Functions to access the volumes */
+
+	{ "get_number_of_volumes",
+	  (PyCFunction) pyscca_file_get_number_of_volumes,
+	  METH_NOARGS,
+	  "get_number_of_volumes() -> Integer\n"
+	  "\n"
+	  "Retrieves the number of volumes" },
+
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
 };
 
 PyGetSetDef pyscca_file_object_get_set_definitions[] = {
+
+	{ "format_version",
+	  (getter) pyscca_file_get_format_version,
+	  (setter) 0,
+	  "The format version",
+	  NULL },
+
+	{ "prefetch_hash",
+	  (getter) pyscca_file_get_prefetch_hash,
+	  (setter) 0,
+	  "The prefetch hash",
+	  NULL },
+
+	{ "number_of_filenames",
+	  (getter) pyscca_file_get_number_of_filenames,
+	  (setter) 0,
+	  "The number of filenames",
+	  NULL },
+
+	{ "number_of_volumes",
+	  (getter) pyscca_file_get_number_of_volumes,
+	  (setter) 0,
+	  "The number of volumes",
+	  NULL },
 
 	/* Sentinel */
 	{ NULL, NULL, NULL, NULL, NULL }
@@ -810,5 +866,215 @@ PyObject *pyscca_file_close(
 	 Py_None );
 
 	return( Py_None );
+}
+
+/* Retrieves the format version
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_format_version(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyscca_file_get_format_version";
+	uint32_t format_version  = 0;
+	int result               = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_format_version(
+	          pyscca_file->file,
+	          &format_version,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve format version.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	return( PyLong_FromUnsignedLong(
+	         (unsigned long) format_version ) );
+}
+
+/* Retrieves the prefetch hash
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_prefetch_hash(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyscca_file_get_prefetch_hash";
+	uint32_t prefetch_hash   = 0;
+	int result               = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_prefetch_hash(
+	          pyscca_file->file,
+	          &prefetch_hash,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve prefetch hash.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	return( PyLong_FromUnsignedLong(
+	         (unsigned long) prefetch_hash ) );
+}
+
+/* Retrieves the number of filenames
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_number_of_filenames(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
+	static char *function    = "pyscca_file_get_number_of_filenames";
+	int number_of_filenames  = 0;
+	int result               = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_number_of_filenames(
+	          pyscca_file->file,
+	          &number_of_filenames,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of filenames.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+#if PY_MAJOR_VERSION >= 3
+	integer_object = PyLong_FromLong(
+	                  (long) number_of_filenames );
+#else
+	integer_object = PyInt_FromLong(
+	                  (long) number_of_filenames );
+#endif
+	return( integer_object );
+}
+
+/* Retrieves the number of volumes
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_number_of_volumes(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
+	static char *function    = "pyscca_file_get_number_of_volumes";
+	int number_of_volumes    = 0;
+	int result               = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_number_of_volumes(
+	          pyscca_file->file,
+	          &number_of_volumes,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of volumes.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+#if PY_MAJOR_VERSION >= 3
+	integer_object = PyLong_FromLong(
+	                  (long) number_of_volumes );
+#else
+	integer_object = PyInt_FromLong(
+	                  (long) number_of_volumes );
+#endif
+	return( integer_object );
 }
 
