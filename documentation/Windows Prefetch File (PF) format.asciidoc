@@ -525,7 +525,7 @@ Contains a FILETIME
 | 28 | 4 | | Directory strings offset
 | 32 | 4 | | Number of directory strings
 | 36 | 4 | | [yellow-background]*Unknown* +
-I[yellow-background]*Does this value relate to the remnant data in the file references array?*
+[yellow-background]*Does this value relate to the remnant data in the file references array?*
 | *40* | *24* | | [yellow-background]*Unknown (empty values)*
 | *64* | 4 | | [yellow-background]*Unknown* +
 [yellow-background]*Copy of the number of directory strings?*
