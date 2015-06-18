@@ -39,6 +39,7 @@
 #include "libscca_libfcache.h"
 #include "libscca_libfdata.h"
 #include "libscca_libfvalue.h"
+#include "libscca_libuna.h"
 #include "libscca_volume_information.h"
 
 /* Creates a file
@@ -1110,6 +1111,8 @@ int libscca_file_open_read(
 	     internal_file->io_handle,
 	     internal_file->uncompressed_data_stream,
 	     file_io_handle,
+	     internal_file->executable_filename,
+	     &( internal_file->executable_filename_size ),
 	     &( internal_file->prefetch_hash ),
 	     error ) != 1 )
 	{
@@ -1336,6 +1339,186 @@ int libscca_file_get_format_version(
 	}
 	*format_version = internal_file->io_handle->format_version;
 
+	return( 1 );
+}
+
+/* Retrieves the size of a specific UTF-8 encoded executable filename
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_get_utf8_executable_filename_size(
+     libscca_file_t *file,
+     size_t *utf8_string_size,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_t *internal_file = NULL;
+	static char *function                  = "libscca_file_get_utf8_executable_filename_size";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libscca_internal_file_t *) file;
+
+	if( libuna_utf8_string_size_from_utf16_stream(
+	     internal_file->executable_filename,
+	     internal_file->executable_filename_size,
+	     LIBUNA_ENDIAN_LITTLE,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to determine size of UTF-8 executable filename string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a specific UTF-8 encoded executable filename
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_get_utf8_executable_filename(
+     libscca_file_t *file,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_t *internal_file = NULL;
+	static char *function                  = "libscca_file_get_utf8_executable_filename";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libscca_internal_file_t *) file;
+
+	if( libuna_utf8_string_copy_from_utf16_stream(
+	     (libuna_utf8_character_t *) utf8_string,
+	     utf8_string_size,
+	     internal_file->executable_filename,
+	     internal_file->executable_filename_size,
+	     LIBUNA_ENDIAN_LITTLE,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set UTF-8 executable filename string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of a specific UTF-16 encoded executable filename
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_get_utf16_executable_filename_size(
+     libscca_file_t *file,
+     size_t *utf16_string_size,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_t *internal_file = NULL;
+	static char *function                  = "libscca_file_get_utf16_executable_filename_size";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libscca_internal_file_t *) file;
+
+	if( libuna_utf16_string_size_from_utf16_stream(
+	     internal_file->executable_filename,
+	     internal_file->executable_filename_size,
+	     LIBUNA_ENDIAN_LITTLE,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to determine size of UTF-16 executable filename string.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a specific UTF-16 encoded executable filename
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_get_utf16_executable_filename(
+     libscca_file_t *file,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_t *internal_file = NULL;
+	static char *function                  = "libscca_file_get_utf16_executable_filename";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libscca_internal_file_t *) file;
+
+	if( libuna_utf16_string_copy_from_utf16_stream(
+	     (libuna_utf16_character_t *) utf16_string,
+	     utf16_string_size,
+	     internal_file->executable_filename,
+	     internal_file->executable_filename_size,
+	     LIBUNA_ENDIAN_LITTLE,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set UTF-16 executable filename string.",
+		 function );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 

@@ -96,6 +96,8 @@ int libscca_io_handle_read_uncompressed_file_header(
      libscca_io_handle_t *io_handle,
      libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,
+     uint8_t *executable_filename,
+     size_t *executable_filename_size,
      uint32_t *prefetch_hash,
      libcerror_error_t **error );
 

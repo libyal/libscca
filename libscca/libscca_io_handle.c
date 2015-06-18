@@ -554,17 +554,22 @@ int libscca_io_handle_read_uncompressed_file_header(
      libscca_io_handle_t *io_handle,
      libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,
+     uint8_t *executable_filename,
+     size_t *executable_filename_size,
      uint32_t *prefetch_hash,
      libcerror_error_t **error )
 {
 	scca_file_header_t file_header;
 
-	static char *function = "libscca_io_handle_read_uncompressed_file_header";
-	ssize_t read_count    = 0;
-	uint32_t file_size    = 0;
+	static char *function                       = "libscca_io_handle_read_uncompressed_file_header";
+	ssize_t read_count                          = 0;
+	uint32_t file_size                          = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	uint32_t value_32bit  = 0;
+	libcstring_system_character_t *value_string = NULL;
+	size_t value_string_size                    = 0;
+	uint32_t value_32bit                        = 0;
+	int result                                  = 0;
 #endif
 
 	if( io_handle == NULL )
@@ -574,6 +579,39 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
 		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( executable_filename == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid executable filename.",
+		 function );
+
+		return( -1 );
+	}
+	if( executable_filename_size == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid executable filename size.",
+		 function );
+
+		return( -1 );
+	}
+	if( prefetch_hash == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid prefetch hash.",
 		 function );
 
 		return( -1 );
@@ -599,7 +637,7 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 "%s: unable to seek file header offset: 0.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	read_count = libfdata_stream_read_buffer(
 	              uncompressed_data_stream,
@@ -618,7 +656,7 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 "%s: unable to read file header data.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -644,7 +682,7 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 "%s: invalid signature.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
 	byte_stream_copy_to_uint32_little_endian(
 	 file_header.format_version,
@@ -658,6 +696,30 @@ int libscca_io_handle_read_uncompressed_file_header(
 	 file_header.prefetch_hash,
 	 *prefetch_hash );
 
+	if( memory_copy(
+	     executable_filename,
+	     file_header.executable_filename,
+	     60 ) == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_MEMORY,
+		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
+		 "%s: unable to copy executable filename.",
+		 function );
+
+		goto on_error;
+	}
+	for( *executable_filename_size = 0;
+	     ( *executable_filename_size + 1 ) < 60;
+	     *executable_filename_size += 2 )
+	{
+		if( ( executable_filename[ *executable_filename_size ] == 0 )
+		 && ( executable_filename[ *executable_filename_size + 1 ] == 0 ) )
+		{
+			break;
+		}
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -687,13 +749,95 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 function,
 		 file_size );
 
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libuna_utf16_string_size_from_utf16_stream(
+			  executable_filename,
+			  *executable_filename_size,
+			  LIBUNA_ENDIAN_LITTLE,
+			  &value_string_size,
+			  error );
+#else
+		result = libuna_utf8_string_size_from_utf16_stream(
+			  executable_filename,
+			  *executable_filename_size,
+			  LIBUNA_ENDIAN_LITTLE,
+			  &value_string_size,
+			  error );
+#endif
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to determine size of executable filename string.",
+			 function );
+
+			goto on_error;
+		}
+		if( ( value_string_size > (size_t) SSIZE_MAX )
+		 || ( ( sizeof( libcstring_system_character_t ) * value_string_size ) > (size_t) SSIZE_MAX ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
+			 "%s: invalid executable filename string size value exceeds maximum.",
+			 function );
+
+			goto on_error;
+		}
+		value_string = libcstring_system_string_allocate(
+				value_string_size );
+
+		if( value_string == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+			 "%s: unable to create executable filename string.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libuna_utf16_string_copy_from_utf16_stream(
+			  (libuna_utf16_character_t *) value_string,
+			  value_string_size,
+			  executable_filename,
+			  *executable_filename_size,
+			  LIBUNA_ENDIAN_LITTLE,
+			  error );
+#else
+		result = libuna_utf8_string_copy_from_utf16_stream(
+			  (libuna_utf8_character_t *) value_string,
+			  value_string_size,
+			  executable_filename,
+			  *executable_filename_size,
+			  LIBUNA_ENDIAN_LITTLE,
+			  error );
+#endif
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set executable filename string.",
+			 function );
+
+			goto on_error;
+		}
 		libcnotify_printf(
-		 "%s: executable filename:\n",
-		 function );
-		libcnotify_print_data(
-		 file_header.executable_filename,
-		 60,
-		 0 );
+		 "%s: executable filename\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+		 function,
+		 value_string );
+
+		memory_free(
+		 value_string );
+
+		value_string = NULL;
 
 		libcnotify_printf(
 		 "%s: prefetch hash\t\t: 0x%08" PRIx32 "\n",
@@ -717,6 +861,16 @@ int libscca_io_handle_read_uncompressed_file_header(
 /* TODO flag mismatch and file as corrupted? */
 	}
 	return( 1 );
+
+on_error:
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( value_string != NULL )
+	{
+		memory_free(
+		 value_string );
+	}
+#endif
+	return( -1 );
 }
 
 /* Reads the metrics array

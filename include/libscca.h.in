@@ -269,6 +269,48 @@ int libscca_file_get_format_version(
      uint32_t *format_version,
      libscca_error_t **error );
 
+/* Retrieves the size of a specific UTF-8 encoded executable filename
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSCCA_EXTERN \
+int libscca_file_get_utf8_executable_filename_size(
+     libscca_file_t *file,
+     size_t *utf8_string_size,
+     libscca_error_t **error );
+
+/* Retrieves a specific UTF-8 encoded executable filename
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSCCA_EXTERN \
+int libscca_file_get_utf8_executable_filename(
+     libscca_file_t *file,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libscca_error_t **error );
+
+/* Retrieves the size of a specific UTF-16 encoded executable filename
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSCCA_EXTERN \
+int libscca_file_get_utf16_executable_filename_size(
+     libscca_file_t *file,
+     size_t *utf16_string_size,
+     libscca_error_t **error );
+
+/* Retrieves a specific UTF-16 encoded executable filename
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+LIBSCCA_EXTERN \
+int libscca_file_get_utf16_executable_filename(
+     libscca_file_t *file,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libscca_error_t **error );
+
 /* Retrieves the prefetch hash
  * Returns 1 if successful or -1 on error
  */

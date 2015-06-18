@@ -1,10 +1,10 @@
 TODO:
 * complete python bindings
+  - executable name
   - filenames
   - volumes
 * handle directory names correctly
 * add API functions
-  - get executable name
   - get file size ?
   - get run count
   - get number of last run times

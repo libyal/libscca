@@ -421,7 +421,78 @@ int info_handle_file_fprint(
 	 "\tPrefetch hash\t\t\t: 0x%08" PRIx32 "\n",
 	 value_32bit );
 
-/* TODO executable name */
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libscca_file_get_utf16_executable_filename_size(
+		  info_handle->input_file,
+		  &value_string_size,
+		  error );
+#else
+	result = libscca_file_get_utf8_executable_filename_size(
+		  info_handle->input_file,
+		  &value_string_size,
+		  error );
+#endif
+	if( result != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve executable filename size.",
+		 function );
+
+		goto on_error;
+	}
+	if( value_string_size > 0 )
+	{
+		value_string = libcstring_system_string_allocate(
+				value_string_size );
+
+		if( value_string == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+			 "%s: unable to create value string.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libscca_file_get_utf16_executable_filename(
+			  info_handle->input_file,
+			  (uint16_t *) value_string,
+			  value_string_size,
+			  error );
+#else
+		result = libscca_file_get_utf8_executable_filename(
+			  info_handle->input_file,
+			  (uint8_t *) value_string,
+			  value_string_size,
+			  error );
+#endif
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve executable filename.",
+			 function );
+
+			goto on_error;
+		}
+		fprintf(
+		 info_handle->notify_stream,
+		 "\tExecutable filename\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+		 value_string );
+
+		memory_free(
+		 value_string );
+
+		value_string = NULL;
+	}
 /* TODO run count */
 /* TODO run time(s) */
 

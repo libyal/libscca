@@ -72,6 +72,14 @@ struct libscca_internal_file
 	 */
 	libfdata_stream_t *uncompressed_data_stream;
 
+	/* The executable filename
+	 */
+	uint8_t executable_filename[ 60 ];
+
+	/* The executable filename size
+	 */
+	size_t executable_filename_size;
+
 	/* The prefetch hash
 	 */
 	uint32_t prefetch_hash;
@@ -141,6 +149,32 @@ LIBSCCA_EXTERN \
 int libscca_file_get_format_version(
      libscca_file_t *file,
      uint32_t *format_version,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_get_utf8_executable_filename_size(
+     libscca_file_t *file,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_get_utf8_executable_filename(
+     libscca_file_t *file,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_get_utf16_executable_filename_size(
+     libscca_file_t *file,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_get_utf16_executable_filename(
+     libscca_file_t *file,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \
