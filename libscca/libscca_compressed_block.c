@@ -177,14 +177,17 @@ int libscca_compressed_block_free(
  */
 ssize_t libscca_compressed_block_read(
          libscca_compressed_block_t *compressed_block,
+         libscca_compressed_block_t *previous_compressed_block,
          libbfio_handle_t *file_io_handle,
          off64_t compressed_block_offset,
          size_t compressed_block_size,
          libcerror_error_t **error )
 {
-	uint8_t *compressed_data = NULL;
-	static char *function    = "libscca_compressed_block_read";
-	ssize_t read_count       = 0;
+	uint8_t *compressed_data               = NULL;
+	uint8_t *previous_uncompressed_data    = NULL;
+	static char *function                  = "libscca_compressed_block_read";
+	size_t previous_uncompressed_data_size = 0;
+	ssize_t read_count                     = 0;
 
 	if( compressed_block == NULL )
 	{
@@ -256,9 +259,16 @@ ssize_t libscca_compressed_block_read(
 
 		goto on_error;
 	}
-	read_count = libfwnt_lzxpress_huffman_decompress(
+	if( previous_compressed_block != NULL )
+	{
+		previous_uncompressed_data      = previous_compressed_block->data;
+		previous_uncompressed_data_size = previous_compressed_block->data_size;
+	}
+	read_count = libfwnt_lzxpress_huffman_decompress_stream(
 	              compressed_data,
 	              (size_t) read_count,
+	              previous_uncompressed_data,
+	              previous_uncompressed_data_size,
 	              compressed_block->data,
 	              &( compressed_block->data_size ),
 	              error );
@@ -274,6 +284,18 @@ ssize_t libscca_compressed_block_read(
 
 		goto on_error;
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: uncompressed data:\n",
+		 function );
+		libcnotify_print_data(
+		 compressed_block->data,
+		 compressed_block->data_size,
+		 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
+	}
+#endif
 	memory_free(
 	 compressed_data );
 
@@ -306,10 +328,12 @@ int libscca_compressed_block_read_element_data(
      uint8_t read_flags LIBSCCA_ATTRIBUTE_UNUSED,
      libcerror_error_t **error )
 {
-	libscca_compressed_block_t *compressed_block = NULL;
-	static char *function                        = "libscca_compressed_block_read_element_data";
-	size64_t uncompressed_size                   = 0;
-	ssize_t read_count                           = 0;
+	libscca_compressed_block_t *compressed_block          = NULL;
+	libscca_compressed_block_t *previous_compressed_block = NULL;
+	static char *function                                 = "libscca_compressed_block_read_element_data";
+	size64_t uncompressed_size                            = 0;
+	ssize_t read_count                                    = 0;
+	int element_index                                     = 0;
 
 	LIBSCCA_UNREFERENCED_PARAMETER( element_file_index )
 	LIBSCCA_UNREFERENCED_PARAMETER( read_flags )
@@ -358,6 +382,24 @@ int libscca_compressed_block_read_element_data(
 
 		return( -1 );
 	}
+	if( libfdata_list_element_get_element_index(
+	     element,
+	     &element_index,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve list element index.",
+		 function );
+
+		goto on_error;
+	}
+	if( element_index > 0 )
+	{
+/* TODO get previous list element to read compressed block */
+	}
 	if( libfdata_list_element_get_mapped_size(
 	     element,
 	     &uncompressed_size,
@@ -399,6 +441,7 @@ int libscca_compressed_block_read_element_data(
 	}
 	read_count = libscca_compressed_block_read(
 	              compressed_block,
+	              previous_compressed_block,
 	              file_io_handle,
 	              compressed_block_offset,
 	              (size_t) compressed_block_size,

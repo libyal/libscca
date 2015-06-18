@@ -1011,6 +1011,20 @@ int libscca_file_open_read(
 
 			goto on_error;
 		}
+		if( libfcache_cache_initialize(
+		     &( internal_file->compressed_blocks_cache ),
+		     LIBSCCA_MAXIMUM_CACHE_ENTRIES_COMPRESSED_BLOCKS,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+			 "%s: unable to create compressed blocks cache.",
+			 function );
+
+			goto on_error;
+		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
@@ -1030,20 +1044,6 @@ int libscca_file_open_read(
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
 			 "%s: unable to read compressed blocks.",
-			 function );
-
-			goto on_error;
-		}
-		if( libfcache_cache_initialize(
-		     &( internal_file->compressed_blocks_cache ),
-		     LIBSCCA_MAXIMUM_CACHE_ENTRIES_COMPRESSED_BLOCKS,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create compressed blocks cache.",
 			 function );
 
 			goto on_error;

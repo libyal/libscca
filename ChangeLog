@@ -20,6 +20,9 @@ TODO:
 * check signature
   - add check for mam file header?
 
+20150618
+* worked on Windows 10 compressed file support
+
 20150613
 * worked on Windows 10 compressed file support
 * worked on Python bindings

@@ -362,15 +362,17 @@ int libscca_io_handle_read_compressed_blocks(
      libfcache_cache_t *compressed_blocks_cache,
      libcerror_error_t **error )
 {
-	libscca_compressed_block_t *compressed_block = NULL;
-	static char *function                        = "libscca_io_handle_read_compressed_blocks";
-	off64_t file_offset                          = 0;
-	size64_t compressed_data_size                = 0;
-	ssize_t read_count                           = 0;
-	uint32_t uncompressed_data_size              = 0;
-	uint32_t uncompressed_block_size             = 0;
-	int compressed_block_index                   = 0;
-	int element_index                            = 0;
+	libfdata_list_element_t *compressed_blocks_list_element = NULL;
+	libscca_compressed_block_t *compressed_block            = NULL;
+	libscca_compressed_block_t *previous_compressed_block   = NULL;
+	static char *function                                   = "libscca_io_handle_read_compressed_blocks";
+	off64_t file_offset                                     = 0;
+	size64_t compressed_data_size                           = 0;
+	ssize_t read_count                                      = 0;
+	uint32_t uncompressed_data_size                         = 0;
+	uint32_t uncompressed_block_size                        = 0;
+	int compressed_block_index                              = 0;
+	int element_index                                       = 0;
 
 	if( io_handle == NULL )
 	{
@@ -438,6 +440,7 @@ int libscca_io_handle_read_compressed_blocks(
 #endif
 		read_count = libscca_compressed_block_read(
 		              compressed_block,
+		              previous_compressed_block,
 		              file_io_handle,
 		              file_offset,
 		              (size_t) io_handle->uncompressed_block_size,
@@ -488,20 +491,47 @@ int libscca_io_handle_read_compressed_blocks(
 		compressed_data_size   -= read_count;
 		uncompressed_data_size -= uncompressed_block_size;
 
-/* TODO cache uncompressed block */
-		if( libscca_compressed_block_free(
-		     &compressed_block,
+		if( libfdata_list_get_list_element_by_index(
+		     compressed_blocks_list,
+		     element_index,
+		     &compressed_blocks_list_element,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free compressed block.",
-			 function );
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve compressed block: %d list element.",
+			 function,
+			 element_index );
 
 			goto on_error;
 		}
+		if( libfdata_list_element_set_element_value(
+		     compressed_blocks_list_element,
+		     (intptr_t *) file_io_handle,
+		     compressed_blocks_cache,
+		     (intptr_t *) compressed_block,
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libscca_compressed_block_free,
+		     LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to set compressed block: %d as element value.",
+			 function,
+			 element_index );
+
+			goto on_error;
+		}
+/* TODO the behavior of the cache does not caches out the previous block at the moment
+ * but revisit this to make this more reliable, when the cache implementation might change
+ */
+		previous_compressed_block = compressed_block;
+		compressed_block          = NULL;
+
 		compressed_block_index++;
 	}
 /* TODO check if terminator is 0x0000 */
@@ -761,8 +791,17 @@ int libscca_io_handle_read_metrics_array(
 	{
 		entry_data_size = sizeof( scca_metrics_array_entry_v23_t );
 	}
-/* TODO add bounds check number of entries metrics entry_data_size */
+	if( (size_t) number_of_entries > ( (size_t) SSIZE_MAX / entry_data_size ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of entries value out of bounds.",
+		 function );
 
+		return( -1 );
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -1050,8 +1089,17 @@ int libscca_io_handle_read_trace_chain_array(
 	{
 		entry_data_size = sizeof( scca_trace_chain_array_entry_v30_t );
 	}
-/* TODO add bounds check number of entries y entry_data_size */
+	if( (size_t) number_of_entries > ( (size_t) SSIZE_MAX / entry_data_size ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of entries value out of bounds.",
+		 function );
 
+		return( -1 );
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -1552,6 +1600,17 @@ int libscca_io_handle_read_volumes_information(
 	{
 		volume_information_size = sizeof( scca_volume_information_v30_t );
 	}
+	if( volume_information_size > volumes_information_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid volume information size value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
 	for( volume_index = 0;
 	     volume_index < number_of_volumes;
 	     volume_index++ )
@@ -1570,7 +1629,17 @@ int libscca_io_handle_read_volumes_information(
 
 			goto on_error;
 		}
-/* TODO check bounds of volume_information_offset */
+		if( volume_information_offset > ( volumes_information_size - volume_information_size ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid volume information offset value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
 		volume_information_data = &( volumes_information_data[ volume_information_offset ] );
 
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -1813,12 +1882,45 @@ int libscca_io_handle_read_volumes_information(
 #endif
 		volume_information_offset += volume_information_size;
 
-/* TODO add bounds check device_path_offset and device_path_size */
 		if( ( device_path_offset != 0 )
 		 && ( device_path_size != 0 ) )
 		{
+			if( device_path_offset > volumes_information_size )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid volume device path offset value out of bounds.",
+				 function );
+
+				goto on_error;
+			}
+			if( device_path_size >= ( UINT32_MAX / 2 ) )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
+				 "%s: invalid volume device path string size value exceeds maximum.",
+				 function );
+
+				goto on_error;
+			}
 			device_path_size *= 2;
 
+			if( ( device_path_size > volumes_information_size )
+			 || ( device_path_offset > ( volumes_information_size - device_path_size ) ) )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid volume device path size value out of bounds.",
+				 function );
+
+				goto on_error;
+			}
 			volume_information->device_path = (uint8_t *) memory_allocate(
 			                                               sizeof( uint8_t ) * device_path_size );
 
@@ -1946,7 +2048,29 @@ int libscca_io_handle_read_volumes_information(
 		}
 		if( file_references_offset != 0 )
 		{
-/* TODO add bounds check file_references_offset and file_references_size */
+			if( file_references_offset > volumes_information_size )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid file references offset value out of bounds.",
+				 function );
+
+				goto on_error;
+			}
+			if( ( file_references_size > volumes_information_size )
+			 || ( file_references_offset > ( volumes_information_size - file_references_size ) ) )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid file references size value out of bounds.",
+				 function );
+
+				goto on_error;
+			}
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
@@ -2028,9 +2152,19 @@ int libscca_io_handle_read_volumes_information(
 			}
 #endif
 		}
-/* TODO add bounds check directory_strings_array_offset */
 		if( directory_strings_array_offset != 0 )
 		{
+			if( directory_strings_array_offset > volumes_information_size )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid directory strings array offset value out of bounds.",
+				 function );
+
+				goto on_error;
+			}
 /* TODO fix size calculation */
 			directory_strings_array_size = volumes_information_size - directory_strings_array_offset;
 
