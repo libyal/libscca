@@ -25,8 +25,8 @@
 #include <common.h>
 #include <byte_stream.h>
 
-#define LIBSCCA_ENDIAN_BIG				_BYTE_STREAM_ENDIAN_BIG
-#define LIBSCCA_ENDIAN_LITTLE				_BYTE_STREAM_ENDIAN_LITTLE
+#define LIBSCCA_ENDIAN_BIG					_BYTE_STREAM_ENDIAN_BIG
+#define LIBSCCA_ENDIAN_LITTLE					_BYTE_STREAM_ENDIAN_LITTLE
 
 /* Define HAVE_LOCAL_LIBSCCA for local use of libscca
  */
@@ -37,11 +37,11 @@
  * for local use of libscca
  */
 #else
-#define LIBSCCA_VERSION					@VERSION@
+#define LIBSCCA_VERSION						@VERSION@
 
 /* The version string
  */
-#define LIBSCCA_VERSION_STRING				"@VERSION@"
+#define LIBSCCA_VERSION_STRING					"@VERSION@"
 
 /* The access flags definitions
  * bit 1        set to 1 for read access
@@ -50,30 +50,30 @@
  */
 enum LIBSCCA_ACCESS_FLAGS
 {
-	LIBSCCA_ACCESS_FLAG_READ			= 0x01,
+	LIBSCCA_ACCESS_FLAG_READ				= 0x01,
 /* Reserved: not supported yet */
-	LIBSCCA_ACCESS_FLAG_WRITE			= 0x02
+	LIBSCCA_ACCESS_FLAG_WRITE				= 0x02
 };
 
 /* The file access macros
  */
-#define LIBSCCA_OPEN_READ				( LIBSCCA_ACCESS_FLAG_READ )
+#define LIBSCCA_OPEN_READ					( LIBSCCA_ACCESS_FLAG_READ )
 /* Reserved: not supported yet */
-#define LIBSCCA_OPEN_WRITE				( LIBSCCA_ACCESS_FLAG_WRITE )
+#define LIBSCCA_OPEN_WRITE					( LIBSCCA_ACCESS_FLAG_WRITE )
 /* Reserved: not supported yet */
-#define LIBSCCA_OPEN_READ_WRITE				( LIBSCCA_ACCESS_FLAG_READ | LIBSCCA_ACCESS_FLAG_WRITE )
+#define LIBSCCA_OPEN_READ_WRITE					( LIBSCCA_ACCESS_FLAG_READ | LIBSCCA_ACCESS_FLAG_WRITE )
 
 /* The file type definitions
  */
 enum LIBSCCA_FILE_TYPES
 {
-	LIBSCCA_FILE_TYPE_UNCOMPRESSED			= 1,
-	LIBSCCA_FILE_TYPE_COMPRESSED_WINDOWS10		= 2
+	LIBSCCA_FILE_TYPE_UNCOMPRESSED				= 1,
+	LIBSCCA_FILE_TYPE_COMPRESSED_WINDOWS10			= 2
 };
 
 #endif
 
-#define LIBSCCA_MAXIMUM_CACHE_ENTRIES_COMPRESSED_BLOCKS	8
+#define LIBSCCA_MAXIMUM_CACHE_ENTRIES_COMPRESSED_BLOCKS		32
 
 #endif
 

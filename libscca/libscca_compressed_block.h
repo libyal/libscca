@@ -58,7 +58,6 @@ int libscca_compressed_block_free(
 
 ssize_t libscca_compressed_block_read(
          libscca_compressed_block_t *compressed_block,
-         libscca_compressed_block_t *previous_compressed_block,
          libbfio_handle_t *file_io_handle,
          off64_t compressed_block_offset,
          size_t compressed_block_size,

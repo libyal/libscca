@@ -305,8 +305,7 @@ int libscca_io_handle_read_compressed_file_header(
 	}
 	if( io_handle->file_type == LIBSCCA_FILE_TYPE_UNCOMPRESSED )
 	{
-		io_handle->uncompressed_block_size = 0;
-		io_handle->uncompressed_data_size  = io_handle->file_size;
+		io_handle->uncompressed_data_size = io_handle->file_size;
 	}
 	else if( io_handle->file_type == LIBSCCA_FILE_TYPE_COMPRESSED_WINDOWS10 )
 	{
@@ -322,8 +321,6 @@ int libscca_io_handle_read_compressed_file_header(
 			 file_header_data[ 3 ] );
 		}
 #endif
-		io_handle->uncompressed_block_size = 65536;
-
 		byte_stream_copy_to_uint32_little_endian(
 		 &( file_header_data[ 4 ] ),
 		 io_handle->uncompressed_data_size );
@@ -364,7 +361,6 @@ int libscca_io_handle_read_compressed_blocks(
 {
 	libfdata_list_element_t *compressed_blocks_list_element = NULL;
 	libscca_compressed_block_t *compressed_block            = NULL;
-	libscca_compressed_block_t *previous_compressed_block   = NULL;
 	static char *function                                   = "libscca_io_handle_read_compressed_blocks";
 	off64_t file_offset                                     = 0;
 	size64_t compressed_data_size                           = 0;
@@ -403,17 +399,8 @@ int libscca_io_handle_read_compressed_blocks(
 
 	while( compressed_data_size > 2 )
 	{
-		/* It is assumed here that the compressed data is always smaller
-		 * than the uncompressed data
-		 */
-		if( uncompressed_data_size < io_handle->uncompressed_block_size )
-		{
-			uncompressed_block_size = uncompressed_data_size;
-		}
-		else
-		{
-			uncompressed_block_size = io_handle->uncompressed_block_size;
-		}
+		uncompressed_block_size = (size_t) uncompressed_data_size;
+
 		if( libscca_compressed_block_initialize(
 		     &compressed_block,
 		     uncompressed_block_size,
@@ -440,10 +427,9 @@ int libscca_io_handle_read_compressed_blocks(
 #endif
 		read_count = libscca_compressed_block_read(
 		              compressed_block,
-		              previous_compressed_block,
 		              file_io_handle,
 		              file_offset,
-		              (size_t) io_handle->uncompressed_block_size,
+		              (size_t) uncompressed_block_size,
 		              error );
 
 		if( read_count == -1 )
@@ -526,15 +512,10 @@ int libscca_io_handle_read_compressed_blocks(
 
 			goto on_error;
 		}
-/* TODO the behavior of the cache does not caches out the previous block at the moment
- * but revisit this to make this more reliable, when the cache implementation might change
- */
-		previous_compressed_block = compressed_block;
-		compressed_block          = NULL;
+		compressed_block = NULL;
 
 		compressed_block_index++;
 	}
-/* TODO check if terminator is 0x0000 */
 	return( 1 );
 
 on_error:

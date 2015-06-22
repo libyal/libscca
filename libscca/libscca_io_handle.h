@@ -47,10 +47,6 @@ struct libscca_io_handle
 	 */
 	uint8_t file_type;
 
-	/* The uncompressed block size
-	 */
-	uint32_t uncompressed_block_size;
-
 	/* The uncompressed data size
 	 */
 	uint32_t uncompressed_data_size;
