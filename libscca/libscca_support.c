@@ -395,7 +395,7 @@ int libscca_check_file_signature_file_io_handle(
 	              8,
 	              error );
 
-	if( read_count != 2 )
+	if( read_count != 8 )
 	{
 		libcerror_error_set(
 		 error,
