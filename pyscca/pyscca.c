@@ -30,6 +30,7 @@
 #include "pyscca_error.h"
 #include "pyscca_file.h"
 #include "pyscca_file_object_io_handle.h"
+#include "pyscca_filenames.h"
 #include "pyscca_libcerror.h"
 #include "pyscca_libcstring.h"
 #include "pyscca_libscca.h"
@@ -452,6 +453,7 @@ PyMODINIT_FUNC initpyscca(
 {
 	PyObject *module                             = NULL;
 	PyTypeObject *file_type_object               = NULL;
+	PyTypeObject *filenames_type_object          = NULL;
 	PyTypeObject *volume_information_type_object = NULL;
 	PyGILState_STATE gil_state                   = 0;
 
@@ -525,6 +527,25 @@ PyMODINIT_FUNC initpyscca(
 	 module,
 	 "volume_information",
 	 (PyObject *) volume_information_type_object );
+
+	/* Setup the filenames type object
+	 */
+	pyscca_filenames_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyscca_filenames_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyscca_filenames_type_object );
+
+	filenames_type_object = &pyscca_filenames_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "filenames",
+	 (PyObject *) filenames_type_object );
 
 #if PY_MAJOR_VERSION >= 3
 	return( module );

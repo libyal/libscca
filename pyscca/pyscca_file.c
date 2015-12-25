@@ -30,6 +30,7 @@
 #include "pyscca_error.h"
 #include "pyscca_file.h"
 #include "pyscca_file_object_io_handle.h"
+#include "pyscca_filenames.h"
 #include "pyscca_integer.h"
 #include "pyscca_libbfio.h"
 #include "pyscca_libcerror.h"
@@ -1020,6 +1021,214 @@ PyObject *pyscca_file_get_number_of_filenames(
 	                  (long) number_of_filenames );
 #endif
 	return( integer_object );
+}
+
+/* Retrieves a specific filename by index
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_filename_by_index(
+           pyscca_file_t *pyscca_file,
+           int filename_index )
+{
+	libcerror_error_t *error = NULL;
+	PyObject *string_object  = NULL;
+	uint8_t *filename        = NULL;
+	const char *errors       = NULL;
+	static char *function    = "pyscca_file_get_filename_by_index";
+	size_t filename_size     = 0;
+	int result               = 0;
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_utf8_filename_size(
+	          pyscca_file->file,
+	          filename_index,
+	          &filename_size,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result == -1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve filename: %d size.",
+		 function,
+		 filename_index );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	else if( ( result == 0 )
+	      || ( filename_size == 0 ) )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	filename = (uint8_t *) PyMem_Malloc(
+	                        sizeof( uint8_t ) * filename_size );
+
+	if( filename == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to create filename: %d.",
+		 function,
+		 filename_index );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_utf8_filename(
+		  pyscca_file->file,
+		  filename_index,
+		  filename,
+		  filename_size,
+		  &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve filename: %d.",
+		 function,
+		 filename_index );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	/* Pass the string length to PyUnicode_DecodeUTF8
+	 * otherwise it makes the end of string character is part
+	 * of the string
+	 */
+	string_object = PyUnicode_DecodeUTF8(
+			 (char *) filename,
+			 (Py_ssize_t) filename_size - 1,
+			 errors );
+
+	PyMem_Free(
+	 filename );
+
+	return( string_object );
+
+on_error:
+	if( filename != NULL )
+	{
+		PyMem_Free(
+		 filename );
+	}
+	return( NULL );
+}
+
+/* Retrieves a specific filename
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_filename(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *string_object     = NULL;
+	static char *keyword_list[] = { "filename_index", NULL };
+	int filename_index          = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &filename_index ) == 0 )
+	{
+		return( NULL );
+	}
+	string_object = pyscca_file_get_filename_by_index(
+	                 pyscca_file,
+	                 filename_index );
+
+	return( string_object );
+}
+
+/* Retrieves a filenames sequence and iterator object for the filenames
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_filenames(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error   = NULL;
+	PyObject *filenames_object = NULL;
+	static char *function      = "pyscca_file_get_filenames";
+	int number_of_filenames    = 0;
+	int result                 = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_number_of_filenames(
+	          pyscca_file->file,
+	          &number_of_filenames,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of filenames.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	filenames_object = pyscca_filenames_new(
+	                    pyscca_file,
+	                    &pyscca_file_get_filename_by_index,
+	                    number_of_filenames );
+
+	if( filenames_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create filenames object.",
+		 function );
+
+		return( NULL );
+	}
+	return( filenames_object );
 }
 
 /* Retrieves the number of volumes

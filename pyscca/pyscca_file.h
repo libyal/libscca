@@ -102,13 +102,24 @@ PyObject *pyscca_file_get_number_of_filenames(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );
 
-/* TODO get filename */
+PyObject *pyscca_file_get_filename_by_index(
+           pyscca_file_t *pyscca_file,
+           int filename_index );
+
+PyObject *pyscca_file_get_filename(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyscca_file_get_filenames(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
 
 PyObject *pyscca_file_get_number_of_volumes(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );
 
-/* TODO get filename */
+/* TODO get volume */
 
 #if defined( __cplusplus )
 }

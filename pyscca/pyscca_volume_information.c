@@ -320,7 +320,6 @@ PyObject *pyscca_volume_information_get_serial_number(
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
-	PyObject *integer_object = NULL;
 	static char *function    = "pyscca_volume_information_get_serial_number";
 	uint32_t serial_number   = 0;
 	int result               = 0;

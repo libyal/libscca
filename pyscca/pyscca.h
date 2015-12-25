@@ -45,8 +45,13 @@ PyObject *pyscca_check_file_signature_file_object(
            PyObject *arguments,
            PyObject *keywords );
 
+#if PY_MAJOR_VERSION >= 3
+PyMODINIT_FUNC PyInit_pyscca(
+                void );
+#else
 PyMODINIT_FUNC initpyscca(
                 void );
+#endif
 
 #if defined( __cplusplus )
 }
