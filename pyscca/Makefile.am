@@ -28,7 +28,8 @@ pyscca_la_SOURCES = \
 	pyscca_libscca.h \
 	pyscca_python.h \
 	pyscca_unused.h \
-	pyscca_volume_information.c pyscca_volume_information.h
+	pyscca_volume_information.c pyscca_volume_information.h \
+	pyscca_volumes.c pyscca_volumes.h
 
 pyscca_la_LIBADD = \
 	@LIBCSTRING_LIBADD@ \
@@ -45,14 +46,9 @@ pyscca_la_LDFLAGS  = -module -avoid-version $(PYTHON_LDFLAGS)
 
 endif
 
-EXTRA_DIST = \
-	setup.py \
-	setup.py.in
-
 MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f setup.py
 	/bin/rm -f Makefile
 

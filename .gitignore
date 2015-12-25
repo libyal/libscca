@@ -112,7 +112,6 @@ stamp-h[1-9]
 /include/libscca/types.h
 /libscca/libscca.rc
 /libscca/libscca_definitions.h
-/pyscca/setup.py
 /sccatools/sccainfo
 /tests/input
 /tests/scca_test_open_close
