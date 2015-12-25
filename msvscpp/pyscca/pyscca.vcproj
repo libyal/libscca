@@ -190,6 +190,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pyscca\pyscca_filenames.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pyscca\pyscca_integer.c"
 				>
 			</File>
@@ -221,6 +225,10 @@
 			</File>
 			<File
 				RelativePath="..\..\pyscca\pyscca_file_object_io_handle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyscca\pyscca_filenames.h"
 				>
 			</File>
 			<File

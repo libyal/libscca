@@ -94,6 +94,10 @@ PyObject *pyscca_file_get_format_version(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );
 
+PyObject *pyscca_file_get_executable_filename(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
+
 PyObject *pyscca_file_get_prefetch_hash(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );
@@ -119,7 +123,18 @@ PyObject *pyscca_file_get_number_of_volumes(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );
 
-/* TODO get volume */
+PyObject *pyscca_file_get_volume_information_by_index(
+           pyscca_file_t *pyscca_file,
+           int volume_index );
+
+PyObject *pyscca_file_get_volume_information(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyscca_file_get_volumes(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
 
 #if defined( __cplusplus )
 }

@@ -1,6 +1,5 @@
 TODO:
 * complete python bindings
-  - executable name
   - volumes
 * handle directory names correctly
 * add API functions

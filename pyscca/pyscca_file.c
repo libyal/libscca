@@ -39,6 +39,8 @@
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
 #include "pyscca_unused.h"
+#include "pyscca_volume_information.h"
+#include "pyscca_volumes.h"
 
 #if !defined( LIBSCCA_HAVE_BFIO )
 LIBSCCA_EXTERN \
@@ -90,6 +92,13 @@ PyMethodDef pyscca_file_object_methods[] = {
 	  "\n"
 	  "Retrieves the format version" },
 
+	{ "get_executable_filename",
+	  (PyCFunction) pyscca_file_get_executable_filename,
+	  METH_NOARGS,
+	  "get_executable_filename() -> Unicode string or None\n"
+	  "\n"
+	  "Retrieves the executable filename." },
+
 	{ "get_prefetch_hash",
 	  (PyCFunction) pyscca_file_get_prefetch_hash,
 	  METH_NOARGS,
@@ -106,6 +115,13 @@ PyMethodDef pyscca_file_object_methods[] = {
 	  "\n"
 	  "Retrieves the number of filenames" },
 
+	{ "get_filename",
+	  (PyCFunction) pyscca_file_get_filename,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_filename(filename_index) -> Unicode string or None\n"
+	  "\n"
+	  "Retrieves a specific filename." },
+
 	/* Functions to access the volumes */
 
 	{ "get_number_of_volumes",
@@ -114,6 +130,13 @@ PyMethodDef pyscca_file_object_methods[] = {
 	  "get_number_of_volumes() -> Integer\n"
 	  "\n"
 	  "Retrieves the number of volumes" },
+
+	{ "get_volume_information",
+	  (PyCFunction) pyscca_file_get_volume_information,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_volume_information(volume_index) -> Object or None\n"
+	  "\n"
+	  "Retrieves a specific volume." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -125,6 +148,12 @@ PyGetSetDef pyscca_file_object_get_set_definitions[] = {
 	  (getter) pyscca_file_get_format_version,
 	  (setter) 0,
 	  "The format version",
+	  NULL },
+
+	{ "executable_filename",
+	  (getter) pyscca_file_get_executable_filename,
+	  (setter) 0,
+	  "The executable filename.",
 	  NULL },
 
 	{ "prefetch_hash",
@@ -139,10 +168,22 @@ PyGetSetDef pyscca_file_object_get_set_definitions[] = {
 	  "The number of filenames",
 	  NULL },
 
+	{ "filenames",
+	  (getter) pyscca_file_get_filenames,
+	  (setter) 0,
+	  "The filenames.",
+	  NULL },
+
 	{ "number_of_volumes",
 	  (getter) pyscca_file_get_number_of_volumes,
 	  (setter) 0,
 	  "The number of volumes",
+	  NULL },
+
+	{ "volumes",
+	  (getter) pyscca_file_get_volumes,
+	  (setter) 0,
+	  "The volumes",
 	  NULL },
 
 	/* Sentinel */
@@ -918,6 +959,120 @@ PyObject *pyscca_file_get_format_version(
 	         (unsigned long) format_version ) );
 }
 
+/* Retrieves the executable filename
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_executable_filename(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error        = NULL;
+	PyObject *string_object         = NULL;
+	const char *errors              = NULL;
+	uint8_t *executable_filename    = NULL;
+	static char *function           = "pyscca_file_get_executable_filename";
+	size_t executable_filename_size = 0;
+	int result                      = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_utf8_executable_filename_size(
+	          pyscca_file->file,
+	          &executable_filename_size,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result == -1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve executable filename size.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	else if( ( result == 0 )
+	      || ( executable_filename_size == 0 ) )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	executable_filename = (uint8_t *) PyMem_Malloc(
+	                                   sizeof( uint8_t ) * executable_filename_size );
+
+	if( executable_filename == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to create executable filename.",
+		 function );
+
+		goto on_error;
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_utf8_executable_filename(
+		  pyscca_file->file,
+		  executable_filename,
+		  executable_filename_size,
+		  &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve executable filename.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	/* Pass the string length to PyUnicode_DecodeUTF8
+	 * otherwise it makes the end of string character is part
+	 * of the string
+	 */
+	string_object = PyUnicode_DecodeUTF8(
+			 (char *) executable_filename,
+			 (Py_ssize_t) executable_filename_size - 1,
+			 errors );
+
+	PyMem_Free(
+	 executable_filename );
+
+	return( string_object );
+
+on_error:
+	if( executable_filename != NULL )
+	{
+		PyMem_Free(
+		 executable_filename );
+	}
+	return( NULL );
+}
+
 /* Retrieves the prefetch hash
  * Returns a Python object if successful or NULL on error
  */
@@ -1285,5 +1440,168 @@ PyObject *pyscca_file_get_number_of_volumes(
 	                  (long) number_of_volumes );
 #endif
 	return( integer_object );
+}
+
+/* Retrieves a specific volume information by index
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_volume_information_by_index(
+           pyscca_file_t *pyscca_file,
+           int volume_index )
+{
+	libcerror_error_t *error                         = NULL;
+	libscca_volume_information_t *volume_information = NULL;
+	PyObject *volume_information_object              = NULL;
+	static char *function                            = "pyscca_file_get_volume_information_by_index";
+	int result                                       = 0;
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_volume_information(
+	          pyscca_file->file,
+	          volume_index,
+	          &volume_information,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve volume information: %d.",
+		 function,
+		 volume_index );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	volume_information_object = pyscca_volume_information_new(
+	                             volume_information,
+	                             pyscca_file );
+
+	if( volume_information_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create volume information object.",
+		 function );
+
+		goto on_error;
+	}
+	return( volume_information_object );
+
+on_error:
+	if( volume_information != NULL )
+	{
+		libscca_volume_information_free(
+		 &volume_information,
+		 NULL );
+	}
+	return( NULL );
+}
+
+/* Retrieves a specific volume information
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_volume_information(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *volume_object     = NULL;
+	static char *keyword_list[] = { "volume_index", NULL };
+	int volume_index            = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &volume_index ) == 0 )
+	{
+		return( NULL );
+	}
+	volume_object = pyscca_file_get_volume_information_by_index(
+	                 pyscca_file,
+	                 volume_index );
+
+	return( volume_object );
+}
+
+/* Retrieves a volumes sequence and iterator object for the volumes
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_volumes(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	PyObject *volumes_object = NULL;
+	static char *function    = "pyscca_file_get_volumes";
+	int number_of_volumes    = 0;
+	int result               = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_number_of_volumes(
+	          pyscca_file->file,
+	          &number_of_volumes,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of volumes.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	volumes_object = pyscca_volumes_new(
+	                  pyscca_file,
+	                  &pyscca_file_get_volume_information_by_index,
+	                  number_of_volumes );
+
+	if( volumes_object == NULL )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_MemoryError,
+		 "%s: unable to create volumes object.",
+		 function );
+
+		return( NULL );
+	}
+	return( volumes_object );
 }
 

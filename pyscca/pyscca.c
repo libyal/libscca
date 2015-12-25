@@ -37,6 +37,7 @@
 #include "pyscca_python.h"
 #include "pyscca_unused.h"
 #include "pyscca_volume_information.h"
+#include "pyscca_volumes.h"
 
 #if !defined( LIBSCCA_HAVE_BFIO )
 LIBSCCA_EXTERN \
@@ -455,6 +456,7 @@ PyMODINIT_FUNC initpyscca(
 	PyTypeObject *file_type_object               = NULL;
 	PyTypeObject *filenames_type_object          = NULL;
 	PyTypeObject *volume_information_type_object = NULL;
+	PyTypeObject *volumes_type_object            = NULL;
 	PyGILState_STATE gil_state                   = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -544,8 +546,27 @@ PyMODINIT_FUNC initpyscca(
 
 	PyModule_AddObject(
 	 module,
-	 "filenames",
+	 "_filenames",
 	 (PyObject *) filenames_type_object );
+
+	/* Setup the volumes type object
+	 */
+	pyscca_volumes_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyscca_volumes_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyscca_volumes_type_object );
+
+	volumes_type_object = &pyscca_volumes_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "_volumes",
+	 (PyObject *) volumes_type_object );
 
 #if PY_MAJOR_VERSION >= 3
 	return( module );
