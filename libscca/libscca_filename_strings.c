@@ -439,7 +439,7 @@ int libscca_filename_strings_read(
 
 			goto on_error;
 		}
-		*filename_string_offset = data_offset;
+		*filename_string_offset = last_data_offset;
 
 		if( libcdata_array_append_entry(
 		     filename_strings->offsets_array,

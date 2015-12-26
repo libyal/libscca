@@ -19,6 +19,7 @@ pyscca_la_SOURCES = \
 	pyscca_error.c pyscca_error.h \
 	pyscca_file.c pyscca_file.h \
 	pyscca_file_metrics.c pyscca_file_metrics.h \
+	pyscca_file_metrics_entries.c pyscca_file_metrics_entries.h \
 	pyscca_file_object_io_handle.c pyscca_file_object_io_handle.h \
 	pyscca_filenames.c pyscca_filenames.h \
 	pyscca_integer.c pyscca_integer.h \

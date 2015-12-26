@@ -30,6 +30,7 @@
 #include "pyscca_error.h"
 #include "pyscca_file.h"
 #include "pyscca_file_metrics.h"
+#include "pyscca_file_metrics_entries.h"
 #include "pyscca_file_object_io_handle.h"
 #include "pyscca_filenames.h"
 #include "pyscca_libcerror.h"
@@ -453,13 +454,14 @@ PyMODINIT_FUNC initpyscca(
                 void )
 #endif
 {
-	PyObject *module                             = NULL;
-	PyTypeObject *file_type_object               = NULL;
-	PyTypeObject *file_metrics_type_object       = NULL;
-	PyTypeObject *filenames_type_object          = NULL;
-	PyTypeObject *volume_information_type_object = NULL;
-	PyTypeObject *volumes_type_object            = NULL;
-	PyGILState_STATE gil_state                   = 0;
+	PyObject *module                               = NULL;
+	PyTypeObject *file_type_object                 = NULL;
+	PyTypeObject *file_metrics_entries_type_object = NULL;
+	PyTypeObject *file_metrics_type_object         = NULL;
+	PyTypeObject *filenames_type_object            = NULL;
+	PyTypeObject *volume_information_type_object   = NULL;
+	PyTypeObject *volumes_type_object              = NULL;
+	PyGILState_STATE gil_state                     = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libscca_notify_set_stream(
@@ -569,6 +571,25 @@ PyMODINIT_FUNC initpyscca(
 	 module,
 	 "_filenames",
 	 (PyObject *) filenames_type_object );
+
+	/* Setup the file metrics entries type object
+	 */
+	pyscca_file_metrics_entries_type_object.tp_new = PyType_GenericNew;
+
+	if( PyType_Ready(
+	     &pyscca_file_metrics_entries_type_object ) < 0 )
+	{
+		goto on_error;
+	}
+	Py_IncRef(
+	 (PyObject *) &pyscca_file_metrics_entries_type_object );
+
+	file_metrics_entries_type_object = &pyscca_file_metrics_entries_type_object;
+
+	PyModule_AddObject(
+	 module,
+	 "_file_metrics_entries",
+	 (PyObject *) file_metrics_entries_type_object );
 
 	/* Setup the volumes type object
 	 */

@@ -29,6 +29,8 @@
 #include "pyscca_datetime.h"
 #include "pyscca_error.h"
 #include "pyscca_file.h"
+#include "pyscca_file_metrics.h"
+#include "pyscca_file_metrics_entries.h"
 #include "pyscca_file_object_io_handle.h"
 #include "pyscca_filenames.h"
 #include "pyscca_integer.h"
@@ -127,6 +129,22 @@ PyMethodDef pyscca_file_object_methods[] = {
 	  "\n"
 	  "Retrieves the run count" },
 
+	/* Functions to access the file metrics entries */
+
+	{ "get_number_of_file_metrics_entries",
+	  (PyCFunction) pyscca_file_get_number_of_file_metrics_entries,
+	  METH_NOARGS,
+	  "get_number_of_file_metrics_entries() -> Integer\n"
+	  "\n"
+	  "Retrieves the number of file metrics entries" },
+
+	{ "get_file_metrics_entry",
+	  (PyCFunction) pyscca_file_get_file_metrics_entry,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_file_metrics_entry(entry_index) -> Object or None\n"
+	  "\n"
+	  "Retrieves a specific file metrics entry." },
+
 	/* Functions to access the filenames */
 
 	{ "get_number_of_filenames",
@@ -187,6 +205,18 @@ PyGetSetDef pyscca_file_object_get_set_definitions[] = {
 	  (getter) pyscca_file_get_run_count,
 	  (setter) 0,
 	  "The run count",
+	  NULL },
+
+	{ "number_of_file_metrics_entries",
+	  (getter) pyscca_file_get_number_of_file_metrics_entries,
+	  (setter) 0,
+	  "The number of file metrics entries",
+	  NULL },
+
+	{ "file_metrics_entries",
+	  (getter) pyscca_file_get_file_metrics_entries,
+	  (setter) 0,
+	  "The file metrics entries",
 	  NULL },
 
 	{ "number_of_filenames",
@@ -1330,6 +1360,225 @@ PyObject *pyscca_file_get_run_count(
 	         (unsigned long) run_count ) );
 }
 
+/* Retrieves the number of file metrics entries
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_number_of_file_metrics_entries(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	PyObject *integer_object = NULL;
+	static char *function    = "pyscca_file_get_number_of_file_metrics_entries";
+	int number_of_entries    = 0;
+	int result               = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_number_of_file_metrics_entries(
+	          pyscca_file->file,
+	          &number_of_entries,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of file metrics entries.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+#if PY_MAJOR_VERSION >= 3
+	integer_object = PyLong_FromLong(
+	                  (long) number_of_entries );
+#else
+	integer_object = PyInt_FromLong(
+	                  (long) number_of_entries );
+#endif
+	return( integer_object );
+}
+
+/* Retrieves a specific file metric entry by index
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_file_metrics_entry_by_index(
+           pyscca_file_t *pyscca_file,
+           int entry_index )
+{
+	libcerror_error_t *error             = NULL;
+	libscca_file_metrics_t *file_metrics = NULL;
+	PyObject *file_metrics_object        = NULL;
+	static char *function                = "pyscca_file_get_file_metrics_entry_by_index";
+	int result                           = 0;
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_file_metrics_entry(
+	          pyscca_file->file,
+	          entry_index,
+	          &file_metrics,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve file metrics entry: %d.",
+		 function,
+		 entry_index );
+
+		libcerror_error_free(
+		 &error );
+
+		goto on_error;
+	}
+	file_metrics_object = pyscca_file_metrics_new(
+	                       file_metrics,
+	                       pyscca_file );
+
+	if( file_metrics_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create file metrics object.",
+		 function );
+
+		goto on_error;
+	}
+	return( file_metrics_object );
+
+on_error:
+	if( file_metrics != NULL )
+	{
+		libscca_file_metrics_free(
+		 &file_metrics,
+		 NULL );
+	}
+	return( NULL );
+}
+
+/* Retrieves a specific file metrics entry
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_file_metrics_entry(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *file_metrics_object = NULL;
+	static char *keyword_list[]   = { "entry_index", NULL };
+	int entry_index               = 0;
+
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &entry_index ) == 0 )
+	{
+		return( NULL );
+	}
+	file_metrics_object = pyscca_file_get_file_metrics_entry_by_index(
+	                       pyscca_file,
+	                       entry_index );
+
+	return( file_metrics_object );
+}
+
+/* Retrieves a file metrics entries sequence and iterator object for the file metrics entries
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_file_metrics_entries(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error              = NULL;
+	PyObject *file_metrics_entries_object = NULL;
+	static char *function                 = "pyscca_file_get_file_metrics_entries";
+	int number_of_entries                 = 0;
+	int result                            = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_number_of_file_metrics_entries(
+	          pyscca_file->file,
+	          &number_of_entries,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve number of file metrics entries.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	file_metrics_entries_object = pyscca_file_metrics_entries_new(
+	                               pyscca_file,
+	                               &pyscca_file_get_file_metrics_entry_by_index,
+	                               number_of_entries );
+
+	if( file_metrics_entries_object == NULL )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_MemoryError,
+		 "%s: unable to create file metrics entries object.",
+		 function );
+
+		return( NULL );
+	}
+	return( file_metrics_entries_object );
+}
+
 /* Retrieves the number of filenames
  * Returns a Python object if successful or NULL on error
  */
@@ -1729,9 +1978,9 @@ PyObject *pyscca_file_get_volume_information(
            PyObject *arguments,
            PyObject *keywords )
 {
-	PyObject *volume_object     = NULL;
-	static char *keyword_list[] = { "volume_index", NULL };
-	int volume_index            = 0;
+	PyObject *volume_information_object = NULL;
+	static char *keyword_list[]         = { "volume_index", NULL };
+	int volume_index                    = 0;
 
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
@@ -1742,11 +1991,11 @@ PyObject *pyscca_file_get_volume_information(
 	{
 		return( NULL );
 	}
-	volume_object = pyscca_file_get_volume_information_by_index(
-	                 pyscca_file,
-	                 volume_index );
+	volume_information_object = pyscca_file_get_volume_information_by_index(
+	                             pyscca_file,
+	                             volume_index );
 
-	return( volume_object );
+	return( volume_information_object );
 }
 
 /* Retrieves a volumes sequence and iterator object for the volumes

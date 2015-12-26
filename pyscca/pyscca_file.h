@@ -116,6 +116,23 @@ PyObject *pyscca_file_get_run_count(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );
 
+PyObject *pyscca_file_get_number_of_file_metrics_entries(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
+
+PyObject *pyscca_file_get_file_metrics_entry_by_index(
+           pyscca_file_t *pyscca_file,
+           int entry_index );
+
+PyObject *pyscca_file_get_file_metrics_entry(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyscca_file_get_file_metrics_entries(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
+
 PyObject *pyscca_file_get_number_of_filenames(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );
