@@ -1,4 +1,4 @@
-.Dd June 18, 2015
+.Dd December 26, 2015
 .Dt libscca 3
 .Os libscca
 .Sh NAME
@@ -74,6 +74,10 @@ File functions
 .Fn libscca_file_get_utf16_executable_filename "libscca_file_t *file, uint16_t *utf16_string, size_t utf16_string_size, libscca_error_t **error"
 .Ft int
 .Fn libscca_file_get_prefetch_hash "libscca_file_t *file, uint32_t *prefetch_hash, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_last_run_time "libscca_file_t *file, int last_run_time_index, uint64_t *last_run_time, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_get_run_count "libscca_file_t *file, uint32_t *run_count, libscca_error_t **error"
 .Ft int
 .Fn libscca_file_get_number_of_filenames "libscca_file_t *file, int *number_of_filenames, libscca_error_t **error"
 .Ft int

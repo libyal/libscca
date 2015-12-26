@@ -152,6 +152,8 @@ int libscca_file_information_read(
 	static char *function             = "libscca_file_information_read";
 	size_t read_size                  = 0;
 	ssize_t read_count                = 0;
+	int last_run_time_index           = 0;
+	int number_of_last_run_times      = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libcstring_system_character_t filetime_string[ 48 ];
@@ -159,7 +161,6 @@ int libscca_file_information_read(
 	libfdatetime_filetime_t *filetime = NULL;
 	uint64_t value_64bit              = 0;
 	uint32_t value_32bit              = 0;
-	int filetime_index                = 0;
 	int result                        = 0;
 #endif
 
@@ -293,6 +294,57 @@ int libscca_file_information_read(
 	 ( (scca_file_information_v17_t *) file_information_data )->volumes_information_size,
 	 file_information->volumes_information_size );
 
+	if( io_handle->format_version < 26 )
+	{
+		number_of_last_run_times = 1;
+	}
+	else
+	{
+		number_of_last_run_times = 8;
+	}
+	for( last_run_time_index = 0;
+	     last_run_time_index < number_of_last_run_times;
+	     last_run_time_index++ )
+	{
+		if( io_handle->format_version == 17 )
+		{
+			byte_stream_copy_to_uint64_little_endian(
+			 &( ( (scca_file_information_v17_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
+			 file_information->last_run_time[ last_run_time_index ] );
+		}
+		else if( io_handle->format_version == 23 )
+		{
+			byte_stream_copy_to_uint64_little_endian(
+			 &( ( (scca_file_information_v23_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
+			 file_information->last_run_time[ last_run_time_index ] );
+		}
+		else if( ( io_handle->format_version == 26 )
+		      || ( io_handle->format_version == 30 ) )
+		{
+			byte_stream_copy_to_uint64_little_endian(
+			 &( ( (scca_file_information_v26_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
+			 file_information->last_run_time[ last_run_time_index ] );
+		}
+	}
+	if( io_handle->format_version == 17 )
+	{
+		byte_stream_copy_to_uint32_little_endian(
+		 ( (scca_file_information_v17_t *) file_information_data )->run_count,
+		 file_information->run_count );
+	}
+	else if( io_handle->format_version == 23 )
+	{
+		byte_stream_copy_to_uint32_little_endian(
+		 ( (scca_file_information_v23_t *) file_information_data )->run_count,
+		 file_information->run_count );
+	}
+	else if( ( io_handle->format_version == 26 )
+	      || ( io_handle->format_version == 30 ) )
+	{
+		byte_stream_copy_to_uint32_little_endian(
+		 ( (scca_file_information_v26_t *) file_information_data )->run_count,
+		 file_information->run_count );
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -364,81 +416,87 @@ int libscca_file_information_read(
 			 function,
 			 value_64bit );
 		}
-		if( io_handle->format_version == 17 )
+		for( last_run_time_index = 0;
+		     last_run_time_index < number_of_last_run_times;
+		     last_run_time_index++ )
 		{
-			result = libfdatetime_filetime_copy_from_byte_stream(
-				  filetime,
-				  ( (scca_file_information_v17_t *) file_information_data )->last_run_time,
-				  8,
-				  LIBFDATETIME_ENDIAN_LITTLE,
-				  error );
-		}
-		else if( io_handle->format_version == 23 )
-		{
-			result = libfdatetime_filetime_copy_from_byte_stream(
-				  filetime,
-				  ( (scca_file_information_v23_t *) file_information_data )->last_run_time,
-				  8,
-				  LIBFDATETIME_ENDIAN_LITTLE,
-				  error );
-		}
-		else if( ( io_handle->format_version == 26 )
-		      || ( io_handle->format_version == 30 ) )
-		{
-			result = libfdatetime_filetime_copy_from_byte_stream(
-				  filetime,
-				  ( (scca_file_information_v26_t *) file_information_data )->last_run_time,
-				  8,
-				  LIBFDATETIME_ENDIAN_LITTLE,
-				  error );
-		}
-		if( result != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-			 "%s: unable to copy byte stream to filetime.",
-			 function );
+			if( io_handle->format_version == 17 )
+			{
+				result = libfdatetime_filetime_copy_from_byte_stream(
+					  filetime,
+				          &( ( (scca_file_information_v17_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
+					  8,
+					  LIBFDATETIME_ENDIAN_LITTLE,
+					  error );
+			}
+			else if( io_handle->format_version == 23 )
+			{
+				result = libfdatetime_filetime_copy_from_byte_stream(
+					  filetime,
+				          &( ( (scca_file_information_v23_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
+					  8,
+					  LIBFDATETIME_ENDIAN_LITTLE,
+					  error );
+			}
+			else if( ( io_handle->format_version == 26 )
+			      || ( io_handle->format_version == 30 ) )
+			{
+				result = libfdatetime_filetime_copy_from_byte_stream(
+					  filetime,
+				          &( ( (scca_file_information_v26_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
+					  8,
+					  LIBFDATETIME_ENDIAN_LITTLE,
+					  error );
+			}
+			if( result != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to copy byte stream to filetime.",
+				 function );
 
-			goto on_error;
-		}
+				goto on_error;
+			}
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libfdatetime_filetime_copy_to_utf16_string(
-			  filetime,
-			  (uint16_t *) filetime_string,
-			  48,
-			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
-			  error );
+			result = libfdatetime_filetime_copy_to_utf16_string(
+				  filetime,
+				  (uint16_t *) filetime_string,
+				  48,
+				  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
+				  error );
 #else
-		result = libfdatetime_filetime_copy_to_utf8_string(
-			  filetime,
-			  (uint8_t *) filetime_string,
-			  48,
-			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
-			  error );
+			result = libfdatetime_filetime_copy_to_utf8_string(
+				  filetime,
+				  (uint8_t *) filetime_string,
+				  48,
+				  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
+				  error );
 #endif
-		if( result != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-			 "%s: unable to copy filetime to string.",
-			 function );
+			if( result != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+				 "%s: unable to copy filetime to string.",
+				 function );
 
-			goto on_error;
+				goto on_error;
+			}
+			libcnotify_printf(
+			 "%s: last run time: %d\t\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+			 function,
+			 last_run_time_index,
+			 filetime_string );
 		}
 		libcnotify_printf(
-		 "%s: last run time\t\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
-		 function,
-		 filetime_string );
+		 "%s: unknown4:\n",
+		 function );
 
 		if( io_handle->format_version == 17 )
 		{
-			libcnotify_printf(
-			 "%s: unknown4:\n",
-			 function );
 			libcnotify_print_data(
 			 ( (scca_file_information_v17_t *) file_information_data )->unknown4,
 			 16,
@@ -446,9 +504,6 @@ int libscca_file_information_read(
 		}
 		else if( io_handle->format_version == 23 )
 		{
-			libcnotify_printf(
-			 "%s: unknown4:\n",
-			 function );
 			libcnotify_print_data(
 			 ( (scca_file_information_v23_t *) file_information_data )->unknown4,
 			 16,
@@ -457,89 +512,15 @@ int libscca_file_information_read(
 		else if( ( io_handle->format_version == 26 )
 		      || ( io_handle->format_version == 30 ) )
 		{
-			for( filetime_index = 0;
-			     filetime_index < 7;
-			     filetime_index++ )
-			{
-				if( libfdatetime_filetime_copy_from_byte_stream(
-				     filetime,
-				     &( ( (scca_file_information_v26_t *) file_information_data )->previous_last_run_time[ filetime_index * 8 ] ),
-				     8,
-				     LIBFDATETIME_ENDIAN_LITTLE,
-				     error ) != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-					 "%s: unable to copy byte stream to filetime.",
-					 function );
-
-					goto on_error;
-				}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
-				result = libfdatetime_filetime_copy_to_utf16_string(
-					  filetime,
-					  (uint16_t *) filetime_string,
-					  48,
-					  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
-					  error );
-#else
-				result = libfdatetime_filetime_copy_to_utf8_string(
-					  filetime,
-					  (uint8_t *) filetime_string,
-					  48,
-					  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
-					  error );
-#endif
-				if( result != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-					 "%s: unable to copy filetime to string.",
-					 function );
-
-					goto on_error;
-				}
-				libcnotify_printf(
-				 "%s: previous last run time: %d\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
-				 function,
-				 filetime_index,
-				 filetime_string );
-			}
-			libcnotify_printf(
-			 "%s: unknown4:\n",
-			 function );
 			libcnotify_print_data(
 			 ( (scca_file_information_v26_t *) file_information_data )->unknown4,
 			 16,
 			 0 );
 		}
-		if( io_handle->format_version == 17 )
-		{
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (scca_file_information_v17_t *) file_information_data )->run_count,
-			 value_32bit );
-		}
-		else if( io_handle->format_version == 23 )
-		{
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (scca_file_information_v23_t *) file_information_data )->run_count,
-			 value_32bit );
-		}
-		else if( ( io_handle->format_version == 26 )
-		      || ( io_handle->format_version == 30 ) )
-		{
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (scca_file_information_v26_t *) file_information_data )->run_count,
-			 value_32bit );
-		}
 		libcnotify_printf(
 		 "%s: run count\t\t\t\t: %" PRIu32 "\n",
 		 function,
-		 value_32bit );
+		 file_information->run_count );
 
 		if( io_handle->format_version == 17 )
 		{

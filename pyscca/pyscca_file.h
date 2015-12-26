@@ -102,6 +102,20 @@ PyObject *pyscca_file_get_prefetch_hash(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );
 
+PyObject *pyscca_file_get_last_run_time(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyscca_file_get_last_run_time_as_integer(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyscca_file_get_run_count(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments );
+
 PyObject *pyscca_file_get_number_of_filenames(
            pyscca_file_t *pyscca_file,
            PyObject *arguments );

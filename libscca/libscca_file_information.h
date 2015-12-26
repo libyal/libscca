@@ -73,6 +73,14 @@ struct libscca_file_information
 	/* The volumes information size
 	 */
 	uint32_t volumes_information_size;
+
+	/* The last run time
+	 */
+	uint64_t last_run_time[ 8 ];
+
+	/* The run count
+	 */
+	uint32_t run_count;
 };
 
 int libscca_file_information_initialize(

@@ -283,15 +283,14 @@ The offset is relative to the start of the file
 | 28 | 4 | | Number of volumes
 | 32 | 4 | | Volumes information size
 | 36 | 8 | | [yellow-background]*Unknown (Empty values)*
-| 44 | 8 | | (Most recent) Last run time +
-Contains a FILETIME
-| *52* | *7 x 8 = 56* | | [yellow-background]*Older (most recent) last run times* +
-Contains a FILETIME, or 0 if not set
+| 44 | *8 x 8 = 64* | | Last run time(s) +
+Contains FILETIMEs, or 0 if not set +
+The first FILETIME is the most recent run time
 | *108* | *16* | | [yellow-background]*Unknown* +
 [yellow-background]*Mostly empty values but seem to get filled the run after the 8 last run times have been filled.* +
 [yellow-background]*Could be remnant values.*
 | 124 | 4 | | Run count
-| *128* | *4* | | [yellow-background]*Unknown (number of older last run times?)* +
+| *128* | *4* | | [yellow-background]*Unknown* +
 [yellow-background]*Seen: 1, 2, 7*
 | *132* | *4* | | [yellow-background]*Unknown* +
 [yellow-background]*Seen: 0, 3*

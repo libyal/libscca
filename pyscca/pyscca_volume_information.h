@@ -63,7 +63,19 @@ int pyscca_volume_information_init(
 void pyscca_volume_information_free(
       pyscca_volume_information_t *pyscca_volume_information );
 
+PyObject *pyscca_volume_information_get_creation_time(
+           pyscca_volume_information_t *pyscca_volume_information,
+           PyObject *arguments );
+
+PyObject *pyscca_volume_information_get_creation_time_as_integer(
+           pyscca_volume_information_t *pyscca_volume_information,
+           PyObject *arguments );
+
 PyObject *pyscca_volume_information_get_serial_number(
+           pyscca_volume_information_t *pyscca_volume_information,
+           PyObject *arguments );
+
+PyObject *pyscca_volume_information_get_device_path(
            pyscca_volume_information_t *pyscca_volume_information,
            PyObject *arguments );
 

@@ -106,6 +106,27 @@ PyMethodDef pyscca_file_object_methods[] = {
 	  "\n"
 	  "Retrieves the prefetch hash" },
 
+	{ "get_last_run_time",
+	  (PyCFunction) pyscca_file_get_last_run_time,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_last_run_time(last_run_time_index) -> Datetime\n"
+	  "\n"
+	  "Returns the last run date and time." },
+
+	{ "get_last_run_time_as_integer",
+	  (PyCFunction) pyscca_file_get_last_run_time_as_integer,
+	  METH_VARARGS | METH_KEYWORDS,
+	  "get_last_run_time_as_integer(last_run_time_index) -> Integer\n"
+	  "\n"
+	  "Returns the last run date and time as a 64-bit integer containing a FILETIME value." },
+
+	{ "get_run_count",
+	  (PyCFunction) pyscca_file_get_run_count,
+	  METH_NOARGS,
+	  "get_run_count() -> Integer\n"
+	  "\n"
+	  "Retrieves the run count" },
+
 	/* Functions to access the filenames */
 
 	{ "get_number_of_filenames",
@@ -160,6 +181,12 @@ PyGetSetDef pyscca_file_object_get_set_definitions[] = {
 	  (getter) pyscca_file_get_prefetch_hash,
 	  (setter) 0,
 	  "The prefetch hash",
+	  NULL },
+
+	{ "run_count",
+	  (getter) pyscca_file_get_run_count,
+	  (setter) 0,
+	  "The run count",
 	  NULL },
 
 	{ "number_of_filenames",
@@ -1120,6 +1147,187 @@ PyObject *pyscca_file_get_prefetch_hash(
 	}
 	return( PyLong_FromUnsignedLong(
 	         (unsigned long) prefetch_hash ) );
+}
+
+/* Retrieves the last run date and time
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_last_run_time(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	libcerror_error_t *error    = NULL;
+	PyObject *date_time_object  = NULL;
+	static char *function       = "pyscca_file_get_last_run_time";
+	static char *keyword_list[] = { "last_run_time_index", NULL };
+	uint64_t filetime           = 0;
+	int last_run_time_index     = 0;
+	int result                  = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &last_run_time_index ) == 0 )
+	{
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_last_run_time(
+	          pyscca_file->file,
+	          last_run_time_index,
+	          &filetime,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve last run time: %d.",
+		 function,
+		 last_run_time_index );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	date_time_object = pyscca_datetime_new_from_filetime(
+	                    filetime );
+
+	return( date_time_object );
+}
+
+/* Retrieves the last run date and time as an integer
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_last_run_time_as_integer(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	libcerror_error_t *error    = NULL;
+	PyObject *integer_object    = NULL;
+	static char *function       = "pyscca_file_get_last_run_time_as_integer";
+	static char *keyword_list[] = { "last_run_time_index", NULL };
+	uint64_t filetime           = 0;
+	int last_run_time_index     = 0;
+	int result                  = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_ValueError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	if( PyArg_ParseTupleAndKeywords(
+	     arguments,
+	     keywords,
+	     "i",
+	     keyword_list,
+	     &last_run_time_index ) == 0 )
+	{
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_last_run_time(
+	          pyscca_file->file,
+	          last_run_time_index,
+	          &filetime,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve last run time: %d.",
+		 function,
+		 last_run_time_index );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	integer_object = pyscca_integer_unsigned_new_from_64bit(
+	                  (uint64_t) filetime );
+
+	return( integer_object );
+}
+
+/* Retrieves the run count
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_file_get_run_count(
+           pyscca_file_t *pyscca_file,
+           PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
+{
+	libcerror_error_t *error = NULL;
+	static char *function    = "pyscca_file_get_run_count";
+	uint32_t run_count       = 0;
+	int result               = 0;
+
+	PYSCCA_UNREFERENCED_PARAMETER( arguments )
+
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_TypeError,
+		 "%s: invalid file.",
+		 function );
+
+		return( NULL );
+	}
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_get_run_count(
+	          pyscca_file->file,
+	          &run_count,
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: unable to retrieve run count.",
+		 function );
+
+		libcerror_error_free(
+		 &error );
+
+		return( NULL );
+	}
+	return( PyLong_FromUnsignedLong(
+	         (unsigned long) run_count ) );
 }
 
 /* Retrieves the number of filenames

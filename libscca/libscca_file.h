@@ -184,6 +184,19 @@ int libscca_file_get_prefetch_hash(
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \
+int libscca_file_get_last_run_time(
+     libscca_file_t *file,
+     int last_run_time_index,
+     uint64_t *last_run_time,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_get_run_count(
+     libscca_file_t *file,
+     uint32_t *run_count,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
 int libscca_file_get_number_of_filenames(
      libscca_file_t *file,
      int *number_of_filenames,

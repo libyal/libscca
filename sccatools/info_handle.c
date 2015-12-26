@@ -493,7 +493,25 @@ int info_handle_file_fprint(
 
 		value_string = NULL;
 	}
-/* TODO run count */
+	if( libscca_file_get_run_count(
+	     info_handle->input_file,
+	     &value_32bit,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve run count.",
+		 function );
+
+		goto on_error;
+	}
+	fprintf(
+	 info_handle->notify_stream,
+	 "\tRun count\t\t\t\t: %" PRIu32 "\n",
+	 value_32bit );
+
 /* TODO run time(s) */
 
 	fprintf(

@@ -1,6 +1,7 @@
 TODO:
 * complete python bindings
-  - volumes
+  - get metrics array
+  - get run count
 * handle directory names correctly
 * add API functions
   - get file size ?
@@ -18,9 +19,14 @@ TODO:
 * check signature
   - add check for mam file header?
 
+20151226
+* worked on Python bindings
+* worked on API functions
+
 20151225
 * worked on Python bindings
 * changes for deployment
+* worked on API functions
 
 20150621
 * worked on Windows 10 compressed file support

@@ -1573,6 +1573,145 @@ int libscca_file_get_prefetch_hash(
 	return( 1 );
 }
 
+/* Retrieves a specific last run time
+ * The timestamp is a 64-bit FILETIME date and time value
+ * Files of format version 23 and earlier contain a single last run time
+ * Files of format version 26 and later contain up to 8 last run times
+ * A value if 0 means the last run time is not set
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_get_last_run_time(
+     libscca_file_t *file,
+     int last_run_time_index,
+     uint64_t *last_run_time,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_t *internal_file = NULL;
+	static char *function                  = "libscca_file_get_last_run_time";
+	int number_of_last_run_times           = 0;
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libscca_internal_file_t *) file;
+
+	if( internal_file->io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal file - missing IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_file->file_information == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal file - missing file information.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_file->io_handle->format_version < 26 )
+	{
+		number_of_last_run_times = 1;
+	}
+	else
+	{
+		number_of_last_run_times = 8;
+	}
+	if( ( last_run_time_index < 0 )
+	 || ( last_run_time_index >= number_of_last_run_times ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid last run time index value out of bounds.",
+		 function );
+
+		return( -1 );
+	}
+	if( last_run_time == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid last run time.",
+		 function );
+
+		return( -1 );
+	}
+	*last_run_time = internal_file->file_information->last_run_time[ last_run_time_index ];
+
+	return( 1 );
+}
+
+/* Retrieves the run count
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_get_run_count(
+     libscca_file_t *file,
+     uint32_t *run_count,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_t *internal_file = NULL;
+	static char *function                  = "libscca_file_get_run_count";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libscca_internal_file_t *) file;
+
+	if( internal_file->file_information == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal file - missing file information.",
+		 function );
+
+		return( -1 );
+	}
+	if( run_count == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid run count.",
+		 function );
+
+		return( -1 );
+	}
+	*run_count = internal_file->file_information->run_count;
+
+	return( 1 );
+}
+
 /* Retrieves the number of filenames
  * Returns 1 if successful or -1 on error
  */

@@ -80,7 +80,7 @@ struct scca_file_information_v17
 
 	/* The last run date and time
 	 * Consists of 8 bytes
-	 * Contain a filetime
+	 * Contain a FILETIME
 	 */
 	uint8_t last_run_time[ 8 ];
 
@@ -156,7 +156,7 @@ struct scca_file_information_v23
 
 	/* The last run date and time
 	 * Consists of 8 bytes
-	 * Contain a filetime
+	 * Contain a FILETIME
 	 */
 	uint8_t last_run_time[ 8 ];
 
@@ -236,15 +236,10 @@ struct scca_file_information_v26
 	uint8_t unknown3c[ 8 ];
 
 	/* The last run date and time
-	 * Consists of 8 bytes
-	 * Contain a filetime
+	 * Consists of 64 bytes
+	 * Contains an array of FILETIME
 	 */
-	uint8_t last_run_time[ 8 ];
-
-	/* The previous last run date and times
-	 * Consists of 56 bytes
-	 */
-	uint8_t previous_last_run_time[ 56 ];
+	uint8_t last_run_time[ 64 ];
 
 	/* Unknown
 	 * Consists of 16 bytes
