@@ -186,6 +186,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pyscca\pyscca_file_metrics.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pyscca\pyscca_file_object_io_handle.c"
 				>
 			</File>
@@ -225,6 +229,10 @@
 			</File>
 			<File
 				RelativePath="..\..\pyscca\pyscca_file.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyscca\pyscca_file_metrics.h"
 				>
 			</File>
 			<File

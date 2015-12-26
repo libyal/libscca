@@ -689,6 +689,11 @@ for C: will be "\DEVICE\HARDDISKVOLUME2".
 
 [yellow-background]*TODO: describe UNC path*
 
+[NOTE]
+On Windows 10 "\DEVICE\HARDDISKVOLUME#" is replaced by "\VOLUME{%IDENTIFIER%}"
+
+[yellow-background]*TODO: describe Windows 10*
+
 === Notes
 ....
 #define RNDM_CONSTANT 314159269

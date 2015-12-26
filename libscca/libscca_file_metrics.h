@@ -26,8 +26,8 @@
 #include <types.h>
 
 #include "libscca_extern.h"
+#include "libscca_filename_strings.h"
 #include "libscca_libcerror.h"
-#include "libscca_libfvalue.h"
 #include "libscca_types.h"
 
 #if defined( __cplusplus )
@@ -38,6 +38,10 @@ typedef struct libscca_internal_file_metrics libscca_internal_file_metrics_t;
 
 struct libscca_internal_file_metrics
 {
+	/* The filename strings
+	 */
+	libscca_filename_strings_t *filename_strings;
+
 	/* The start time
 	 */
 	uint32_t start_time;
@@ -46,7 +50,7 @@ struct libscca_internal_file_metrics
 	 */
 	uint32_t duration;
 
-	/* The offset of the filename string
+	/* The filename string offset
 	 */
 	uint32_t filename_string_offset;
 
@@ -57,10 +61,15 @@ struct libscca_internal_file_metrics
 	/* The NTFS file reference
 	 */
 	uint64_t file_reference;
+
+	/* Value to indicate the file reference was set
+	 */
+	uint8_t file_reference_is_set;
 };
 
 int libscca_file_metrics_initialize(
      libscca_internal_file_metrics_t **file_metrics,
+     libscca_filename_strings_t *filename_strings,
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \
@@ -70,6 +79,32 @@ int libscca_file_metrics_free(
 
 int libscca_internal_file_metrics_free(
      libscca_internal_file_metrics_t **file_metrics,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_metrics_get_utf8_filename_size(
+     libscca_file_metrics_t *file_metrics,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_metrics_get_utf8_filename(
+     libscca_file_metrics_t *file_metrics,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_metrics_get_utf16_filename_size(
+     libscca_file_metrics_t *file_metrics,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_metrics_get_utf16_filename(
+     libscca_file_metrics_t *file_metrics,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \

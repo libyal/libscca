@@ -43,7 +43,7 @@ struct scca_file_metrics_array_entry_v17
 	 */
 	uint8_t duration[ 4 ];
 
-	/* The filename string offset
+	/* The filename strings offset
 	 * Consists of 4 bytes
 	 */
 	uint8_t filename_string_offset[ 4 ];

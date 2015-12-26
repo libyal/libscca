@@ -864,6 +864,7 @@ int libscca_io_handle_read_file_metrics_array(
      libbfio_handle_t *file_io_handle,
      uint32_t file_offset,
      uint32_t number_of_entries,
+     libscca_filename_strings_t *filename_strings,
      libcdata_array_t *file_metrics_array,
      libcerror_error_t **error )
 {
@@ -1021,6 +1022,7 @@ int libscca_io_handle_read_file_metrics_array(
 	{
 		if( libscca_file_metrics_initialize(
 		     &file_metrics,
+		     filename_strings,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1079,6 +1081,8 @@ int libscca_io_handle_read_file_metrics_array(
 			byte_stream_copy_to_uint64_little_endian(
 			 ( (scca_file_metrics_array_entry_v23_t *) entry_data )->file_reference,
 			 file_metrics->file_reference );
+
+			file_metrics->file_reference_is_set = 1;
 		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
@@ -1134,9 +1138,7 @@ int libscca_io_handle_read_file_metrics_array(
 			 function,
 			 file_metrics->flags );
 
-			if( ( io_handle->format_version == 23 )
-			 || ( io_handle->format_version == 26 )
-			 || ( io_handle->format_version == 30 ) )
+			if( file_metrics->file_reference_is_set != 0 )
 			{
 				if( file_metrics->file_reference == 0 )
 				{
@@ -1479,138 +1481,6 @@ on_error:
 	{
 		memory_free(
 		 trace_chain_array_data );
-	}
-	return( -1 );
-}
-
-/* Reads the filename strings (array)
- * Returns 1 if successful or -1 on error
- */
-int libscca_io_handle_read_filename_strings(
-     libscca_io_handle_t *io_handle,
-     libfdata_stream_t *uncompressed_data_stream,
-     libbfio_handle_t *file_io_handle,
-     uint32_t filename_string_offset,
-     uint32_t filename_string_size,
-     libfvalue_value_t *filename_strings,
-     libcerror_error_t **error )
-{
-	uint8_t *filename_strings_data = NULL;
-	static char *function          = "libscca_io_handle_read_filename_strings";
-	ssize_t value_data_size        = 0;
-	ssize_t read_count             = 0;
-
-	if( io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid IO handle.",
-		 function );
-
-		return( -1 );
-	}
-#if SIZEOF_SIZE_T <= 4
-	if( (size_t) filename_string_size > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid filenames string size value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-#endif
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: reading filename strings at offset: %" PRIu32 " (0x%08" PRIx32 ")\n",
-		 function,
-		 filename_string_offset,
-		 filename_string_offset );
-	}
-#endif
-	if( libfdata_stream_seek_offset(
-	     uncompressed_data_stream,
-	     (off64_t) filename_string_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek filename strings header offset: %" PRIu32 ".",
-		 function,
-		 filename_string_offset );
-
-		goto on_error;
-	}
-	filename_strings_data = (uint8_t *) memory_allocate(
-	                                     sizeof( uint8_t ) * filename_string_size );
-
-	if( filename_strings_data == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create filename strings data.",
-		 function );
-
-		goto on_error;
-	}
-	read_count = libfdata_stream_read_buffer(
-	              uncompressed_data_stream,
-	              (intptr_t *) file_io_handle,
-	              filename_strings_data,
-	              (size_t) filename_string_size,
-	              0,
-	              error );
-
-	if( read_count != (ssize_t) filename_string_size )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read filename strings data.",
-		 function );
-
-		goto on_error;
-	}
-	value_data_size = libfvalue_value_type_set_data_strings_array(
-	                   filename_strings,
-	                   filename_strings_data,
-	                   (size_t) filename_string_size,
-	                   LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
-	                   error );
-
-	if( value_data_size == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set data of filename strings value.",
-		 function );
-
-		goto on_error;
-	}
-	memory_free(
-	 filename_strings_data );
-
-	return( 1 );
-
-on_error:
-	if( filename_strings_data != NULL )
-	{
-		memory_free(
-		 filename_strings_data );
 	}
 	return( -1 );
 }

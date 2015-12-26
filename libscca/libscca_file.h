@@ -27,6 +27,7 @@
 
 #include "libscca_extern.h"
 #include "libscca_file_information.h"
+#include "libscca_filename_strings.h"
 #include "libscca_io_handle.h"
 #include "libscca_libbfio.h"
 #include "libscca_libcdata.h"
@@ -94,7 +95,7 @@ struct libscca_internal_file
 
 	/* The filename strings
 	 */
-	libfvalue_value_t *filename_strings;
+	libscca_filename_strings_t *filename_strings;
 
 	/* The volumes array
 	 */

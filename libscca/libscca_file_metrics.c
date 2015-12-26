@@ -1,5 +1,5 @@
 /*
- * File metrict functions
+ * File metrics functions
  *
  * Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -26,7 +26,6 @@
 #include "libscca_definitions.h"
 #include "libscca_file_metrics.h"
 #include "libscca_libcerror.h"
-#include "libscca_libfvalue.h"
 #include "libscca_libuna.h"
 
 /* Creates file metrics
@@ -35,6 +34,7 @@
  */
 int libscca_file_metrics_initialize(
      libscca_internal_file_metrics_t **file_metrics,
+     libscca_filename_strings_t *filename_strings,
      libcerror_error_t **error )
 {
 	static char *function = "libscca_file_metrics_initialize";
@@ -57,6 +57,17 @@ int libscca_file_metrics_initialize(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid file metrics value already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( filename_strings == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid filename strings.",
 		 function );
 
 		return( -1 );
@@ -87,8 +98,15 @@ int libscca_file_metrics_initialize(
 		 "%s: unable to clear file metrics.",
 		 function );
 
-		goto on_error;
+		memory_free(
+		 *file_metrics );
+
+		*file_metrics = NULL;
+
+		return( -1 );
 	}
+	( *file_metrics )->filename_strings = filename_strings;
+
 	return( 1 );
 
 on_error:
@@ -159,8 +177,256 @@ int libscca_internal_file_metrics_free(
 	return( 1 );
 }
 
-/* Retrieves the NTFS file reference
+/* Retrieves the size of the UTF-8 encoded filename
+ * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
+ */
+int libscca_file_metrics_get_utf8_filename_size(
+     libscca_file_metrics_t *file_metrics,
+     size_t *utf8_string_size,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_metrics_t *internal_file_metrics = NULL;
+	static char *function                                  = "libscca_file_metrics_get_utf8_filename_size";
+	int filename_index                                     = 0;
+
+	if( file_metrics == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file metrics.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file_metrics = (libscca_internal_file_metrics_t *) file_metrics;
+
+	if( libscca_filename_strings_get_index_by_offset(
+	     internal_file_metrics->filename_strings,
+	     internal_file_metrics->filename_string_offset,
+	     &filename_index,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve index for offset: 0x%08" PRIx32 "",
+		 function,
+		 internal_file_metrics->filename_string_offset );
+
+		return( -1 );
+	}
+	if( libscca_filename_strings_get_utf8_filename_size(
+	     internal_file_metrics->filename_strings,
+	     filename_index,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve filename: %d UTF-8 string size.",
+		 function,
+		 filename_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-8 encoded filename
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_metrics_get_utf8_filename(
+     libscca_file_metrics_t *file_metrics,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_metrics_t *internal_file_metrics = NULL;
+	static char *function                                  = "libscca_file_metrics_get_utf8_filename";
+	int filename_index                                     = 0;
+
+	if( file_metrics == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file metrics.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file_metrics = (libscca_internal_file_metrics_t *) file_metrics;
+
+	if( libscca_filename_strings_get_index_by_offset(
+	     internal_file_metrics->filename_strings,
+	     internal_file_metrics->filename_string_offset,
+	     &filename_index,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve index for offset: 0x%08" PRIx32 "",
+		 function,
+		 internal_file_metrics->filename_string_offset );
+
+		return( -1 );
+	}
+	if( libscca_filename_strings_get_utf8_filename(
+	     internal_file_metrics->filename_strings,
+	     filename_index,
+	     utf8_string,
+	     utf8_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy filename: %d to UTF-8 string.",
+		 function,
+		 filename_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the size of the UTF-16 encoded filename
+ * The returned size includes the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_metrics_get_utf16_filename_size(
+     libscca_file_metrics_t *file_metrics,
+     size_t *utf16_string_size,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_metrics_t *internal_file_metrics = NULL;
+	static char *function                                  = "libscca_file_metrics_get_utf16_filename_size";
+	int filename_index                                     = 0;
+
+	if( file_metrics == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file metrics.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file_metrics = (libscca_internal_file_metrics_t *) file_metrics;
+
+	if( libscca_filename_strings_get_index_by_offset(
+	     internal_file_metrics->filename_strings,
+	     internal_file_metrics->filename_string_offset,
+	     &filename_index,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve index for offset: 0x%08" PRIx32 "",
+		 function,
+		 internal_file_metrics->filename_string_offset );
+
+		return( -1 );
+	}
+	if( libscca_filename_strings_get_utf16_filename_size(
+	     internal_file_metrics->filename_strings,
+	     filename_index,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve filename: %d UTF-16 string size.",
+		 function,
+		 filename_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the UTF-16 encoded filename
+ * The size should include the end of string character
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_metrics_get_utf16_filename(
+     libscca_file_metrics_t *file_metrics,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_metrics_t *internal_file_metrics = NULL;
+	static char *function                                  = "libscca_file_metrics_get_utf16_filename";
+	int filename_index                                     = 0;
+
+	if( file_metrics == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file metrics.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file_metrics = (libscca_internal_file_metrics_t *) file_metrics;
+
+	if( libscca_filename_strings_get_index_by_offset(
+	     internal_file_metrics->filename_strings,
+	     internal_file_metrics->filename_string_offset,
+	     &filename_index,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve index for offset: 0x%08" PRIx32 "",
+		 function,
+		 internal_file_metrics->filename_string_offset );
+
+		return( -1 );
+	}
+	if( libscca_filename_strings_get_utf16_filename(
+	     internal_file_metrics->filename_strings,
+	     filename_index,
+	     utf16_string,
+	     utf16_string_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy filename: %d to UTF-16 string.",
+		 function,
+		 filename_index );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves the NTFS file reference
+ * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libscca_file_metrics_get_file_reference(
      libscca_file_metrics_t *file_metrics,
@@ -193,6 +459,10 @@ int libscca_file_metrics_get_file_reference(
 		 function );
 
 		return( -1 );
+	}
+	if( internal_file_metrics->file_reference_is_set == 0 )
+	{
+		return( 0 );
 	}
 	*file_reference = internal_file_metrics->file_reference;
 

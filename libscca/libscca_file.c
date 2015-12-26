@@ -31,6 +31,8 @@
 #include "libscca_io_handle.h"
 #include "libscca_file.h"
 #include "libscca_file_information.h"
+#include "libscca_file_metrics.h"
+#include "libscca_filename_strings.h"
 #include "libscca_libbfio.h"
 #include "libscca_libcdata.h"
 #include "libscca_libcerror.h"
@@ -120,6 +122,19 @@ int libscca_file_initialize(
 
 		goto on_error;
 	}
+	if( libscca_filename_strings_initialize(
+	     &( internal_file->filename_strings ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create filename strings.",
+		 function );
+
+		goto on_error;
+	}
 	if( libcdata_array_initialize(
 	     &( internal_file->volumes_array ),
 	     0,
@@ -159,6 +174,12 @@ on_error:
 			libcdata_array_free(
 			 &( internal_file->volumes_array ),
 			 NULL,
+			 NULL );
+		}
+		if( internal_file->filename_strings != NULL )
+		{
+			libscca_filename_strings_free(
+			 &( internal_file->filename_strings ),
 			 NULL );
 		}
 		if( internal_file->file_metrics_array != NULL )
@@ -232,10 +253,22 @@ int libscca_file_free(
 
 			result = -1;
 		}
-/* TODO add free function */
+		if( libscca_filename_strings_free(
+		     &( internal_file->filename_strings ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free filename strings.",
+			 function );
+
+			result = -1;
+		}
 		if( libcdata_array_free(
 		     &( internal_file->file_metrics_array ),
-		     NULL,
+		     (int (*)(intptr_t **, libcerror_error_t **)) &libscca_internal_file_metrics_free,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -891,41 +924,35 @@ int libscca_file_close(
 			result = -1;
 		}
 	}
-/* TODO add free function */
-	if( libcdata_array_resize(
+	if( libcdata_array_empty(
 	     internal_file->file_metrics_array,
-	     0,
-	     NULL,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libscca_internal_file_metrics_free,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
-		 "%s: unable to resize file metrics array.",
+		 "%s: unable to empty file metrics array.",
 		 function );
 
 		result = -1;
 	}
-	if( internal_file->filename_strings != NULL )
+	if( libscca_filename_strings_clear(
+	     internal_file->filename_strings,
+	     error ) != 1 )
 	{
-		if( libfvalue_value_free(
-		     &( internal_file->filename_strings ),
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free filename strings.",
-			 function );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to clear filename strings.",
+		 function );
 
-			result = -1;
-		}
+		result = -1;
 	}
-	if( libcdata_array_resize(
+	if( libcdata_array_empty(
 	     internal_file->volumes_array,
-	     0,
 	     (int (*)(intptr_t **, libcerror_error_t **)) &libscca_internal_volume_information_free,
 	     error ) != 1 )
 	{
@@ -933,7 +960,7 @@ int libscca_file_close(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
-		 "%s: unable to resize volumes array.",
+		 "%s: unable to empty volumes array.",
 		 function );
 
 		result = -1;
@@ -1003,17 +1030,6 @@ int libscca_file_open_read(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid file - file information value already set.",
-		 function );
-
-		return( -1 );
-	}
-	if( internal_file->filename_strings != NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
-		 "%s: invalid file - filename strings value already set.",
 		 function );
 
 		return( -1 );
@@ -1222,6 +1238,7 @@ int libscca_file_open_read(
 		     file_io_handle,
 		     internal_file->file_information->metrics_array_offset,
 		     internal_file->file_information->number_of_file_metrics_entries,
+		     internal_file->filename_strings,
 		     internal_file->file_metrics_array,
 		     error ) != 1 )
 		{
@@ -1261,31 +1278,15 @@ int libscca_file_open_read(
 		}
 	}
 #endif
-/* TODO move the following section to a separate function */
 	if( internal_file->file_information->filename_strings_offset != 0 )
 	{
 /* TODO check bounds filename_strings_offset < file_header, filename_strings_offset > file_size */
-		if( libfvalue_value_type_initialize(
-		     &( internal_file->filename_strings ),
-		     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create filename strings value.",
-			 function );
-
-			goto on_error;
-		}
-		if( libscca_io_handle_read_filename_strings(
-		     internal_file->io_handle,
+		if( libscca_filename_strings_read(
+		     internal_file->filename_strings,
 		     internal_file->uncompressed_data_stream,
 		     file_io_handle,
 		     internal_file->file_information->filename_strings_offset,
 		     internal_file->file_information->filename_strings_size,
-		     internal_file->filename_strings,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
@@ -1323,28 +1324,23 @@ int libscca_file_open_read(
 	return( 1 );
 
 on_error:
-	if( internal_file->filename_strings != NULL )
-	{
-		libfvalue_value_free(
-		 &( internal_file->filename_strings ),
-		 NULL );
-	}
 	if( internal_file->file_information != NULL )
 	{
 		libscca_file_information_free(
 		 &( internal_file->file_information ),
 		 NULL );
 	}
-/* TODO add free function */
-	libcdata_array_resize(
+	libcdata_array_empty(
 	 internal_file->file_metrics_array,
-	 0,
-	 NULL,
+	 (int (*)(intptr_t **, libcerror_error_t **)) &libscca_internal_file_metrics_free,
 	 NULL );
 
-	libcdata_array_resize(
+	libscca_filename_strings_clear(
+	 internal_file->filename_strings,
+	 NULL );
+
+	libcdata_array_empty(
 	 internal_file->volumes_array,
-	 0,
 	 (int (*)(intptr_t **, libcerror_error_t **)) &libscca_internal_volume_information_free,
 	 NULL );
 
@@ -1870,7 +1866,7 @@ int libscca_file_get_number_of_filenames(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( libfvalue_value_get_number_of_value_entries(
+	if( libscca_filename_strings_get_number_of_filenames(
 	     internal_file->filename_strings,
 	     number_of_filenames,
 	     error ) != 1 )
@@ -1913,7 +1909,7 @@ int libscca_file_get_utf8_filename_size(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( libfvalue_value_get_utf8_string_size(
+	if( libscca_filename_strings_get_utf8_filename_size(
 	     internal_file->filename_strings,
 	     filename_index,
 	     utf8_string_size,
@@ -1959,7 +1955,7 @@ int libscca_file_get_utf8_filename(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( libfvalue_value_copy_to_utf8_string(
+	if( libscca_filename_strings_get_utf8_filename(
 	     internal_file->filename_strings,
 	     filename_index,
 	     utf8_string,
@@ -2005,7 +2001,7 @@ int libscca_file_get_utf16_filename_size(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( libfvalue_value_get_utf16_string_size(
+	if( libscca_filename_strings_get_utf16_filename_size(
 	     internal_file->filename_strings,
 	     filename_index,
 	     utf16_string_size,
@@ -2051,7 +2047,7 @@ int libscca_file_get_utf16_filename(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( libfvalue_value_copy_to_utf16_string(
+	if( libscca_filename_strings_get_utf16_filename(
 	     internal_file->filename_strings,
 	     filename_index,
 	     utf16_string,

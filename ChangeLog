@@ -1,10 +1,9 @@
 TODO:
 * Python bindings
-  - add file metrics support
 * add API functions
   - get file size ?
   - file metrics
-    - get filename (offset?)
+    - get filename offset?
   - volume information
     - get directory strings
   - add functions to calcalate hashes?
