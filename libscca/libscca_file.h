@@ -88,6 +88,10 @@ struct libscca_internal_file
 	 */
 	libscca_file_information_t *file_information;
 
+	/* The file metrics array
+	 */
+	libcdata_array_t *file_metrics_array;
+
 	/* The filename strings
 	 */
 	libfvalue_value_t *filename_strings;
@@ -194,6 +198,19 @@ LIBSCCA_EXTERN \
 int libscca_file_get_run_count(
      libscca_file_t *file,
      uint32_t *run_count,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_get_number_of_file_metrics_entries(
+     libscca_file_t *file,
+     int *number_of_entries,
+     libcerror_error_t **error );
+
+LIBSCCA_EXTERN \
+int libscca_file_get_file_metrics_entry(
+     libscca_file_t *file,
+     int entry_index,
+     libscca_file_metrics_t **file_metrics,
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \

@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libscca\libscca_file_metrics.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libscca\libscca_io_handle.c"
 				>
 			</File>
@@ -253,6 +257,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libscca\libscca_file_information.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libscca\libscca_file_metrics.h"
 				>
 			</File>
 			<File
@@ -336,7 +344,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\libscca\scca_metrics_array.h"
+				RelativePath="..\..\libscca\scca_file_metrics_array.h"
 				>
 			</File>
 			<File

@@ -107,6 +107,20 @@ int libscca_file_initialize(
 		return( -1 );
 	}
 	if( libcdata_array_initialize(
+	     &( internal_file->file_metrics_array ),
+	     0,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create file metrics array.",
+		 function );
+
+		goto on_error;
+	}
+	if( libcdata_array_initialize(
 	     &( internal_file->volumes_array ),
 	     0,
 	     error ) != 1 )
@@ -144,6 +158,13 @@ on_error:
 		{
 			libcdata_array_free(
 			 &( internal_file->volumes_array ),
+			 NULL,
+			 NULL );
+		}
+		if( internal_file->file_metrics_array != NULL )
+		{
+			libcdata_array_free(
+			 &( internal_file->file_metrics_array ),
 			 NULL,
 			 NULL );
 		}
@@ -207,6 +228,21 @@ int libscca_file_free(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free volumes array.",
+			 function );
+
+			result = -1;
+		}
+/* TODO add free function */
+		if( libcdata_array_free(
+		     &( internal_file->file_metrics_array ),
+		     NULL,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free file metrics array.",
 			 function );
 
 			result = -1;
@@ -855,6 +891,22 @@ int libscca_file_close(
 			result = -1;
 		}
 	}
+/* TODO add free function */
+	if( libcdata_array_resize(
+	     internal_file->file_metrics_array,
+	     0,
+	     NULL,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_RESIZE_FAILED,
+		 "%s: unable to resize file metrics array.",
+		 function );
+
+		result = -1;
+	}
 	if( internal_file->filename_strings != NULL )
 	{
 		if( libfvalue_value_free(
@@ -1161,30 +1213,31 @@ int libscca_file_open_read(
 
 		goto on_error;
 	}
+	if( internal_file->file_information->metrics_array_offset != 0 )
+	{
+/* TODO check bounds metrics_array_offset < file_header, metrics_array_offset > trace_chain_array_offset */
+		if( libscca_io_handle_read_file_metrics_array(
+		     internal_file->io_handle,
+		     internal_file->uncompressed_data_stream,
+		     file_io_handle,
+		     internal_file->file_information->metrics_array_offset,
+		     internal_file->file_information->number_of_file_metrics_entries,
+		     internal_file->file_metrics_array,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read file metrics array.",
+			 function );
+
+			goto on_error;
+		}
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
-		if( internal_file->file_information->metrics_array_offset != 0 )
-		{
-/* TODO check bounds metrics_array_offset < file_header, metrics_array_offset > trace_chain_array_offset */
-			if( libscca_io_handle_read_metrics_array(
-			     internal_file->io_handle,
-			     internal_file->uncompressed_data_stream,
-			     file_io_handle,
-			     internal_file->file_information->metrics_array_offset,
-			     internal_file->file_information->number_of_metrics_entries,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_IO,
-				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read x array.",
-				 function );
-
-				goto on_error;
-			}
-		}
 		if( internal_file->file_information->trace_chain_array_offset != 0 )
 		{
 /* TODO check bounds trace_chain_array_offset < file_header, trace_chain_array_offset > file_size */
@@ -1200,7 +1253,7 @@ int libscca_file_open_read(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_IO,
 				 LIBCERROR_IO_ERROR_READ_FAILED,
-				 "%s: unable to read y array.",
+				 "%s: unable to read trace chain array.",
 				 function );
 
 				goto on_error;
@@ -1282,6 +1335,13 @@ on_error:
 		 &( internal_file->file_information ),
 		 NULL );
 	}
+/* TODO add free function */
+	libcdata_array_resize(
+	 internal_file->file_metrics_array,
+	 0,
+	 NULL,
+	 NULL );
+
 	libcdata_array_resize(
 	 internal_file->volumes_array,
 	 0,
@@ -1546,17 +1606,6 @@ int libscca_file_get_prefetch_hash(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( internal_file->io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal file - missing IO handle.",
-		 function );
-
-		return( -1 );
-	}
 	if( prefetch_hash == NULL )
 	{
 		libcerror_error_set(
@@ -1709,6 +1758,91 @@ int libscca_file_get_run_count(
 	}
 	*run_count = internal_file->file_information->run_count;
 
+	return( 1 );
+}
+
+/* Retrieves the number of file metrics entries
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_get_number_of_file_metrics_entries(
+     libscca_file_t *file,
+     int *number_of_entries,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_t *internal_file = NULL;
+	static char *function                  = "libscca_file_get_number_of_file_metrics_entries";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libscca_internal_file_t *) file;
+
+	if( libcdata_array_get_number_of_entries(
+	     internal_file->file_metrics_array,
+	     number_of_entries,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve number of file metrics entries.",
+		 function );
+
+		return( -1 );
+	}
+	return( 1 );
+}
+
+/* Retrieves a specific file metrics entry
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_get_file_metrics_entry(
+     libscca_file_t *file,
+     int entry_index,
+     libscca_file_metrics_t **file_metrics,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_t *internal_file = NULL;
+	static char *function                  = "libscca_file_get_file_metrics_entry";
+
+	if( file == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file = (libscca_internal_file_t *) file;
+
+	if( libcdata_array_get_entry_by_index(
+	     internal_file->file_metrics_array,
+	     entry_index,
+	     (intptr_t **) file_metrics,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve file metrics entry: %d.",
+		 function,
+		 entry_index );
+
+		return( -1 );
+	}
 	return( 1 );
 }
 
@@ -2003,17 +2137,6 @@ int libscca_file_get_volume_information(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( internal_file->io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal file - missing file information.",
-		 function );
-
-		return( -1 );
-	}
 	if( libcdata_array_get_entry_by_index(
 	     internal_file->volumes_array,
 	     volume_index,

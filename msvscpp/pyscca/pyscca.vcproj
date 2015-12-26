@@ -201,6 +201,10 @@
 				RelativePath="..\..\pyscca\pyscca_volume_information.c"
 				>
 			</File>
+			<File
+				RelativePath="..\..\pyscca\pyscca_volumes.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -265,6 +269,10 @@
 			</File>
 			<File
 				RelativePath="..\..\pyscca\pyscca_volume_information.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyscca\pyscca_volumes.h"
 				>
 			</File>
 		</Filter>

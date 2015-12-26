@@ -32,6 +32,7 @@ libscca_la_SOURCES = \
 	libscca_extern.h \
 	libscca_file.c libscca_file.h \
 	libscca_file_information.c libscca_file_information.h \
+	libscca_file_metrics.c libscca_file_metrics.h \
 	libscca_io_handle.c libscca_io_handle.h \
 	libscca_libbfio.h \
 	libscca_libcdata.h \
@@ -52,7 +53,7 @@ libscca_la_SOURCES = \
 	libscca_volume_information.c libscca_volume_information.h \
 	scca_file_header.h \
 	scca_file_information.h \
-	scca_metrics_array.h \
+	scca_file_metrics_array.h \
 	scca_trace_chain_array.h \
 	scca_volume_information.h
 

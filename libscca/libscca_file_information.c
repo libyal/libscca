@@ -263,8 +263,8 @@ int libscca_file_information_read(
 	 file_information->metrics_array_offset );
 
 	byte_stream_copy_to_uint32_little_endian(
-	 ( (scca_file_information_v17_t *) file_information_data )->number_of_metrics_entries,
-	 file_information->number_of_metrics_entries );
+	 ( (scca_file_information_v17_t *) file_information_data )->number_of_file_metrics_entries,
+	 file_information->number_of_file_metrics_entries );
 
 	byte_stream_copy_to_uint32_little_endian(
 	 ( (scca_file_information_v17_t *) file_information_data )->trace_chain_array_offset,
@@ -367,9 +367,9 @@ int libscca_file_information_read(
 		 file_information->metrics_array_offset );
 
 		libcnotify_printf(
-		 "%s: number of metrics entries\t\t: %" PRIu32 "\n",
+		 "%s: number of file metrics entries\t\t: %" PRIu32 "\n",
 		 function,
-		 file_information->number_of_metrics_entries );
+		 file_information->number_of_file_metrics_entries );
 
 		libcnotify_printf(
 		 "%s: trace chain array offset\t\t\t: 0x%08" PRIx32 "\n",

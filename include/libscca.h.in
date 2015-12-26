@@ -343,6 +343,25 @@ int libscca_file_get_run_count(
      uint32_t *run_count,
      libscca_error_t **error );
 
+/* Retrieves the number of file metrics entries
+ * Returns 1 if successful or -1 on error
+ */
+LIBSCCA_EXTERN \
+int libscca_file_get_number_of_file_metrics_entries(
+     libscca_file_t *file,
+     int *number_of_entries,
+     libscca_error_t **error );
+
+/* Retrieves a specific file metrics entry
+ * Returns 1 if successful or -1 on error
+ */
+LIBSCCA_EXTERN \
+int libscca_file_get_file_metrics_entry(
+     libscca_file_t *file,
+     int entry_index,
+     libscca_file_metrics_t **file_metrics,
+     libscca_error_t **error );
+
 /* Retrieves the number of filenames
  * Returns 1 if successful or -1 on error
  */
@@ -418,6 +437,27 @@ int libscca_file_get_volume_information(
      libscca_error_t **error );
 
 /* -------------------------------------------------------------------------
+ * File metrics functions
+ * ------------------------------------------------------------------------- */
+
+/* Frees file metrics
+ * Returns 1 if successful or -1 on error
+ */
+LIBSCCA_EXTERN \
+int libscca_file_metrics_free(
+     libscca_file_metrics_t **file_metrics,
+     libscca_error_t **error );
+
+/* Retrieves the NTFS file reference
+ * Returns 1 if successful or -1 on error
+ */
+LIBSCCA_EXTERN \
+int libscca_file_metrics_get_file_reference(
+     libscca_file_metrics_t *file_metrics,
+     uint64_t *file_reference,
+     libscca_error_t **error );
+
+/* -------------------------------------------------------------------------
  * Volume information functions
  * ------------------------------------------------------------------------- */
 
@@ -430,6 +470,7 @@ int libscca_volume_information_free(
      libscca_error_t **error );
 
 /* Retrieves the 64-bit filetime value containing the volume creation date and time
+ * The timestamp is a 64-bit FILETIME date and time value
  * Returns 1 if successful or -1 on error
  */
 LIBSCCA_EXTERN \

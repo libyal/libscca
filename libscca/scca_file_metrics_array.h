@@ -1,5 +1,5 @@
 /*
- * The metrics array definitions of a Windows Prefetch File (PF)
+ * The file metrics array definitions of a Windows Prefetch File (PF)
  *
  * Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -29,9 +29,9 @@
 extern "C" {
 #endif
 
-typedef struct scca_metrics_array_entry_v17 scca_metrics_array_entry_v17_t;
+typedef struct scca_file_metrics_array_entry_v17 scca_file_metrics_array_entry_v17_t;
 
-struct scca_metrics_array_entry_v17
+struct scca_file_metrics_array_entry_v17
 {
 	/* The start time
 	 * Consists of 4 bytes
@@ -59,9 +59,9 @@ struct scca_metrics_array_entry_v17
 	uint8_t flags[ 4 ];
 };
 
-typedef struct scca_metrics_array_entry_v23 scca_metrics_array_entry_v23_t;
+typedef struct scca_file_metrics_array_entry_v23 scca_file_metrics_array_entry_v23_t;
 
-struct scca_metrics_array_entry_v23
+struct scca_file_metrics_array_entry_v23
 {
 	/* The start time
 	 * Consists of 4 bytes

@@ -348,9 +348,12 @@ int info_handle_file_fprint(
 	static char *function                            = "info_handle_file_fprint";
 	size_t value_string_size                         = 0;
 	uint64_t value_64bit                             = 0;
+	uint32_t format_version                          = 0;
 	uint32_t value_32bit                             = 0;
 	int filename_index                               = 0;
+	int last_run_time_index                          = 0;
 	int number_of_filenames                          = 0;
+	int number_of_last_run_times                     = 0;
 	int number_of_volumes                            = 0;
 	int result                                       = 0;
 	int volume_index                                 = 0;
@@ -385,7 +388,7 @@ int info_handle_file_fprint(
 
 	if( libscca_file_get_format_version(
 	     info_handle->input_file,
-	     &value_32bit,
+	     &format_version,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
@@ -400,7 +403,7 @@ int info_handle_file_fprint(
 	fprintf(
 	 info_handle->notify_stream,
 	 "\tFormat version\t\t\t: %" PRIu32 "\n",
-	 value_32bit );
+	 format_version );
 
 	if( libscca_file_get_prefetch_hash(
 	     info_handle->input_file,
@@ -509,11 +512,113 @@ int info_handle_file_fprint(
 	}
 	fprintf(
 	 info_handle->notify_stream,
-	 "\tRun count\t\t\t\t: %" PRIu32 "\n",
+	 "\tRun count\t\t\t: %" PRIu32 "\n",
 	 value_32bit );
 
-/* TODO run time(s) */
+	if( format_version < 26 )
+	{
+		number_of_last_run_times = 1;
+	}
+	else
+	{
+		number_of_last_run_times = 8;
+	}
+	for( last_run_time_index = 0;
+	     last_run_time_index < number_of_last_run_times;
+	     last_run_time_index++ )
+	{
+		if( libscca_file_get_last_run_time(
+		     info_handle->input_file,
+		     last_run_time_index,
+		     &value_64bit,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve last run time: %d.",
+			 function,
+			 last_run_time_index );
 
+			goto on_error;
+		}
+		if( value_64bit == 0 )
+		{
+			if( number_of_last_run_times == 1 )
+			{
+				fprintf(
+				 info_handle->notify_stream,
+				 "\tLast run time:\t\t\t: %" PRIu64 "\n",
+				 value_64bit );
+			}
+			else
+			{
+				fprintf(
+				 info_handle->notify_stream,
+				 "\tLast run time: %d\t\t: %" PRIu64 "\n",
+				 last_run_time_index + 1,
+				 value_64bit );
+			}
+
+			continue;
+		}
+		if( libfdatetime_filetime_copy_from_64bit(
+		     filetime,
+		     value_64bit,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy 64-bit value to filetime.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+		result = libfdatetime_filetime_copy_to_utf16_string(
+			  filetime,
+			  (uint16_t *) filetime_string,
+			  48,
+			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
+			  error );
+#else
+		result = libfdatetime_filetime_copy_to_utf8_string(
+			  filetime,
+			  (uint8_t *) filetime_string,
+			  48,
+			  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
+			  error );
+#endif
+		if( result != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+			 "%s: unable to copy filetime to string.",
+			 function );
+
+			goto on_error;
+		}
+		if( number_of_last_run_times == 1 )
+		{
+			fprintf(
+			 info_handle->notify_stream,
+			 "\tLast run time:\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+			 filetime_string );
+		}
+		else
+		{
+			fprintf(
+			 info_handle->notify_stream,
+			 "\tLast run time: %d\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+			 last_run_time_index + 1,
+			 filetime_string );
+		}
+	}
 	fprintf(
 	 info_handle->notify_stream,
 	 "\n" );

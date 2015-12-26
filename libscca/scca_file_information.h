@@ -38,10 +38,10 @@ struct scca_file_information_v17
 	 */
 	uint8_t metrics_array_offset[ 4 ];
 
-	/* The number of metrics array entries
+	/* The number of file metrics array entries
 	 * Consists of 4 bytes
 	 */
-	uint8_t number_of_metrics_entries[ 4 ];
+	uint8_t number_of_file_metrics_entries[ 4 ];
 
 	/* The offset of the trace chain array
 	 * Consists of 4 bytes
@@ -109,10 +109,10 @@ struct scca_file_information_v23
 	 */
 	uint8_t metrics_array_offset[ 4 ];
 
-	/* The number of metrics array entries
+	/* The number of file metrics array entries
 	 * Consists of 4 bytes
 	 */
-	uint8_t number_of_metrics_entries[ 4 ];
+	uint8_t number_of_file_metrics_entries[ 4 ];
 
 	/* The offset of the trace chain array
 	 * Consists of 4 bytes
@@ -190,10 +190,10 @@ struct scca_file_information_v26
 	 */
 	uint8_t metrics_array_offset[ 4 ];
 
-	/* The number of metrics array entries
+	/* The number of file metrics array entries
 	 * Consists of 4 bytes
 	 */
-	uint8_t number_of_metrics_entries[ 4 ];
+	uint8_t number_of_file_metrics_entries[ 4 ];
 
 	/* The offset of the trace chain array
 	 * Consists of 4 bytes

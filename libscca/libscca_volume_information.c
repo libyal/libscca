@@ -84,7 +84,7 @@ int libscca_volume_information_initialize(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_MEMORY,
 		 LIBCERROR_MEMORY_ERROR_SET_FAILED,
-		 "%s: unable to clear volume.",
+		 "%s: unable to clear volume information.",
 		 function );
 
 		goto on_error;
@@ -152,7 +152,6 @@ int libscca_internal_volume_information_free(
 	}
 	if( *volume_information != NULL )
 	{
-
 		if( ( *volume_information )->device_path != NULL )
 		{
 			memory_free(
@@ -183,6 +182,7 @@ int libscca_internal_volume_information_free(
 }
 
 /* Retrieves the 64-bit filetime value containing the volume creation date and time
+ * The timestamp is a 64-bit FILETIME date and time value
  * Returns 1 if successful or -1 on error
  */
 int libscca_volume_information_get_creation_time(

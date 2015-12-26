@@ -1,20 +1,14 @@
 TODO:
-* complete python bindings
-  - get metrics array
-  - get run count
-* handle directory names correctly
+* Python bindings
+  - add file metrics support
 * add API functions
   - get file size ?
-  - get run count
-  - get number of last run times
-  - get last run times
-  - get filename string
-  - get volume information
-    - get volume name
-    - get volume creation time (add to API and info handle)
+  - file metrics
+    - get filename (offset?)
+  - volume information
     - get directory strings
-    - get file references
-  - functions to calcalate hashes?
+  - add functions to calcalate hashes?
+* handle directory names correctly
 * update manuals
 * check signature
   - add check for mam file header?

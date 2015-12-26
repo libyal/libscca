@@ -47,12 +47,13 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.3 | J.B. Metz | March 2014 | Fixed error in total number of bytes of file information - version 26.
 | 0.0.4 | J.B. Metz | April 2014 | Additional information regarding volumes and directory strings.
 | 0.0.5 | J.B. Metz | April 2014 | Additional information regarding volumes information and file references.
-| 0.0.6 | J.B. Metz | June 2014 | Additional information regarding the metrics array section with thanks to J. Schneider for pointing me to additional values in the X-Ways output.
-| 0.0.7 | J.B. Metz | June 2014 | Additional information regarding the metrics section. Added information about the trace chains array.
-| 0.0.8 | J.B. Metz | June 2014 | Thanks to M. Seyer providing a sample that indicates that the v23 and v26 metrics entry are the same.
-| 0.0.9 | J.B. Metz | June 2014 | Revisited the v17 metrics entry with thanks to T. Olson.
+| 0.0.6 | J.B. Metz | June 2014 | Additional information regarding the file metrics array section with thanks to J. Schneider for pointing me to additional values in the X-Ways output.
+| 0.0.7 | J.B. Metz | June 2014 | Additional information regarding the file metrics section. Added information about the trace chains array.
+| 0.0.8 | J.B. Metz | June 2014 | Thanks to M. Seyer providing a sample that indicates that the v23 and v26 file metrics entry are the same.
+| 0.0.9 | J.B. Metz | June 2014 | Revisited the v17 file metrics entry with thanks to T. Olson.
 | 0.0.10 | J.B. Metz | June 2015 | Switched to asciidoc format.
 | 0.0.11 | J.B. Metz | June 2015 | Additional information regarding Windows 10 compressed Prefetch files with thanks to F. Picasso.
+| 0.0.12 | J.B. Metz | December 2015 | Small changes.
 |===
 
 :numbered:
@@ -64,7 +65,7 @@ before it is demanded.
 A PF consist of the following distinguishable elements:
 
 * file header
-* metrics array
+* file metrics array
 * trace chains array
 * filename strings
 * [yellow-background]*trailing data (alignment padding?)*
@@ -80,7 +81,7 @@ SuperFetch. Also see: https://github.com/libyal/libagdb/blob/master/documentatio
 |===
 | Characteristics | Description
 | Byte order | little-endian
-| Date and time values | Filetime in UTC
+| Date and time values | FILETIME in UTC
 | Character strings | Unicode strings are stored in UTF-16 little-endian without the byte order mark (BOM).
 |===
 
@@ -217,9 +218,9 @@ The file information - version 17 is 68 bytes of size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | 4 | 0x00000098 | Metrics array offset +
+| 0 | 4 | 0x00000098 | File metrics array offset +
 The offset is relative to the start of the file
-| 4 | 4 | | Number of metrics entries
+| 4 | 4 | | Number of file metrics entries
 | 8 | 4 | | Trace chains array offset +
 The offset is relative to the start of the file
 | 12 | 4 | | Number of trace chains array entries
@@ -242,9 +243,9 @@ The file information - version 23 is 156 bytes of size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | 4 | 0x000000f0 | Metrics array offset +
+| 0 | 4 | 0x000000f0 | File metrics array offset +
 The offset is relative to the start of the file
-| 4 | 4 | | Number of metrics entries
+| 4 | 4 | | Number of file metrics entries
 | 8 | 4 | | Trace chains array offset +
 The offset is relative to the start of the file
 | 12 | 4 | | Number of trace chains array entries
@@ -271,9 +272,9 @@ The file information - version 26 is 224 bytes of size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | 4 | 0x00000130 | Metrics array offset +
+| 0 | 4 | 0x00000130 | File metrics array offset +
 The offset is relative to the start of the file
-| 4 | 4 | | Number of metrics entries
+| 4 | 4 | | Number of file metrics entries
 | 8 | 4 | | Trace chains array offset +
 The offset is relative to the start of the file
 | 12 | 4 | | Number of trace chains array entries
@@ -303,16 +304,16 @@ The entries with a bold offset and size were changed since version 23.
 The file information - version 30 appears to be similar to the file information
 - version 26.
 
-=== Metrics array
-The metrics array consists of metrics array entries. The entries in the metrics 
-array correspond with the entries in the filename strings.
+=== File metrics array
+The file metrics array consists of entries containing metrics about the files
+loaded by the executable.
 
 [NOTE]
-This part of the file currently is referred to as metrics array largely because
-of a lack of a better term.
+This part of the file currently is referred to as file metrics array largely
+because of a lack of a better term.
 
-==== Metrics array entry - version 17
-The metrics array entry - version 17 is 20 bytes in size and consists of:
+==== File metrics array entry - version 17
+The file metrics array entry - version 17 is 20 bytes in size and consists of:
 
 [cols="1,1,1,5",options="header"]
 |===
@@ -328,8 +329,8 @@ Does not include the end-of-string character
 | 16 | 4 | | [yellow-background]*Unknown (Flags?)*
 |===
 
-==== Metrics array entry - version 23
-The metrics array entry - version 23 is 32 bytes in size and consists of:
+==== File metrics array entry - version 23
+The file metrics array entry - version 23 is 32 bytes in size and consists of:
 
 [cols="1,1,1,5",options="header"]
 |===
@@ -352,19 +353,20 @@ See section: <<ntfs_file_reference,The NTFS file reference>>
 
 The entries with a bold offset and size were changed since version 17.
 
-==== Metrics array entry - version 26
-The metrics array entry - version 26 appears to be similar to the metrics array 
-entry - version 23.
+==== File metrics array entry - version 26
+The file metrics array entry - version 26 appears to be similar to the file 
+metrics array entry - version 23.
 
-==== Metrics array entry - version 30
-The metrics array entry - version 30 appears to be similar to the metrics array 
-entry - version 23.
+==== File metrics array entry - version 30
+The file metrics array entry - version 30 appears to be similar to the file
+metrics array entry - version 23.
 
 === Trace chains array
 A trace chain is similar to a File Allocation Table (FAT) chain where the array 
 entries form chains and -1 (0xffffffff) is used to mark the end-of-chain. The 
-chains in the trace chains array correspond with the entries in the metrics 
-array, meaning the first trace chain relates to the first metrics array entry.
+chains in the trace chains array correspond with the entries in the file 
+metrics array, meaning the first trace chain relates to the first file metrics 
+array entry.
 
 [NOTE]
 This part of the file currently is referred to as trace chains array largely 

@@ -42,9 +42,9 @@ struct libscca_file_information
 	 */
 	uint32_t metrics_array_offset;
 
-	/* The number of metrics array entries
+	/* The number of file metrics array entries
 	 */
-	uint32_t number_of_metrics_entries;
+	uint32_t number_of_file_metrics_entries;
 
 	/* The offset of the trace chain array
 	 */
