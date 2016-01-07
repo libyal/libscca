@@ -1,5 +1,4 @@
 TODO:
-* Python bindings
 * add API functions
   - get file size ?
   - file metrics
@@ -11,6 +10,9 @@ TODO:
 * update manuals
 * check signature
   - add check for mam file header?
+
+20160107
+* 2016 update
 
 20151226
 * worked on Python bindings
