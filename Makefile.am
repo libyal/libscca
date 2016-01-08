@@ -23,6 +23,8 @@ SUBDIRS = \
 	libcsystem \
 	sccatools \
 	pyscca \
+	pyscca2 \
+	pyscca3 \
 	po \
 	manuals \
 	tests \
@@ -36,8 +38,10 @@ DPKG_FILES = \
 	dpkg/copyright \
 	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libscca-dev.docs \
 	dpkg/libscca.docs \
+	dpkg/libscca-dev.docs \
+	dpkg/libscca-python.docs \
+	dpkg/libscca-python3.docs \
 	dpkg/libscca-tools.docs \
 	dpkg/source/format
 

@@ -11,6 +11,9 @@ TODO:
 * check signature
   - add check for mam file header?
 
+20160108
+* worked on Python 3 support
+
 20160107
 * 2016 update
 
