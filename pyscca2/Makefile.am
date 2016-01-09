@@ -57,7 +57,7 @@ pyscca_la_CPPFLAGS = $(PYTHON2_CPPFLAGS)
 pyscca_la_LDFLAGS  = -module -avoid-version $(PYTHON2_LDFLAGS)
 
 $(BUILT_SOURCES):
-	/bin/cp -f $(top_srcdir)/pyscca/pyscca*.[ch] .
+	/bin/cp -f $(top_srcdir)/pyscca/$@ $@
 
 endif
 
