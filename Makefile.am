@@ -23,8 +23,8 @@ SUBDIRS = \
 	libcsystem \
 	sccatools \
 	pyscca \
-	pyscca2 \
-	pyscca3 \
+	pyscca-python2 \
+	pyscca-python3 \
 	po \
 	manuals \
 	tests \
