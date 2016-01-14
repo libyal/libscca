@@ -29,7 +29,7 @@ tooling to be able to process this file type.
 [preface]
 == License
 ....
-Copyright (C) 2011-2015, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the 
 terms of the GNU Free Documentation License, Version 1.3 or any later version 
 published by the Free Software Foundation; with no Invariant Sections, no 
@@ -54,6 +54,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.10 | J.B. Metz | June 2015 | Switched to asciidoc format.
 | 0.0.11 | J.B. Metz | June 2015 | Additional information regarding Windows 10 compressed Prefetch files with thanks to F. Picasso.
 | 0.0.12 | J.B. Metz | December 2015 | Small changes.
+| 0.0.13 | J.B. Metz | January 2016 | Fixed stale information in volume information entry with thanks to E. Zimmerman.
 |===
 
 :numbered:
@@ -465,7 +466,7 @@ The offset is relative from the start of the volume information
 Contains a FILETIME
 | 16 | 4 | | Volume serial number
 | 20 | 4 | | File references offset
-| 24 | 4 | | Number of file references
+| 24 | 4 | | File references data size
 | 28 | 4 | | Directory strings offset
 | 32 | 4 | | Number of directory strings
 | 36 | 4 | | [yellow-background]*Unknown*
@@ -484,7 +485,7 @@ The offset is relative from the start of the volume information
 Contains a FILETIME
 | 16 | 4 | | Volume serial number
 | 20 | 4 | | File references offset
-| 24 | 4 | | Number of file references
+| 24 | 4 | | File references data size
 | 28 | 4 | | Directory strings offset
 | 32 | 4 | | Number of directory strings
 | 36 | 4 | | [yellow-background]*Unknown* +
@@ -516,7 +517,7 @@ The offset is relative from the start of the volume information
 Contains a FILETIME
 | 16 | 4 | | Volume serial number
 | 20 | 4 | | File references offset
-| 24 | 4 | | Number of file references
+| 24 | 4 | | File references data size
 | 28 | 4 | | Directory strings offset
 | 32 | 4 | | Number of directory strings
 | 36 | 4 | | [yellow-background]*Unknown* +
