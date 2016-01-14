@@ -55,6 +55,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.11 | J.B. Metz | June 2015 | Additional information regarding Windows 10 compressed Prefetch files with thanks to F. Picasso.
 | 0.0.12 | J.B. Metz | December 2015 | Small changes.
 | 0.0.13 | J.B. Metz | January 2016 | Fixed stale information in volume information entry with thanks to E. Zimmerman.
+| 0.0.14 | J.B. Metz | January 2016 | Additional information regarding Prefetch file from an NTFS ADS with thanks to S. Gillespie.
 |===
 
 :numbered:
@@ -116,6 +117,23 @@ Where "executable filename" is the filename of the original executable
 truncated to 29 characters, and "prefetch hash" is calculated based on the 
 original filename. For more information on calculating the prefetch hash see 
 section: <<calculating_prefetch_hash,Calculating the prefetch hash>>.
+
+....
+<executable filename>-<prefetch hash>.pf
+....
+
+==== NTFS alternate data streams
+If an NTFS alternate data stream (ADS) e.g.
+....
+C:\Windows\System32\notepad.exe:evil.exe
+....
+
+is executed then the resulting file will be:
+....
+C:\Windows\Prefetch\notepad.exe:evil.pf
+....
+
+The same applies to directories.
 
 == Common data structures
 === [[ntfs_file_reference]]The NTFS file reference
