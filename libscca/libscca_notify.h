@@ -53,11 +53,11 @@ LIBSCCA_EXTERN \
 int libscca_notify_stream_close(
      libcerror_error_t **error );
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSCCA ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_NOTIFY_H ) */
 

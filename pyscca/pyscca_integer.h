@@ -52,5 +52,5 @@ int pyscca_integer_unsigned_copy_to_64bit(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSCCA_INTEGER_H ) */
 

@@ -28,7 +28,7 @@
 #include "pyscca_libcerror.h"
 #include "pyscca_python.h"
 
-#define PYSCCA_ERROR_STRING_SIZE		2048
+#define PYSCCA_ERROR_STRING_SIZE	2048
 
 #if defined( __cplusplus )
 extern "C" {
@@ -56,5 +56,5 @@ void pyscca_error_raise(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSCCA_ERROR_H ) */
 

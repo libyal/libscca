@@ -43,9 +43,9 @@ typedef intptr_t libscca_file_t;
 typedef intptr_t libscca_file_metrics_t;
 typedef intptr_t libscca_volume_information_t;
 
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI ) */
 
-#endif
+#endif /* defined( HAVE_LOCAL_LIBSCCA ) */
 
-#endif
+#endif /* !defined( _LIBSCCA_INTERNAL_TYPES_H ) */
 

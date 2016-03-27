@@ -1,4 +1,4 @@
-.Dd December 26, 2015
+.Dd January 31, 2016
 .Dt libscca 3
 .Os libscca
 .Sh NAME
@@ -109,6 +109,14 @@ File metrics functions
 .Ft int
 .Fn libscca_file_metrics_free "libscca_file_metrics_t **file_metrics, libscca_error_t **error"
 .Ft int
+.Fn libscca_file_metrics_get_utf8_filename_size "libscca_file_metrics_t *file_metrics, size_t *utf8_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_metrics_get_utf8_filename "libscca_file_metrics_t *file_metrics, uint8_t *utf8_string, size_t utf8_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_metrics_get_utf16_filename_size "libscca_file_metrics_t *file_metrics, size_t *utf16_string_size, libscca_error_t **error"
+.Ft int
+.Fn libscca_file_metrics_get_utf16_filename "libscca_file_metrics_t *file_metrics, uint16_t *utf16_string, size_t utf16_string_size, libscca_error_t **error"
+.Ft int
 .Fn libscca_file_metrics_get_file_reference "libscca_file_metrics_t *file_metrics, uint64_t *file_reference, libscca_error_t **error"
 .Pp
 Volume information functions
@@ -137,6 +145,7 @@ For the actual return values see "libscca.h".
 None
 .Sh FILES
 None
+.Sh NOTES
 libscca allows to be compiled with wide character support (wchar_t).
 
 To compile libscca with wide character support use:

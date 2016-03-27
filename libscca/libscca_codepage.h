@@ -80,11 +80,11 @@ enum LIBSCCA_CODEPAGES
 	LIBSCCA_CODEPAGE_WINDOWS_1258			= 1258
 };
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSCCA ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_INTERNAL_CODEPAGE_H ) */
 
