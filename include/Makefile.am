@@ -1,13 +1,13 @@
 include_HEADERS = \
-        libscca.h
+	libscca.h
 
 pkginclude_HEADERS = \
-        libscca/codepage.h \
-        libscca/definitions.h \
-        libscca/error.h \
-        libscca/extern.h \
-        libscca/features.h \
-        libscca/types.h
+	libscca/codepage.h \
+	libscca/definitions.h \
+	libscca/error.h \
+	libscca/extern.h \
+	libscca/features.h \
+	libscca/types.h
 
 EXTRA_DIST = \
 	libscca.h.in \
