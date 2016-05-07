@@ -17,26 +17,38 @@ AM_CPPFLAGS = \
 
 if HAVE_PYTHON_TESTS
 TESTS_PYSCCA = \
-	test_pyscca_open_close.sh
+	test_python_functions.sh
 endif
 
 TESTS = \
-	test_open_close.sh \
+	test_api_functions.sh \
 	test_sccainfo.sh \
 	$(TESTS_PYSCCA)
 
 check_SCRIPTS = \
+	pyscca_test_get_version.py \
 	pyscca_test_open_close.py \
-	test_open_close.sh \
-	test_pyscca_open_close.sh \
-	test_sccainfo.sh \
-	test_runner.sh
+	test_api_functions.sh \
+	test_python_functions.sh \
+	test_runner.sh \
+	test_sccainfo.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	scca_test_get_version \
 	scca_test_open_close
+
+scca_test_get_version_SOURCES = \
+	scca_test_get_version.c \
+	scca_test_libcstring.h \
+	scca_test_libscca.h \
+	scca_test_unused.h
+
+scca_test_get_version_LDADD = \
+	../libscca/libscca.la \
+	@LIBCSTRING_LIBADD@
 
 scca_test_open_close_SOURCES = \
 	scca_test_libcerror.h \

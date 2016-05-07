@@ -18,6 +18,7 @@ MSVSCPP_FILES = \
 	libscca/libscca.vcproj \
 	libuna/libuna.vcproj \
 	pyscca/pyscca.vcproj \
+	scca_test_get_version/scca_test_get_version.vcproj \
 	scca_test_open_close/scca_test_open_close.vcproj \
 	sccainfo/sccainfo.vcproj \
 	libscca.sln

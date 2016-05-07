@@ -40,9 +40,44 @@ int scca_test_single_open_close_file(
      int expected_result )
 {
 	libcerror_error_t *error = NULL;
-	libscca_file_t *file     = NULL;
+	libscca_file_t *file      = NULL;
 	static char *function    = "scca_test_single_open_close_file";
+	char *access_string      = NULL;
 	int result               = 0;
+
+	if( access_flags == LIBSCCA_OPEN_READ )
+	{
+		access_string = "read";
+	}
+	else if( access_flags == LIBSCCA_OPEN_WRITE )
+	{
+		access_string = "write";
+	}
+	else
+	{
+		access_string = "UNKNOWN";
+	}
+	fprintf(
+	 stdout,
+	 "Testing single open close of: " );
+
+	if( filename != NULL )
+	{
+		fprintf(
+		 stdout,
+		 "%" PRIs_LIBCSTRING_SYSTEM "",
+		 filename );
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 "NULL" );
+	}
+	fprintf(
+	 stdout,
+	 " with access: %s\t",
+	 access_string );
 
 	if( libscca_file_initialize(
 	     &file,
@@ -154,9 +189,44 @@ int scca_test_multi_open_close_file(
      int expected_result )
 {
 	libcerror_error_t *error = NULL;
-	libscca_file_t *file     = NULL;
+	libscca_file_t *file      = NULL;
 	static char *function    = "scca_test_multi_open_close_file";
+	char *access_string      = NULL;
 	int result               = 0;
+
+	if( access_flags == LIBSCCA_OPEN_READ )
+	{
+		access_string = "read";
+	}
+	else if( access_flags == LIBSCCA_OPEN_WRITE )
+	{
+		access_string = "write";
+	}
+	else
+	{
+		access_string = "UNKNOWN";
+	}
+	fprintf(
+	 stdout,
+	 "Testing multi open close of: " );
+
+	if( filename != NULL )
+	{
+		fprintf(
+		 stdout,
+		 "%" PRIs_LIBCSTRING_SYSTEM "",
+		 filename );
+	}
+	else
+	{
+		fprintf(
+		 stdout,
+		 "NULL" );
+	}
+	fprintf(
+	 stdout,
+	 " with access: %s\t",
+	 access_string );
 
 	if( libscca_file_initialize(
 	     &file,
@@ -336,11 +406,6 @@ int main( int argc, char * const argv[] )
 
 	/* Case 0: single open and close of a file using filename
 	 */
-	fprintf(
-	 stdout,
-	 "Testing single open close of: %s with access: read\t",
-	 source );
-
 	if( scca_test_single_open_close_file(
 	     source,
 	     LIBSCCA_OPEN_READ,
@@ -352,10 +417,6 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-	fprintf(
-	 stdout,
-	 "Testing single open close of: NULL with access: read\t" );
-
 	if( scca_test_single_open_close_file(
 	     NULL,
 	     LIBSCCA_OPEN_READ,
@@ -367,11 +428,6 @@ int main( int argc, char * const argv[] )
 
 		return( EXIT_FAILURE );
 	}
-	fprintf(
-	 stdout,
-	 "Testing single open close of: %s with access: write\t",
-	 source );
-
 	if( scca_test_single_open_close_file(
 	     source,
 	     LIBSCCA_OPEN_WRITE,
@@ -385,11 +441,6 @@ int main( int argc, char * const argv[] )
 	}
 	/* Case 1: multiple open and close of a file using filename
 	 */
-	fprintf(
-	 stdout,
-	 "Testing multi open close of: %s with access: read\t",
-	 source );
-
 	if( scca_test_multi_open_close_file(
 	     source,
 	     LIBSCCA_OPEN_READ,
