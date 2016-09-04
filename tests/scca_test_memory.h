@@ -1,5 +1,5 @@
 /*
- * The internal libclocale header
+ * Memory allocation functions for testing
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,32 +19,32 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _SCCATOOLS_LIBCLOCALE_H )
-#define _SCCATOOLS_LIBCLOCALE_H
+#if !defined( _SCCA_TEST_MEMORY_H )
+#define _SCCA_TEST_MEMORY_H
 
 #include <common.h>
 
-/* Define HAVE_LOCAL_LIBCLOCALE for local use of libclocale
- */
-#if defined( HAVE_LOCAL_LIBCLOCALE )
-
-#include <libclocale_codepage.h>
-#include <libclocale_definitions.h>
-#include <libclocale_locale.h>
-#include <libclocale_support.h>
-
-#else
-
-/* If libtool DLL support is enabled set LIBCLOCALE_DLL_IMPORT
- * before including libclocale.h
- */
-#if defined( _WIN32 ) && defined( DLL_IMPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
-#define LIBCLOCALE_DLL_IMPORT
+#if defined( __cplusplus )
+extern "C" {
 #endif
 
-#include <libclocale.h>
+#if defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ )
 
-#endif /* defined( HAVE_LOCAL_LIBCLOCALE ) */
+#define HAVE_SCCA_TEST_MEMORY		1
 
-#endif /* !defined( _SCCATOOLS_LIBCLOCALE_H ) */
+extern int scca_test_malloc_attempts_before_fail;
+
+extern int scca_test_memcpy_attempts_before_fail;
+
+extern int scca_test_memset_attempts_before_fail;
+
+extern int scca_test_realloc_attempts_before_fail;
+
+#endif /* defined( HAVE_GNU_DL_DLSYM ) && defined( __GNUC__ ) && !defined( __clang__ ) */
+
+#if defined( __cplusplus )
+}
+#endif
+
+#endif /* !defined( _SCCA_TEST_MEMORY_H ) */
 

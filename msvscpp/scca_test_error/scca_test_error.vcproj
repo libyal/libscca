@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="scca_test_get_version"
-	ProjectGUID="{8F2A1455-550D-4C05-BC99-4C34B59E8797}"
-	RootNamespace="scca_test_get_version"
+	Name="scca_test_error"
+	ProjectGUID="{813BDC3C-5899-4584-BF50-E2A275324F92}"
+	RootNamespace="scca_test_error"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,7 +176,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\scca_test_get_version.c"
+				RelativePath="..\..\tests\scca_test_error.c"
 				>
 			</File>
 		</Filter>

@@ -37,13 +37,26 @@ EXTRA_DIST = \
 	$(check_SCRIPTS)
 
 check_PROGRAMS = \
+	scca_test_error \
 	scca_test_get_version \
 	scca_test_open_close
+
+scca_test_error_SOURCES = \
+	scca_test_error.c \
+	scca_test_libcstring.h \
+	scca_test_libscca.h \
+	scca_test_macros.h \
+	scca_test_unused.h
+
+scca_test_error_LDADD = \
+	../libscca/libscca.la \
+	@LIBCSTRING_LIBADD@
 
 scca_test_get_version_SOURCES = \
 	scca_test_get_version.c \
 	scca_test_libcstring.h \
 	scca_test_libscca.h \
+	scca_test_macros.h \
 	scca_test_unused.h
 
 scca_test_get_version_LDADD = \
