@@ -22,6 +22,7 @@ endif
 
 TESTS = \
 	test_api_functions.sh \
+	test_api_types.sh \
 	test_sccainfo.sh \
 	$(TESTS_PYSCCA)
 
@@ -29,6 +30,7 @@ check_SCRIPTS = \
 	pyscca_test_get_version.py \
 	pyscca_test_open_close.py \
 	test_api_functions.sh \
+	test_api_types.sh \
 	test_python_functions.sh \
 	test_runner.sh \
 	test_sccainfo.sh
