@@ -1,5 +1,5 @@
 /*
- * Library error functions test program
+ * Library notification functions test program
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -30,78 +30,60 @@
 #include "scca_test_macros.h"
 #include "scca_test_unused.h"
 
-/* Tests the libscca_error_free function
+/* Tests the libscca_notify_set_verbose function
  * Returns 1 if successful or 0 if not
  */
-int scca_test_error_free(
+int scca_test_notify_set_verbose(
      void )
 {
 	/* Test invocation of function only
 	 */
-	libscca_error_free(
-	 NULL );
-
-	return( 1 );
-}
-
-/* Tests the libscca_error_fprint function
- * Returns 1 if successful or 0 if not
- */
-int scca_test_error_fprint(
-     void )
-{
-	/* Test invocation of function only
-	 */
-	libscca_error_fprint(
-	 NULL,
-	 NULL );
-
-	return( 1 );
-}
-
-/* Tests the libscca_error_sprint function
- * Returns 1 if successful or 0 if not
- */
-int scca_test_error_sprint(
-     void )
-{
-	/* Test invocation of function only
-	 */
-	libscca_error_sprint(
-	 NULL,
-	 NULL,
+	libscca_notify_set_verbose(
 	 0 );
 
 	return( 1 );
 }
 
-/* Tests the libscca_error_backtrace_fprint function
+/* Tests the libscca_notify_set_stream function
  * Returns 1 if successful or 0 if not
  */
-int scca_test_error_backtrace_fprint(
+int scca_test_notify_set_stream(
      void )
 {
 	/* Test invocation of function only
 	 */
-	libscca_error_backtrace_fprint(
+	libscca_notify_set_stream(
 	 NULL,
 	 NULL );
 
 	return( 1 );
 }
 
-/* Tests the libscca_error_backtrace_sprint function
+/* Tests the libscca_notify_stream_open function
  * Returns 1 if successful or 0 if not
  */
-int scca_test_error_backtrace_sprint(
+int scca_test_notify_stream_open(
      void )
 {
 	/* Test invocation of function only
 	 */
-	libscca_error_backtrace_sprint(
+	libscca_notify_stream_open(
 	 NULL,
-	 NULL,
-	 0 );
+	 NULL );
+
+	return( 1 );
+}
+
+/* Tests the libscca_notify_stream_close function
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_notify_stream_close(
+     void )
+{
+	/* Test invocation of function only
+	 */
+	libscca_notify_stream_close(
+	 NULL );
 
 	return( 1 );
 }
@@ -122,24 +104,20 @@ int main(
 	SCCA_TEST_UNREFERENCED_PARAMETER( argv )
 
 	SCCA_TEST_RUN(
-	 "libscca_error_free",
-	 scca_test_error_free );
+	 "libscca_notify_set_verbose",
+	 scca_test_notify_set_verbose )
 
 	SCCA_TEST_RUN(
-	 "libscca_error_fprint",
-	 scca_test_error_fprint );
+	 "libscca_notify_set_stream",
+	 scca_test_notify_set_stream )
 
 	SCCA_TEST_RUN(
-	 "libscca_error_sprint",
-	 scca_test_error_sprint );
+	 "libscca_notify_stream_open",
+	 scca_test_notify_stream_open )
 
 	SCCA_TEST_RUN(
-	 "libscca_error_backtrace_fprint",
-	 scca_test_error_backtrace_fprint );
-
-	SCCA_TEST_RUN(
-	 "libscca_error_backtrace_sprint",
-	 scca_test_error_backtrace_sprint );
+	 "libscca_notify_stream_close",
+	 scca_test_notify_stream_close )
 
 	return( EXIT_SUCCESS );
 

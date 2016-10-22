@@ -123,8 +123,12 @@ stamp-h[1-9]
 /sccatools/sccainfo
 /tests/input
 /tests/scca_test_error
-/tests/scca_test_get_version
+/tests/scca_test_file
+/tests/scca_test_file_metrics
+/tests/scca_test_notify
 /tests/scca_test_open_close
+/tests/scca_test_support
+/tests/scca_test_volume_information
 /tests/tmp*
 
 # Local library dependencies specific files

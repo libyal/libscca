@@ -34,8 +34,8 @@
 /* The following type definitions hide internal data structures
  */
 #if defined( HAVE_DEBUG_OUTPUT ) && !defined( WINAPI )
-typedef struct libscca_file {}	libscca_file_t;
-typedef struct libscca_file_metrics {}	libscca_file_metrics_t;
+typedef struct libscca_file {}			libscca_file_t;
+typedef struct libscca_file_metrics {}		libscca_file_metrics_t;
 typedef struct libscca_volume_information {}	libscca_volume_information_t;
 
 #else

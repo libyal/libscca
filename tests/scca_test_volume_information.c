@@ -1,5 +1,5 @@
 /*
- * Library error functions test program
+ * Library volume_information type testing program
  *
  * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -20,90 +20,56 @@
  */
 
 #include <common.h>
+#include <file_stream.h>
+#include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( WINAPI )
 #include <stdlib.h>
 #endif
 
 #include "scca_test_libcerror.h"
+#include "scca_test_libcstring.h"
 #include "scca_test_libscca.h"
 #include "scca_test_macros.h"
+#include "scca_test_memory.h"
 #include "scca_test_unused.h"
 
-/* Tests the libscca_error_free function
+/* Tests the libscca_volume_information_free function
  * Returns 1 if successful or 0 if not
  */
-int scca_test_error_free(
+int scca_test_volume_information_free(
      void )
 {
-	/* Test invocation of function only
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test error cases
 	 */
-	libscca_error_free(
-	 NULL );
+	result = libscca_volume_information_free(
+	          NULL,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
 
 	return( 1 );
-}
 
-/* Tests the libscca_error_fprint function
- * Returns 1 if successful or 0 if not
- */
-int scca_test_error_fprint(
-     void )
-{
-	/* Test invocation of function only
-	 */
-	libscca_error_fprint(
-	 NULL,
-	 NULL );
-
-	return( 1 );
-}
-
-/* Tests the libscca_error_sprint function
- * Returns 1 if successful or 0 if not
- */
-int scca_test_error_sprint(
-     void )
-{
-	/* Test invocation of function only
-	 */
-	libscca_error_sprint(
-	 NULL,
-	 NULL,
-	 0 );
-
-	return( 1 );
-}
-
-/* Tests the libscca_error_backtrace_fprint function
- * Returns 1 if successful or 0 if not
- */
-int scca_test_error_backtrace_fprint(
-     void )
-{
-	/* Test invocation of function only
-	 */
-	libscca_error_backtrace_fprint(
-	 NULL,
-	 NULL );
-
-	return( 1 );
-}
-
-/* Tests the libscca_error_backtrace_sprint function
- * Returns 1 if successful or 0 if not
- */
-int scca_test_error_backtrace_sprint(
-     void )
-{
-	/* Test invocation of function only
-	 */
-	libscca_error_backtrace_sprint(
-	 NULL,
-	 NULL,
-	 0 );
-
-	return( 1 );
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
 }
 
 /* The main program
@@ -122,24 +88,8 @@ int main(
 	SCCA_TEST_UNREFERENCED_PARAMETER( argv )
 
 	SCCA_TEST_RUN(
-	 "libscca_error_free",
-	 scca_test_error_free );
-
-	SCCA_TEST_RUN(
-	 "libscca_error_fprint",
-	 scca_test_error_fprint );
-
-	SCCA_TEST_RUN(
-	 "libscca_error_sprint",
-	 scca_test_error_sprint );
-
-	SCCA_TEST_RUN(
-	 "libscca_error_backtrace_fprint",
-	 scca_test_error_backtrace_fprint );
-
-	SCCA_TEST_RUN(
-	 "libscca_error_backtrace_sprint",
-	 scca_test_error_backtrace_sprint );
+	 "libscca_volume_information_free",
+	 scca_test_volume_information_free );
 
 	return( EXIT_SUCCESS );
 

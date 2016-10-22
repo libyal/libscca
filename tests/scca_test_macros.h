@@ -121,7 +121,7 @@
 	}
 
 #define SCCA_TEST_RUN( name, function ) \
-	if( function != 1 ) \
+	if( function() != 1 ) \
 	{ \
 		fprintf( stdout, "Unable to run test: %s\n", name ); \
 		goto on_error; \
@@ -137,6 +137,9 @@
 	}
 
 #endif /* !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 ) */
+
+#define SCCA_TEST_FPRINT_ERROR( error ) \
+	libcerror_error_backtrace_fprint( error, stdout );
 
 #endif /* !defined( _SCCA_TEST_MACROS_H ) */
 
