@@ -423,8 +423,8 @@ int libscca_check_file_signature_file_io_handle(
 		}
 	}
 	if( memory_compare(
-	     &( scca_file_signature[ 4 ] ),
-	     signature,
+	     &( signature[ 4 ] ),
+	     scca_file_signature,
 	     4 ) == 0 )
 	{
 		return( 1 );

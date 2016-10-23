@@ -186,7 +186,15 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\tests\scca_test_libcerror.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\tests\scca_test_libcstring.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\scca_test_libcsystem.h"
 				>
 			</File>
 			<File

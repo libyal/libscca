@@ -122,14 +122,22 @@ scca_test_open_close_LDADD = \
 	@PTHREAD_LIBADD@
 
 scca_test_support_SOURCES = \
-	scca_test_support.c \
+	scca_test_libcerror.h \
 	scca_test_libcstring.h \
+	scca_test_libcsystem.h \
 	scca_test_libscca.h \
 	scca_test_macros.h \
+	scca_test_support.c \
 	scca_test_unused.h
 
 scca_test_support_LDADD = \
+	@LIBCSYSTEM_LIBADD@ \
+	@LIBUNA_LIBADD@ \
+	@LIBCNOTIFY_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	@LIBCDATA_LIBADD@ \
 	../libscca/libscca.la \
+	@LIBCERROR_LIBADD@ \
 	@LIBCSTRING_LIBADD@
 
 scca_test_volume_information_SOURCES = \
