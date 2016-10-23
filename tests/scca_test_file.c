@@ -1305,6 +1305,98 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libscca_file_get_last_run_time functions
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_file_get_last_run_time(
+     libscca_file_t *file )
+{
+	libcerror_error_t *error = NULL;
+	uint64_t last_run_time   = 0;
+	int result               = 0;
+
+	result = libscca_file_get_last_run_time(
+	          file,
+	          0,
+	          &last_run_time,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libscca_file_get_last_run_time(
+	          NULL,
+	          0,
+	          &last_run_time,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libscca_file_get_last_run_time(
+	          file,
+	          -1,
+	          &last_run_time,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libscca_file_get_last_run_time(
+	          file,
+	          0,
+	          NULL,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
 /* Tests the libscca_file_get_run_count functions
  * Returns 1 if successful or 0 if not
  */
@@ -1589,6 +1681,121 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the scca_test_file_get_volume_information functions
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_file_get_volume_information(
+     libscca_file_t *file )
+{
+	libcerror_error_t *error                         = NULL;
+	libscca_volume_information_t *volume_information = NULL;
+	int number_of_volumes                            = 0;
+	int result                                       = 0;
+
+	/* Initialize test
+	 */
+	result = libscca_file_get_number_of_volumes(
+	          file,
+	          &number_of_volumes,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	if( number_of_volumes == 0 )
+	{
+		return( 1 );
+	}
+	/* Test get volume information
+	 */
+	result = libscca_file_get_volume_information(
+	          file,
+	          0,
+	          &volume_information,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libscca_file_get_volume_information(
+	          NULL,
+	          0,
+	          &volume_information,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libscca_file_get_volume_information(
+	          file,
+	          -1,
+	          &volume_information,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libscca_file_get_volume_information(
+	          file,
+	          0,
+	          NULL,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
 /* The main program
  */
 #if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
@@ -1715,7 +1922,10 @@ int main(
 		 scca_test_file_get_prefetch_hash,
 		 file );
 
-		/* TODO add test for libscca_file_get_last_run_time */
+		SCCA_TEST_RUN_WITH_ARGS(
+		 "libscca_file_get_last_run_time",
+		 scca_test_file_get_last_run_time,
+		 file );
 
 		SCCA_TEST_RUN_WITH_ARGS(
 		 "libscca_file_get_run_count",
@@ -1744,7 +1954,10 @@ int main(
 		 scca_test_file_get_number_of_volumes,
 		 file );
 
-		/* TODO add test for libscca_file_get_volume_information */
+		SCCA_TEST_RUN_WITH_ARGS(
+		 "libscca_file_get_volume_information",
+		 scca_test_file_get_volume_information,
+		 file );
 
 		/* Clean up
 		 */
