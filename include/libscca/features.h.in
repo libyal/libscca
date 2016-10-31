@@ -24,13 +24,16 @@
 
 /* The libscca type support features
  */
-#if @HAVE_WIDE_CHARACTER_TYPE@ || defined( HAVE_WIDE_CHARACTER_TYPE )
-#define LIBSCCA_HAVE_WIDE_CHARACTER_TYPE		1
+#if defined( HAVE_WIDE_CHARACTER_TYPE ) || @HAVE_WIDE_CHARACTER_TYPE@
+#define LIBSCCA_HAVE_WIDE_CHARACTER_TYPE	1
+#endif
 
+#if defined( WINAPI ) || @HAVE_MULTI_THREAD_SUPPORT@
+#define LIBSCCA_HAVE_MULTI_THREAD_SUPPORT	1
 #endif
 
 #if defined( HAVE_LIBBFIO ) || ( !defined( WINAPI ) && @HAVE_LIBBFIO@ )
-#define LIBSCCA_HAVE_BFIO				1
+#define LIBSCCA_HAVE_BFIO			1
 #endif
 
 #if !defined( LIBSCCA_DEPRECATED )
@@ -43,5 +46,5 @@
 #endif
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_FEATURES_H ) */
 

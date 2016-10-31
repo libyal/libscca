@@ -58,5 +58,5 @@ enum LIBSCCA_FILE_TYPES
 	LIBSCCA_FILE_TYPE_COMPRESSED_WINDOWS10		= 2
 };
 
-#endif
+#endif /* !defined( _LIBSCCA_DEFINITIONS_H ) */
 

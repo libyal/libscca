@@ -209,5 +209,5 @@ typedef intptr_t libscca_volume_information_t;
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_TYPES_H ) */
 

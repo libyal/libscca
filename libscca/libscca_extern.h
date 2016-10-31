@@ -38,10 +38,9 @@
 #include <libscca/extern.h>
 
 #else
-
-#define LIBSCCA_EXTERN  extern
-
-#endif
+#define LIBSCCA_EXTERN	extern
 
 #endif
+
+#endif /* !defined( _LIBSCCA_INTERNAL_EXTERN_H ) */
 

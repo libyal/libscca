@@ -34,7 +34,7 @@ enum LIBSCCA_ERROR_DOMAINS
 {
 	LIBSCCA_ERROR_DOMAIN_ARGUMENTS			= (int) 'a',
 	LIBSCCA_ERROR_DOMAIN_CONVERSION			= (int) 'c',
-	LIBSCCA_ERROR_DOMAIN_COMPRESSION			= (int) 'C',
+	LIBSCCA_ERROR_DOMAIN_COMPRESSION		= (int) 'C',
 	LIBSCCA_ERROR_DOMAIN_IO				= (int) 'I',
 	LIBSCCA_ERROR_DOMAIN_INPUT			= (int) 'i',
 	LIBSCCA_ERROR_DOMAIN_MEMORY			= (int) 'm',
@@ -59,7 +59,7 @@ enum LIBSCCA_ARGUMENT_ERROR
 
 	/* The argument contains a value zero or less
 	 */
-	LIBSCCA_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS		= 3,
+	LIBSCCA_ARGUMENT_ERROR_VALUE_ZERO_OR_LESS	= 3,
 
 	/* The argument contains a value that exceeds the maximum
 	 * for the specific type
@@ -80,11 +80,11 @@ enum LIBSCCA_ARGUMENT_ERROR
 
 	/* The argument contains a value that is not supported
 	 */
-	LIBSCCA_ARGUMENT_ERROR_UNSUPPORTED_VALUE		= 8,
+	LIBSCCA_ARGUMENT_ERROR_UNSUPPORTED_VALUE	= 8,
 
 	/* The argument contains a value that conficts with another argument
 	 */
-	LIBSCCA_ARGUMENT_ERROR_CONFLICTING_VALUE		= 9
+	LIBSCCA_ARGUMENT_ERROR_CONFLICTING_VALUE	= 9
 };
 
 /* The conversion error codes
@@ -92,7 +92,7 @@ enum LIBSCCA_ARGUMENT_ERROR
  */
 enum LIBSCCA_CONVERSION_ERROR
 {
-	LIBSCCA_CONVERSION_ERROR_GENERIC			= 0,
+	LIBSCCA_CONVERSION_ERROR_GENERIC		= 0,
 
 	/* The conversion failed on the input
 	 */
@@ -108,11 +108,11 @@ enum LIBSCCA_CONVERSION_ERROR
  */
 enum LIBSCCA_COMPRESSION_ERROR
 {
-	LIBSCCA_COMPRESSION_ERROR_GENERIC			= 0,
+	LIBSCCA_COMPRESSION_ERROR_GENERIC		= 0,
 
 	/* The compression failed
 	 */
-	LIBSCCA_COMPRESSION_ERROR_COMPRESS_FAILED		= 1,
+	LIBSCCA_COMPRESSION_ERROR_COMPRESS_FAILED	= 1,
 
 	/* The decompression failed
 	 */
@@ -124,7 +124,7 @@ enum LIBSCCA_COMPRESSION_ERROR
  */
 enum LIBSCCA_IO_ERROR
 {
-	LIBSCCA_IO_ERROR_GENERIC				= 0,
+	LIBSCCA_IO_ERROR_GENERIC			= 0,
 
 	/* The open failed
 	 */
@@ -152,7 +152,7 @@ enum LIBSCCA_IO_ERROR
 
 	/* The resource is invalid i.e. a missing file
 	 */
-	LIBSCCA_IO_ERROR_INVALID_RESOURCE			= 7,
+	LIBSCCA_IO_ERROR_INVALID_RESOURCE		= 7,
 
 	/* The ioctl failed
 	 */
@@ -172,7 +172,7 @@ enum LIBSCCA_INPUT_ERROR
 
 	/* The input contains invalid data
 	 */
-	LIBSCCA_INPUT_ERROR_INVALID_DATA			= 1,
+	LIBSCCA_INPUT_ERROR_INVALID_DATA		= 1,
 
 	/* The input contains an unsupported signature
 	 */
@@ -197,11 +197,11 @@ enum LIBSCCA_MEMORY_ERROR
 
 	/* There is insufficient memory available
 	 */
-	LIBSCCA_MEMORY_ERROR_INSUFFICIENT			= 1,
+	LIBSCCA_MEMORY_ERROR_INSUFFICIENT		= 1,
 
 	/* The memory failed to be copied
 	 */
-	LIBSCCA_MEMORY_ERROR_COPY_FAILED			= 2,
+	LIBSCCA_MEMORY_ERROR_COPY_FAILED		= 2,
 
 	/* The memory failed to be set
 	 */
@@ -237,11 +237,11 @@ enum LIBSCCA_RUNTIME_ERROR
 
 	/* The value could not be determined
 	 */
-	LIBSCCA_RUNTIME_ERROR_GET_FAILED			= 6,
+	LIBSCCA_RUNTIME_ERROR_GET_FAILED		= 6,
 
 	/* The value could not be set
 	 */
-	LIBSCCA_RUNTIME_ERROR_SET_FAILED			= 7,
+	LIBSCCA_RUNTIME_ERROR_SET_FAILED		= 7,
 
 	/* The value could not be appended/prepended
 	 */
@@ -249,7 +249,7 @@ enum LIBSCCA_RUNTIME_ERROR
 
 	/* The value could not be copied
 	 */
-	LIBSCCA_RUNTIME_ERROR_COPY_FAILED			= 9,
+	LIBSCCA_RUNTIME_ERROR_COPY_FAILED		= 9,
 
 	/* The value could not be removed
 	 */
@@ -261,7 +261,7 @@ enum LIBSCCA_RUNTIME_ERROR
 
 	/* The value was out of bounds
 	 */
-	LIBSCCA_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS		= 12,
+	LIBSCCA_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS	= 12,
 
 	/* The value exceeds the maximum for its specific type
 	 */
@@ -287,5 +287,5 @@ enum LIBSCCA_OUTPUT_ERROR
 	LIBSCCA_OUTPUT_ERROR_INSUFFICIENT_SPACE		= 1
 };
 
-#endif
+#endif /* !defined( _LIBSCCA_ERROR_H ) */
 

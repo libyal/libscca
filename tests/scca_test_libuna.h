@@ -17,8 +17,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _EVT_TEST_LIBUNA_H )
-#define _EVT_TEST_LIBUNA_H
+#if !defined( _SCCA_TEST_LIBUNA_H )
+#define _SCCA_TEST_LIBUNA_H
 
 #include <common.h>
 
@@ -54,5 +54,5 @@
 
 #endif /* defined( HAVE_LOCAL_LIBUNA ) */
 
-#endif /* !defined( _EVT_TEST_LIBUNA_H ) */
+#endif /* !defined( _SCCA_TEST_LIBUNA_H ) */
 
