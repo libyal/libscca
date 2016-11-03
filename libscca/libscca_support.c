@@ -429,6 +429,13 @@ int libscca_check_file_signature_file_io_handle(
 	{
 		return( 1 );
 	}
+	else if( memory_compare(
+	          scca_mam_file_signature_win10,
+	          signature,
+	          4 ) == 0 )
+	{
+		return( 1 );
+	}
 	return( 0 );
 
 on_error:

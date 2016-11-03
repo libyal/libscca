@@ -271,10 +271,9 @@ ssize_t libscca_compressed_block_read(
 
 		goto on_error;
 	}
-/* TODO figure out why the there are less bytes decompressed. */
 	uncompressed_data_size = compressed_block->data_size;
 
-	if( libfwnt_lzxpress_huffman_stream_decompress(
+	if( libfwnt_lzxpress_huffman_decompress(
 	     compressed_data,
 	     (size_t) read_count,
 	     compressed_block->data,

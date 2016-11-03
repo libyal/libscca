@@ -56,6 +56,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.12 | J.B. Metz | December 2015 | Small changes.
 | 0.0.13 | J.B. Metz | January 2016 | Fixed stale information in volume information entry with thanks to E. Zimmerman.
 | 0.0.14 | J.B. Metz | January 2016 | Additional information regarding Prefetch file from an NTFS ADS with thanks to S. Gillespie.
+| 0.0.15 | J.B. Metz | November 2016 | Changes regarding compression.
 |===
 
 :numbered:
@@ -175,17 +176,11 @@ The compressed block is variable of size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | ... | | Compressed data
+| 0 | ... | | LZXPRESS Huffman compressed data
 |===
 
-The uncompressed block size is 65536 (0x10000) or the remaining uncompressed 
-data size for the last block.
-
-=== LZXPRESS Huffman stream variant
-The LZXPRESS Huffman stream variant differs from the LZXPRESS Huffman, as 
-used in the Compressed SuperFetch database - MEM0 file format. The stream 
-variant can refer to uncompressed data stored in the previous compressed block. 
-The compressed blocks are essentially a single compressed stream.
+For more information about LZXPRESS Huffman see:
+https://github.com/libyal/libfwnt/blob/master/documentation/Compression%20methods.asciidoc[LIBFWNT\]].
 
 == Uncompressed Prefetch file
 === File header
