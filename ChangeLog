@@ -7,6 +7,8 @@ TODO:
     - get directory strings
   - add functions to calcalate hashes?
 * handle directory names correctly
+* documentation
+  - describe relation ship metrics and trace chains
 * update manuals
 
 20161103
