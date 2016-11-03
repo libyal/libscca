@@ -8,8 +8,9 @@ TODO:
   - add functions to calcalate hashes?
 * handle directory names correctly
 * update manuals
-* check signature
-  - add check for mam file header?
+
+20161103
+* worked on Windows 10 compressed file support
 
 20160109
 * fixes for rpmbuild
