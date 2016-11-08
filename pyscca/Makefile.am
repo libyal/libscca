@@ -2,7 +2,6 @@ if HAVE_PYTHON
 AM_CFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -26,7 +25,6 @@ pyscca_la_SOURCES = \
 	pyscca_libbfio.h \
 	pyscca_libcerror.h \
 	pyscca_libclocale.h \
-	pyscca_libcstring.h \
 	pyscca_libscca.h \
 	pyscca_python.h \
 	pyscca_unused.h \
@@ -34,7 +32,6 @@ pyscca_la_SOURCES = \
 	pyscca_volumes.c pyscca_volumes.h
 
 pyscca_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	../libscca/libscca.la \
 	@LIBCDATA_LIBADD@ \

@@ -22,6 +22,7 @@
 #include <common.h>
 #include <byte_stream.h>
 #include <memory.h>
+#include <system_string.h>
 #include <types.h>
 
 #include "libscca_definitions.h"
@@ -156,7 +157,7 @@ int libscca_file_information_read(
 	int number_of_last_run_times      = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	libcstring_system_character_t filetime_string[ 48 ];
+	system_character_t filetime_string[ 48 ];
 
 	libfdatetime_filetime_t *filetime = NULL;
 	uint64_t value_64bit              = 0;
@@ -459,7 +460,7 @@ int libscca_file_information_read(
 
 				goto on_error;
 			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 			result = libfdatetime_filetime_copy_to_utf16_string(
 				  filetime,
 				  (uint16_t *) filetime_string,
@@ -486,7 +487,7 @@ int libscca_file_information_read(
 				goto on_error;
 			}
 			libcnotify_printf(
-			 "%s: last run time: %d\t\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+			 "%s: last run time: %d\t\t\t\t: %" PRIs_SYSTEM " UTC\n",
 			 function,
 			 last_run_time_index,
 			 filetime_string );

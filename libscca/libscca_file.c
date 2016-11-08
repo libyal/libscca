@@ -21,7 +21,9 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libscca_codepage.h"
 #include "libscca_compressed_block.h"
@@ -37,7 +39,6 @@
 #include "libscca_libcdata.h"
 #include "libscca_libcerror.h"
 #include "libscca_libcnotify.h"
-#include "libscca_libcstring.h"
 #include "libscca_libfcache.h"
 #include "libscca_libfdata.h"
 #include "libscca_libfvalue.h"
@@ -430,7 +431,7 @@ int libscca_file_open(
 	if( libbfio_file_set_name(
 	     file_io_handle,
 	     filename,
-	     libcstring_narrow_string_length(
+	     narrow_string_length(
 	      filename ) + 1,
 	     error ) != 1 )
 	{
@@ -567,7 +568,7 @@ int libscca_file_open_wide(
 	if( libbfio_file_set_name_wide(
 	     file_io_handle,
 	     filename,
-	     libcstring_wide_string_length(
+	     wide_string_length(
 	      filename ) + 1,
 	     error ) != 1 )
 	{

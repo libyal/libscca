@@ -20,18 +20,20 @@
  */
 
 #include <common.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "sccainput.h"
 #include "sccatools_libcerror.h"
-#include "sccatools_libcstring.h"
 #include "sccatools_libscca.h"
 
 /* Determines the codepage from a string
  * Returns 1 if successful, 0 if unsupported value or -1 on error
  */
 int sccainput_determine_ascii_codepage(
-     const libcstring_system_character_t *string,
+     const system_character_t *string,
      int *ascii_codepage,
      libcerror_error_t **error )
 {
@@ -61,14 +63,14 @@ int sccainput_determine_ascii_codepage(
 
 		return( -1 );
 	}
-	string_length = libcstring_system_string_length(
+	string_length = system_string_length(
 	                 string );
 
 	if( string_length == 5 )
 	{
-		if( libcstring_system_string_compare(
+		if( system_string_compare(
 		     string,
-		     _LIBCSTRING_SYSTEM_STRING( "ascii" ),
+		     _SYSTEM_STRING( "ascii" ),
 		     5 ) == 0 )
 		{
 			*ascii_codepage = LIBSCCA_CODEPAGE_ASCII;
@@ -79,18 +81,18 @@ int sccainput_determine_ascii_codepage(
 	if( ( string_length == 10 )
 	 || ( string_length == 11 ) )
 	{
-		if( libcstring_system_string_compare(
+		if( system_string_compare(
 		     string,
-		     _LIBCSTRING_SYSTEM_STRING( "iso" ),
+		     _SYSTEM_STRING( "iso" ),
 		     3 ) == 0 )
 		{
 			if( ( string[ 3 ] != '-' )
 			 && ( string[ 3 ] != '_' ) )
 			{
 			}
-			else if( libcstring_system_string_compare(
+			else if( system_string_compare(
 				  &( string[ 4 ] ),
-				  _LIBCSTRING_SYSTEM_STRING( "8859" ),
+				  _SYSTEM_STRING( "8859" ),
 				  4 ) == 0 )
 			{
 				if( ( string[ 8 ] != '-' )
@@ -99,73 +101,73 @@ int sccainput_determine_ascii_codepage(
 				}
 				else if( string_length == 10 )
 				{
-					if( libcstring_system_string_compare(
+					if( system_string_compare(
 					     &( string[ 9 ] ),
-					     _LIBCSTRING_SYSTEM_STRING( "1" ),
+					     _SYSTEM_STRING( "1" ),
 					     1 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_1;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "2" ),
+						  _SYSTEM_STRING( "2" ),
 						  1 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_2;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "3" ),
+						  _SYSTEM_STRING( "3" ),
 						  1 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_3;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "4" ),
+						  _SYSTEM_STRING( "4" ),
 						  1 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_4;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "5" ),
+						  _SYSTEM_STRING( "5" ),
 						  1 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_5;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "6" ),
+						  _SYSTEM_STRING( "6" ),
 						  1 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_6;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "7" ),
+						  _SYSTEM_STRING( "7" ),
 						  1 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_7;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "8" ),
+						  _SYSTEM_STRING( "8" ),
 						  1 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_8;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "9" ),
+						  _SYSTEM_STRING( "9" ),
 						  1 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_9;
@@ -174,49 +176,49 @@ int sccainput_determine_ascii_codepage(
 				}
 				else if( string_length == 11 )
 				{
-					if( libcstring_system_string_compare(
+					if( system_string_compare(
 					     &( string[ 9 ] ),
-					     _LIBCSTRING_SYSTEM_STRING( "10" ),
+					     _SYSTEM_STRING( "10" ),
 					     2 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_10;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "11" ),
+						  _SYSTEM_STRING( "11" ),
 						  2 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_11;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "13" ),
+						  _SYSTEM_STRING( "13" ),
 						  2 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_13;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "14" ),
+						  _SYSTEM_STRING( "14" ),
 						  2 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_14;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "15" ),
+						  _SYSTEM_STRING( "15" ),
 						  2 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_15;
 						result          = 1;
 					}
-					else if( libcstring_system_string_compare(
+					else if( system_string_compare(
 						  &( string[ 9 ] ),
-						  _LIBCSTRING_SYSTEM_STRING( "16" ),
+						  _SYSTEM_STRING( "16" ),
 						  2 ) == 0 )
 					{
 						*ascii_codepage = LIBSCCA_CODEPAGE_ISO_8859_16;
@@ -230,9 +232,9 @@ int sccainput_determine_ascii_codepage(
 	if( ( string_length == 11 )
 	 || ( string_length == 12 ) )
 	{
-		if( libcstring_system_string_compare(
+		if( system_string_compare(
 		     string,
-		     _LIBCSTRING_SYSTEM_STRING( "windows" ),
+		     _SYSTEM_STRING( "windows" ),
 		     7 ) == 0 )
 		{
 			if( ( string[ 7 ] != '-' )
@@ -241,25 +243,25 @@ int sccainput_determine_ascii_codepage(
 			}
 			else if( string_length == 11 )
 			{
-				if( libcstring_system_string_compare(
+				if( system_string_compare(
 				     &( string[ 8 ] ),
-				     _LIBCSTRING_SYSTEM_STRING( "874" ),
+				     _SYSTEM_STRING( "874" ),
 				     3 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_874;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 				          &( string[ 8 ] ),
-				          _LIBCSTRING_SYSTEM_STRING( "932" ),
+				          _SYSTEM_STRING( "932" ),
 				          3 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_932;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 				          &( string[ 8 ] ),
-				          _LIBCSTRING_SYSTEM_STRING( "936" ),
+				          _SYSTEM_STRING( "936" ),
 				          3 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_936;
@@ -268,81 +270,81 @@ int sccainput_determine_ascii_codepage(
 			}
 			else if( string_length == 12 )
 			{
-				if( libcstring_system_string_compare(
+				if( system_string_compare(
 				     &( string[ 8 ] ),
-				     _LIBCSTRING_SYSTEM_STRING( "1250" ),
+				     _SYSTEM_STRING( "1250" ),
 				     4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1250;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 					  &( string[ 8 ] ),
-					  _LIBCSTRING_SYSTEM_STRING( "1251" ),
+					  _SYSTEM_STRING( "1251" ),
 					  4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1251;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 					  &( string[ 8 ] ),
-					  _LIBCSTRING_SYSTEM_STRING( "1252" ),
+					  _SYSTEM_STRING( "1252" ),
 					  4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1252;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 					  &( string[ 8 ] ),
-					  _LIBCSTRING_SYSTEM_STRING( "1253" ),
+					  _SYSTEM_STRING( "1253" ),
 					  4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1253;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 					  &( string[ 8 ] ),
-					  _LIBCSTRING_SYSTEM_STRING( "1253" ),
+					  _SYSTEM_STRING( "1253" ),
 					  4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1253;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 					  &( string[ 8 ] ),
-					  _LIBCSTRING_SYSTEM_STRING( "1254" ),
+					  _SYSTEM_STRING( "1254" ),
 					  4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1254;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 					  &( string[ 8 ] ),
-					  _LIBCSTRING_SYSTEM_STRING( "1255" ),
+					  _SYSTEM_STRING( "1255" ),
 					  4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1255;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 					  &( string[ 8 ] ),
-					  _LIBCSTRING_SYSTEM_STRING( "1256" ),
+					  _SYSTEM_STRING( "1256" ),
 					  4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1256;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 					  &( string[ 8 ] ),
-					  _LIBCSTRING_SYSTEM_STRING( "1257" ),
+					  _SYSTEM_STRING( "1257" ),
 					  4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1257;
 					result          = 1;
 				}
-				else if( libcstring_system_string_compare(
+				else if( system_string_compare(
 					  &( string[ 8 ] ),
-					  _LIBCSTRING_SYSTEM_STRING( "1258" ),
+					  _SYSTEM_STRING( "1258" ),
 					  4 ) == 0 )
 				{
 					*ascii_codepage = LIBSCCA_CODEPAGE_WINDOWS_1258;

@@ -21,7 +21,9 @@
 
 #include <common.h>
 #include <memory.h>
+#include <narrow_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "libscca_codepage.h"
 #include "libscca_definitions.h"
@@ -29,7 +31,6 @@
 #include "libscca_libbfio.h"
 #include "libscca_libcerror.h"
 #include "libscca_libclocale.h"
-#include "libscca_libcstring.h"
 #include "libscca_support.h"
 
 #if !defined( HAVE_LOCAL_LIBSCCA )
@@ -127,7 +128,7 @@ int libscca_check_file_signature(
 
 		return( -1 );
 	}
-	filename_length = libcstring_narrow_string_length(
+	filename_length = narrow_string_length(
 	                   filename );
 
 	if( filename_length == 0 )
@@ -234,7 +235,7 @@ int libscca_check_file_signature_wide(
 
 		return( -1 );
 	}
-	filename_length = libcstring_wide_string_length(
+	filename_length = wide_string_length(
 	                   filename );
 
 	if( filename_length == 0 )

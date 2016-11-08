@@ -31,7 +31,6 @@
 #include "pyscca_file.h"
 #include "pyscca_integer.h"
 #include "pyscca_libcerror.h"
-#include "pyscca_libcstring.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
 #include "pyscca_unused.h"

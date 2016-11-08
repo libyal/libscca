@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -49,30 +48,26 @@ check_PROGRAMS = \
 
 scca_test_error_SOURCES = \
 	scca_test_error.c \
-	scca_test_libcstring.h \
 	scca_test_libscca.h \
 	scca_test_macros.h \
 	scca_test_unused.h
 
 scca_test_error_LDADD = \
-	../libscca/libscca.la \
-	@LIBCSTRING_LIBADD@
+	../libscca/libscca.la
 
 scca_test_notify_SOURCES = \
-	scca_test_libcstring.h \
 	scca_test_libscca.h \
 	scca_test_macros.h \
 	scca_test_notify.c \
 	scca_test_unused.h
 
 scca_test_notify_LDADD = \
-	../libscca/libscca.la \
-	@LIBCSTRING_LIBADD@
+	../libscca/libscca.la
 
 scca_test_file_SOURCES = \
 	scca_test_file.c \
 	scca_test_libcerror.h \
-	scca_test_libcstring.h \
+	scca_test_libclocale.h \
 	scca_test_libcsystem.h \
 	scca_test_libscca.h \
 	scca_test_libuna.h \
@@ -84,31 +79,23 @@ scca_test_file_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
 	../libscca/libscca.la \
 	@LIBCTHREADS_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@
 	@PTHREAD_LIBADD@
 
 scca_test_file_metrics_SOURCES = \
 	scca_test_file_metrics.c \
 	scca_test_libcerror.h \
-	scca_test_libcstring.h \
-	scca_test_libcsystem.h \
 	scca_test_libscca.h \
 	scca_test_macros.h \
 	scca_test_memory.c scca_test_memory.h \
 	scca_test_unused.h
 
 scca_test_file_metrics_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
 	../libscca/libscca.la \
-	@LIBCTHREADS_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
-	@PTHREAD_LIBADD@
+	@LIBCERROR_LIBADD@
 
 scca_test_open_close_SOURCES = \
 	scca_test_libcerror.h \
-	scca_test_libcstring.h \
 	scca_test_libcsystem.h \
 	scca_test_libscca.h \
 	scca_test_open_close.c
@@ -117,15 +104,15 @@ scca_test_open_close_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
 	../libscca/libscca.la \
 	@LIBCTHREADS_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
+	@LIBCERROR_LIBADD@
 	@PTHREAD_LIBADD@
 
 scca_test_support_SOURCES = \
 	scca_test_libcerror.h \
-	scca_test_libcstring.h \
+	scca_test_libclocale.h \
 	scca_test_libcsystem.h \
 	scca_test_libscca.h \
+	scca_test_libuna.h \
 	scca_test_macros.h \
 	scca_test_support.c \
 	scca_test_unused.h
@@ -137,13 +124,10 @@ scca_test_support_LDADD = \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
 	../libscca/libscca.la \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@
+	@LIBCERROR_LIBADD@
 
 scca_test_volume_information_SOURCES = \
 	scca_test_libcerror.h \
-	scca_test_libcstring.h \
-	scca_test_libcsystem.h \
 	scca_test_libscca.h \
 	scca_test_macros.h \
 	scca_test_memory.c scca_test_memory.h \
@@ -151,12 +135,8 @@ scca_test_volume_information_SOURCES = \
 	scca_test_volume_information.c
 
 scca_test_volume_information_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
 	../libscca/libscca.la \
-	@LIBCTHREADS_LIBADD@ \
-	@LIBCERROR_LIBADD@ \
-	@LIBCSTRING_LIBADD@ \
-	@PTHREAD_LIBADD@
+	@LIBCERROR_LIBADD@
 
 MAINTAINERCLEANFILES = \
 	Makefile.in

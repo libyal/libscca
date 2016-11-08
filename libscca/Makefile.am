@@ -1,7 +1,6 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCTHREADS_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
@@ -40,7 +39,6 @@ libscca_la_SOURCES = \
 	libscca_libcerror.h \
 	libscca_libclocale.h \
 	libscca_libcnotify.h \
-	libscca_libcstring.h \
 	libscca_libfcache.h \
 	libscca_libfdata.h \
 	libscca_libfdatetime.h \
@@ -59,7 +57,6 @@ libscca_la_SOURCES = \
 	scca_volume_information.h
 
 libscca_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCDATA_LIBADD@ \

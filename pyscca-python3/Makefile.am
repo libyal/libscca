@@ -8,7 +8,6 @@ if HAVE_PYTHON3
 AM_CFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
-	@LIBCSTRING_CPPFLAGS@ \
 	@LIBCERROR_CPPFLAGS@ \
 	@LIBCDATA_CPPFLAGS@ \
 	@LIBCLOCALE_CPPFLAGS@ \
@@ -32,7 +31,6 @@ BUILT_SOURCES = \
 	pyscca_libbfio.h \
 	pyscca_libcerror.h \
 	pyscca_libclocale.h \
-	pyscca_libcstring.h \
 	pyscca_libscca.h \
 	pyscca_python.h \
 	pyscca_unused.h \
@@ -44,7 +42,6 @@ pyexec_LTLIBRARIES = pyscca.la
 nodist_pyscca_la_SOURCES = $(BUILT_SOURCES)
 
 pyscca_la_LIBADD = \
-	@LIBCSTRING_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	../libscca/libscca.la \
 	@LIBCDATA_LIBADD@ \

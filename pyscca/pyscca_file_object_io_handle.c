@@ -28,7 +28,6 @@
 #include "pyscca_integer.h"
 #include "pyscca_libbfio.h"
 #include "pyscca_libcerror.h"
-#include "pyscca_libcstring.h"
 #include "pyscca_python.h"
 
 /* Creates a file object IO handle

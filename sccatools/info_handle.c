@@ -22,12 +22,14 @@
 #include <common.h>
 #include <file_stream.h>
 #include <memory.h>
+#include <narrow_string.h>
+#include <system_string.h>
 #include <types.h>
+#include <wide_string.h>
 
 #include "info_handle.h"
 #include "sccainput.h"
 #include "sccatools_libcerror.h"
-#include "sccatools_libcstring.h"
 #include "sccatools_libfdatetime.h"
 #include "sccatools_libscca.h"
 
@@ -214,7 +216,7 @@ int info_handle_signal_abort(
  */
 int info_handle_set_ascii_codepage(
      info_handle_t *info_handle,
-     const libcstring_system_character_t *string,
+     const system_character_t *string,
      libcerror_error_t **error )
 {
 	static char *function = "info_handle_set_ascii_codepage";
@@ -255,7 +257,7 @@ int info_handle_set_ascii_codepage(
  */
 int info_handle_open_input(
      info_handle_t *info_handle,
-     const libcstring_system_character_t *filename,
+     const system_character_t *filename,
      libcerror_error_t **error )
 {
 	static char *function = "info_handle_open_input";
@@ -271,7 +273,7 @@ int info_handle_open_input(
 
 		return( -1 );
 	}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	if( libscca_file_open_wide(
 	     info_handle->input_file,
 	     filename,
@@ -340,11 +342,11 @@ int info_handle_file_fprint(
      info_handle_t *info_handle,
      libcerror_error_t **error )
 {
-	libcstring_system_character_t filetime_string[ 48 ];
+	system_character_t filetime_string[ 48 ];
 
-	libcstring_system_character_t *value_string      = NULL;
 	libfdatetime_filetime_t *filetime                = NULL;
 	libscca_volume_information_t *volume_information = NULL;
+	system_character_t *value_string                 = NULL;
 	static char *function                            = "info_handle_file_fprint";
 	size_t value_string_size                         = 0;
 	uint64_t value_64bit                             = 0;
@@ -424,7 +426,7 @@ int info_handle_file_fprint(
 	 "\tPrefetch hash\t\t\t: 0x%08" PRIx32 "\n",
 	 value_32bit );
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	result = libscca_file_get_utf16_executable_filename_size(
 		  info_handle->input_file,
 		  &value_string_size,
@@ -448,7 +450,7 @@ int info_handle_file_fprint(
 	}
 	if( value_string_size > 0 )
 	{
-		value_string = libcstring_system_string_allocate(
+		value_string = system_string_allocate(
 				value_string_size );
 
 		if( value_string == NULL )
@@ -462,7 +464,7 @@ int info_handle_file_fprint(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libscca_file_get_utf16_executable_filename(
 			  info_handle->input_file,
 			  (uint16_t *) value_string,
@@ -488,7 +490,7 @@ int info_handle_file_fprint(
 		}
 		fprintf(
 		 info_handle->notify_stream,
-		 "\tExecutable filename\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+		 "\tExecutable filename\t\t: %" PRIs_SYSTEM "\n",
 		 value_string );
 
 		memory_free(
@@ -577,7 +579,7 @@ int info_handle_file_fprint(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libfdatetime_filetime_copy_to_utf16_string(
 			  filetime,
 			  (uint16_t *) filetime_string,
@@ -607,14 +609,14 @@ int info_handle_file_fprint(
 		{
 			fprintf(
 			 info_handle->notify_stream,
-			 "\tLast run time:\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+			 "\tLast run time:\t\t\t: %" PRIs_SYSTEM " UTC\n",
 			 filetime_string );
 		}
 		else
 		{
 			fprintf(
 			 info_handle->notify_stream,
-			 "\tLast run time: %d\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+			 "\tLast run time: %d\t\t: %" PRIs_SYSTEM " UTC\n",
 			 last_run_time_index + 1,
 			 filetime_string );
 		}
@@ -650,7 +652,7 @@ int info_handle_file_fprint(
 	     filename_index < number_of_filenames;
 	     filename_index++ )
 	{
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libscca_file_get_utf16_filename_size(
 			  info_handle->input_file,
 			  filename_index,
@@ -677,7 +679,7 @@ int info_handle_file_fprint(
 		}
 		if( value_string_size > 0 )
 		{
-			value_string = libcstring_system_string_allocate(
+			value_string = system_string_allocate(
 					value_string_size );
 
 			if( value_string == NULL )
@@ -691,7 +693,7 @@ int info_handle_file_fprint(
 
 				goto on_error;
 			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 			result = libscca_file_get_utf16_filename(
 				  info_handle->input_file,
 				  filename_index,
@@ -720,7 +722,7 @@ int info_handle_file_fprint(
 			}
 			fprintf(
 			 info_handle->notify_stream,
-			 "\tFilename: %d\t\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+			 "\tFilename: %d\t\t\t: %" PRIs_SYSTEM "\n",
 			 filename_index + 1,
 			 value_string );
 
@@ -785,7 +787,7 @@ int info_handle_file_fprint(
 		 "Volume: %d information:\n",
 		 volume_index + 1 );
 
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libscca_volume_information_get_utf16_device_path_size(
 			  volume_information,
 			  &value_string_size,
@@ -809,7 +811,7 @@ int info_handle_file_fprint(
 		}
 		if( value_string_size > 0 )
 		{
-			value_string = libcstring_system_string_allocate(
+			value_string = system_string_allocate(
 					value_string_size );
 
 			if( value_string == NULL )
@@ -823,7 +825,7 @@ int info_handle_file_fprint(
 
 				goto on_error;
 			}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 			result = libscca_volume_information_get_utf16_device_path(
 				  volume_information,
 				  (uint16_t *) value_string,
@@ -849,7 +851,7 @@ int info_handle_file_fprint(
 			}
 			fprintf(
 			 info_handle->notify_stream,
-			 "\tDevice path\t\t\t: %" PRIs_LIBCSTRING_SYSTEM "\n",
+			 "\tDevice path\t\t\t: %" PRIs_SYSTEM "\n",
 			 value_string );
 
 			memory_free(
@@ -885,7 +887,7 @@ int info_handle_file_fprint(
 
 			goto on_error;
 		}
-#if defined( LIBCSTRING_HAVE_WIDE_SYSTEM_CHARACTER )
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
 		result = libfdatetime_filetime_copy_to_utf16_string(
 			  filetime,
 			  (uint16_t *) filetime_string,
@@ -913,7 +915,7 @@ int info_handle_file_fprint(
 		}
 		fprintf(
 		 info_handle->notify_stream,
-		 "\tCreation time\t\t\t: %" PRIs_LIBCSTRING_SYSTEM " UTC\n",
+		 "\tCreation time\t\t\t: %" PRIs_SYSTEM " UTC\n",
 		 filetime_string );
 
 		if( libscca_volume_information_get_serial_number(

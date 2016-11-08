@@ -26,14 +26,13 @@
 #include <types.h>
 
 #include "sccatools_libcerror.h"
-#include "sccatools_libcstring.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
 int sccainput_determine_ascii_codepage(
-     const libcstring_system_character_t *string,
+     const system_character_t *string,
      int *ascii_codepage,
      libcerror_error_t **error );
 
