@@ -102,5 +102,5 @@ int libscca_file_information_read(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_FILE_INFORMATION_H ) */
 

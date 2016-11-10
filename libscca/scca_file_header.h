@@ -90,5 +90,5 @@ struct scca_mam_file_header
 }
 #endif
 
-#endif
+#endif /* !defined( _SCCA_FILE_HEADER_H ) */
 

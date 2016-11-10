@@ -27,7 +27,6 @@
 #include <stdlib.h>
 #endif
 
-#include "scca_test_libcerror.h"
 #include "scca_test_libscca.h"
 #include "scca_test_macros.h"
 #include "scca_test_unused.h"

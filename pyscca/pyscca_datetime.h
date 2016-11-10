@@ -44,5 +44,5 @@ PyObject *pyscca_datetime_new_from_posix_time(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSCCA_DATETIME_H ) */
 

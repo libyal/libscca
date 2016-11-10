@@ -92,5 +92,5 @@ PyObject *pyscca_volumes_iternext(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSCCA_VOLUMES_H ) */
 

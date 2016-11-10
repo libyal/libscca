@@ -61,11 +61,13 @@ int libscca_check_file_signature(
      libcerror_error_t **error );
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
+
 LIBSCCA_EXTERN \
 int libscca_check_file_signature_wide(
      const wchar_t *filename,
      libcerror_error_t **error );
-#endif
+
+#endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
 LIBSCCA_EXTERN \
 int libscca_check_file_signature_file_io_handle(
@@ -76,5 +78,5 @@ int libscca_check_file_signature_file_io_handle(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_SUPPORT_H ) */
 

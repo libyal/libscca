@@ -92,5 +92,5 @@ PyObject *pyscca_file_metrics_entries_iternext(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSCCA_FILE_METRIC_ENTRIES_H ) */
 

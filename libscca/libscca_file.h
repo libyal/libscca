@@ -267,5 +267,5 @@ int libscca_file_get_volume_information(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_INTERNAL_FILE_H ) */
 

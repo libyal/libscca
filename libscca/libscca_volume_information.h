@@ -114,5 +114,5 @@ int libscca_volume_information_get_utf16_device_path(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_INTERNAL_VOLUME_INFORMATION_H ) */
 

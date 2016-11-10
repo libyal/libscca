@@ -44,5 +44,5 @@ int libscca_debug_print_read_offsets(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_DEBUG_H ) */
 

@@ -103,5 +103,5 @@ struct scca_file_metrics_array_entry_v23
 }
 #endif
 
-#endif
+#endif /* !defined( _SCCA_METRICS_ARRAY_H ) */
 

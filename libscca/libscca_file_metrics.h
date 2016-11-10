@@ -117,5 +117,5 @@ int libscca_file_metrics_get_file_reference(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_INTERNAL_FILE_METRICS_H ) */
 

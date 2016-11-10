@@ -171,5 +171,5 @@ PyObject *pyscca_file_get_volumes(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSCCA_FILE_H ) */
 

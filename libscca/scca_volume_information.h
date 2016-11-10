@@ -223,5 +223,5 @@ struct scca_volume_information_v30
 }
 #endif
 
-#endif
+#endif /* !defined( _SCCA_VOLUME_INFORMATION_H ) */
 

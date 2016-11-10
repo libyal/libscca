@@ -271,5 +271,5 @@ struct scca_file_information_v26
 }
 #endif
 
-#endif
+#endif /* !defined( _SCCA_FILE_INFORMATION_H ) */
 

@@ -123,11 +123,14 @@ stamp-h[1-9]
 /pyscca-python[23]/*.[ch]
 /sccatools/sccainfo
 /tests/input
+/tests/scca_test_compressed_block
 /tests/scca_test_error
 /tests/scca_test_file
+/tests/scca_test_file_information
 /tests/scca_test_file_metrics
+/tests/scca_test_filename_strings
+/tests/scca_test_io_handle
 /tests/scca_test_notify
-/tests/scca_test_open_close
 /tests/scca_test_support
 /tests/scca_test_volume_information
 /tests/tmp*

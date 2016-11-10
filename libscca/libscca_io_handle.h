@@ -149,5 +149,5 @@ off64_t libscca_io_handle_seek_segment_offset(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_IO_HANDLE_H ) */
 

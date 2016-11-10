@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="scca_test_notify"
-	ProjectGUID="{42ECBB04-A2ED-4E50-B2DF-ED488EC60EDA}"
-	RootNamespace="scca_test_notify"
+	Name="scca_test_file_information"
+	ProjectGUID="{957D5898-63AC-44C4-951F-E3899B8ED449}"
+	RootNamespace="scca_test_file_information"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -176,7 +176,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\tests\scca_test_notify.c"
+				RelativePath="..\..\tests\scca_test_file_information.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\scca_test_memory.c"
 				>
 			</File>
 		</Filter>
@@ -186,11 +190,19 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath="..\..\tests\scca_test_libcerror.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\tests\scca_test_libscca.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\tests\scca_test_macros.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\tests\scca_test_memory.h"
 				>
 			</File>
 			<File

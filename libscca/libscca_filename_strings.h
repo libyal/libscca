@@ -113,5 +113,5 @@ int libscca_filename_strings_get_utf16_filename(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_FILENAME_STRINGS_H ) */
 

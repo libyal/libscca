@@ -83,5 +83,5 @@ PyObject *pyscca_volume_information_get_device_path(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSCCA_VOLUME_INFORMATION_H ) */
 

@@ -57,5 +57,5 @@ PyMODINIT_FUNC initpyscca(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSCCA_H ) */
 

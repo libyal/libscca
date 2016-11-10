@@ -87,5 +87,5 @@ int libscca_compressed_blocks_stream_initialize(
 }
 #endif
 
-#endif
+#endif /* !defined( _LIBSCCA_COMPRESSED_BLOCKS_STREAM_H ) */
 

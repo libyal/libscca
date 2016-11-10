@@ -88,5 +88,5 @@ struct scca_trace_chain_array_entry_v30
 }
 #endif
 
-#endif
+#endif /* !defined( _SCCA_TRACE_CHAIN_ARRAY_H ) */
 

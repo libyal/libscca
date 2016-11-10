@@ -40,5 +40,5 @@ int sccainput_determine_ascii_codepage(
 }
 #endif
 
-#endif
+#endif /* !defined( _SCCAINPUT_H ) */
 

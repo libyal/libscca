@@ -92,5 +92,5 @@ PyObject *pyscca_filenames_iternext(
 }
 #endif
 
-#endif
+#endif /* !defined( _PYSCCA_FILENAMES_H ) */
 
