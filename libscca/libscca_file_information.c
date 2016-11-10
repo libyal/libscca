@@ -22,9 +22,9 @@
 #include <common.h>
 #include <byte_stream.h>
 #include <memory.h>
-#include <system_string.h>
 #include <types.h>
 
+#include "libscca_debug.h"
 #include "libscca_definitions.h"
 #include "libscca_file_information.h"
 #include "libscca_io_handle.h"
@@ -149,20 +149,17 @@ int libscca_file_information_read(
      libscca_io_handle_t *io_handle,
      libcerror_error_t **error )
 {
-	uint8_t *file_information_data    = NULL;
-	static char *function             = "libscca_file_information_read";
-	size_t read_size                  = 0;
-	ssize_t read_count                = 0;
-	int last_run_time_index           = 0;
-	int number_of_last_run_times      = 0;
+	uint8_t *file_information_data = NULL;
+	static char *function          = "libscca_file_information_read";
+	size_t read_size               = 0;
+	ssize_t read_count             = 0;
+	int last_run_time_index        = 0;
+	int number_of_last_run_times   = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	system_character_t filetime_string[ 48 ];
-
-	libfdatetime_filetime_t *filetime = NULL;
-	uint64_t value_64bit              = 0;
-	uint32_t value_32bit              = 0;
-	int result                        = 0;
+	uint64_t value_64bit           = 0;
+	uint32_t value_32bit           = 0;
+	int result                     = 0;
 #endif
 
 	if( file_information == NULL )
@@ -349,19 +346,6 @@ int libscca_file_information_read(
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
-		if( libfdatetime_filetime_initialize(
-		     &filetime,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-			 "%s: unable to create filetime.",
-			 function );
-
-			goto on_error;
-		}
 		libcnotify_printf(
 		 "%s: metrics array offset\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
@@ -423,30 +407,36 @@ int libscca_file_information_read(
 		{
 			if( io_handle->format_version == 17 )
 			{
-				result = libfdatetime_filetime_copy_from_byte_stream(
-					  filetime,
+				result = libscca_debug_print_filetime_value(
+					  function,
+					  "last run time: %d\t\t\t\t",
 				          &( ( (scca_file_information_v17_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
 					  8,
 					  LIBFDATETIME_ENDIAN_LITTLE,
+				          LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
 					  error );
 			}
 			else if( io_handle->format_version == 23 )
 			{
-				result = libfdatetime_filetime_copy_from_byte_stream(
-					  filetime,
+				result = libscca_debug_print_filetime_value(
+					  function,
+					  "last run time: %d\t\t\t\t",
 				          &( ( (scca_file_information_v23_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
 					  8,
 					  LIBFDATETIME_ENDIAN_LITTLE,
+				          LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
 					  error );
 			}
 			else if( ( io_handle->format_version == 26 )
 			      || ( io_handle->format_version == 30 ) )
 			{
-				result = libfdatetime_filetime_copy_from_byte_stream(
-					  filetime,
+				result = libscca_debug_print_filetime_value(
+					  function,
+					  "last run time: %d\t\t\t\t",
 				          &( ( (scca_file_information_v26_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
 					  8,
 					  LIBFDATETIME_ENDIAN_LITTLE,
+				          LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
 					  error );
 			}
 			if( result != 1 )
@@ -454,43 +444,12 @@ int libscca_file_information_read(
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy byte stream to filetime.",
+				 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+				 "%s: unable to print filetime value.",
 				 function );
 
 				goto on_error;
 			}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-			result = libfdatetime_filetime_copy_to_utf16_string(
-				  filetime,
-				  (uint16_t *) filetime_string,
-				  48,
-				  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
-				  error );
-#else
-			result = libfdatetime_filetime_copy_to_utf8_string(
-				  filetime,
-				  (uint8_t *) filetime_string,
-				  48,
-				  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
-				  error );
-#endif
-			if( result != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy filetime to string.",
-				 function );
-
-				goto on_error;
-			}
-			libcnotify_printf(
-			 "%s: last run time: %d\t\t\t\t: %" PRIs_SYSTEM " UTC\n",
-			 function,
-			 last_run_time_index,
-			 filetime_string );
 		}
 		libcnotify_printf(
 		 "%s: unknown4:\n",
@@ -581,19 +540,6 @@ int libscca_file_information_read(
 			 88,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
-		if( libfdatetime_filetime_free(
-		     &filetime,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-			 "%s: unable to free filetime.",
-			 function );
-
-			goto on_error;
-		}
 	}
 #endif
 	memory_free(
@@ -602,14 +548,6 @@ int libscca_file_information_read(
 	return( 1 );
 
 on_error:
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( filetime != NULL )
-	{
-		libfdatetime_filetime_free(
-		 &filetime,
-		 NULL );
-	}
-#endif
 	if( file_information_data != NULL )
 	{
 		memory_free(

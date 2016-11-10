@@ -22,12 +22,10 @@
 #include <common.h>
 #include <byte_stream.h>
 #include <memory.h>
-#include <narrow_string.h>
-#include <system_string.h>
 #include <types.h>
-#include <wide_string.h>
 
 #include "libscca_compressed_block.h"
+#include "libscca_debug.h"
 #include "libscca_definitions.h"
 #include "libscca_file_metrics.h"
 #include "libscca_io_handle.h"
@@ -546,15 +544,12 @@ int libscca_io_handle_read_uncompressed_file_header(
 {
 	scca_file_header_t file_header;
 
-	static char *function            = "libscca_io_handle_read_uncompressed_file_header";
-	ssize_t read_count               = 0;
-	uint32_t file_size               = 0;
+	static char *function = "libscca_io_handle_read_uncompressed_file_header";
+	ssize_t read_count    = 0;
+	uint32_t file_size    = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	system_character_t *value_string = NULL;
-	size_t value_string_size         = 0;
-	uint32_t value_32bit             = 0;
-	int result                       = 0;
+	uint32_t value_32bit  = 0;
 #endif
 
 	if( io_handle == NULL )
@@ -622,7 +617,7 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 "%s: unable to seek file header offset: 0.",
 		 function );
 
-		goto on_error;
+		return( -1 );
 	}
 	read_count = libfdata_stream_read_buffer(
 	              uncompressed_data_stream,
@@ -641,7 +636,7 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 "%s: unable to read file header data.",
 		 function );
 
-		goto on_error;
+		return( -1 );
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
@@ -667,7 +662,7 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 "%s: invalid signature.",
 		 function );
 
-		goto on_error;
+		return( -1 );
 	}
 	byte_stream_copy_to_uint32_little_endian(
 	 file_header.format_version,
@@ -693,7 +688,7 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 "%s: unable to copy executable filename.",
 		 function );
 
-		goto on_error;
+		return( -1 );
 	}
 	for( *executable_filename_size = 0;
 	     ( *executable_filename_size + 1 ) < 60;
@@ -734,96 +729,23 @@ int libscca_io_handle_read_uncompressed_file_header(
 		 function,
 		 file_size );
 
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libuna_utf16_string_size_from_utf16_stream(
-			  executable_filename,
-			  *executable_filename_size,
-			  LIBUNA_ENDIAN_LITTLE,
-			  &value_string_size,
-			  error );
-#else
-		result = libuna_utf8_string_size_from_utf16_stream(
-			  executable_filename,
-			  *executable_filename_size,
-			  LIBUNA_ENDIAN_LITTLE,
-			  &value_string_size,
-			  error );
-#endif
-		if( result != 1 )
+		if( libscca_debug_print_utf16_string_value(
+		     function,
+		     "executable filename\t",
+		     executable_filename,
+		     *executable_filename_size,
+		     LIBUNA_ENDIAN_LITTLE,
+		     error ) != 1 )
 		{
 			libcerror_error_set(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-			 "%s: unable to determine size of executable filename string.",
+			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+			 "%s: unable to print UTF-16 string value.",
 			 function );
 
-			goto on_error;
+			return( -1 );
 		}
-		if( ( value_string_size > (size_t) SSIZE_MAX )
-		 || ( ( sizeof( system_character_t ) * value_string_size ) > (size_t) SSIZE_MAX ) )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
-			 "%s: invalid executable filename string size value exceeds maximum.",
-			 function );
-
-			goto on_error;
-		}
-		value_string = system_string_allocate(
-				value_string_size );
-
-		if( value_string == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_MEMORY,
-			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable to create executable filename string.",
-			 function );
-
-			goto on_error;
-		}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-		result = libuna_utf16_string_copy_from_utf16_stream(
-			  (libuna_utf16_character_t *) value_string,
-			  value_string_size,
-			  executable_filename,
-			  *executable_filename_size,
-			  LIBUNA_ENDIAN_LITTLE,
-			  error );
-#else
-		result = libuna_utf8_string_copy_from_utf16_stream(
-			  (libuna_utf8_character_t *) value_string,
-			  value_string_size,
-			  executable_filename,
-			  *executable_filename_size,
-			  LIBUNA_ENDIAN_LITTLE,
-			  error );
-#endif
-		if( result != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to set executable filename string.",
-			 function );
-
-			goto on_error;
-		}
-		libcnotify_printf(
-		 "%s: executable filename\t: %" PRIs_SYSTEM "\n",
-		 function,
-		 value_string );
-
-		memory_free(
-		 value_string );
-
-		value_string = NULL;
-
 		libcnotify_printf(
 		 "%s: prefetch hash\t\t: 0x%08" PRIx32 "\n",
 		 function,
@@ -846,16 +768,6 @@ int libscca_io_handle_read_uncompressed_file_header(
 /* TODO flag mismatch and file as corrupted? */
 	}
 	return( 1 );
-
-on_error:
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( value_string != NULL )
-	{
-		memory_free(
-		 value_string );
-	}
-#endif
-	return( -1 );
 }
 
 /* Reads the file metrics array
@@ -1523,14 +1435,8 @@ int libscca_io_handle_read_volumes_information(
 	int entry_index                                           = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	system_character_t filetime_string[ 48 ];
-
-	libfdatetime_filetime_t *filetime                         = NULL;
-	system_character_t *value_string                          = NULL;
-	size_t value_string_size                                  = 0;
 	uint64_t value_64bit                                      = 0;
 	uint32_t value_32bit                                      = 0;
-	int result                                                = 0;
 #endif
 
 	if( io_handle == NULL )
@@ -1745,19 +1651,6 @@ int libscca_io_handle_read_volumes_information(
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
-			if( libfdatetime_filetime_initialize(
-			     &filetime,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create filetime.",
-				 function );
-
-				goto on_error;
-			}
 			libcnotify_printf(
 			 "%s: device path offset\t\t\t: 0x%08" PRIx32 "\n",
 			 function,
@@ -1768,53 +1661,24 @@ int libscca_io_handle_read_volumes_information(
 			 function,
 			 device_path_size );
 
-			if( libfdatetime_filetime_copy_from_byte_stream(
-			     filetime,
+			if( libscca_debug_print_filetime_value(
+			     function,
+			     "creation time\t\t\t",
 			     ( (scca_volume_information_v17_t *) volume_information_data )->creation_time,
 			     8,
 			     LIBFDATETIME_ENDIAN_LITTLE,
+			     LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
 			     error ) != 1 )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy byte stream to filetime.",
+				 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+				 "%s: unable to print filetime value.",
 				 function );
 
 				goto on_error;
 			}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-			result = libfdatetime_filetime_copy_to_utf16_string(
-				  filetime,
-				  (uint16_t *) filetime_string,
-				  48,
-				  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
-				  error );
-#else
-			result = libfdatetime_filetime_copy_to_utf8_string(
-				  filetime,
-				  (uint8_t *) filetime_string,
-				  48,
-				  LIBFDATETIME_STRING_FORMAT_TYPE_CTIME | LIBFDATETIME_STRING_FORMAT_FLAG_DATE_TIME_NANO_SECONDS,
-				  error );
-#endif
-			if( result != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
-				 "%s: unable to copy filetime to string.",
-				 function );
-
-				goto on_error;
-			}
-			libcnotify_printf(
-			 "%s: creation time\t\t\t: %" PRIs_SYSTEM " UTC\n",
-			 function,
-			 filetime_string );
-
 			libcnotify_printf(
 			 "%s: serial number\t\t\t: 0x%08" PRIx32 "\n",
 			 function,
@@ -1919,20 +1783,6 @@ int libscca_io_handle_read_volumes_information(
 			}
 			libcnotify_printf(
 			 "\n" );
-
-			if( libfdatetime_filetime_free(
-			     &filetime,
-			     error ) != 1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
-				 "%s: unable to free filetime.",
-				 function );
-
-				goto on_error;
-			}
 		}
 #endif
 		volume_information_offset += volume_information_size;
@@ -2009,95 +1859,23 @@ int libscca_io_handle_read_volumes_information(
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-				result = libuna_utf16_string_size_from_utf16_stream(
-					  volume_information->device_path,
-					  volume_information->device_path_size,
-					  LIBUNA_ENDIAN_LITTLE,
-					  &value_string_size,
-					  error );
-#else
-				result = libuna_utf8_string_size_from_utf16_stream(
-					  volume_information->device_path,
-					  volume_information->device_path_size,
-					  LIBUNA_ENDIAN_LITTLE,
-					  &value_string_size,
-					  error );
-#endif
-				if( result != 1 )
+				if( libscca_debug_print_utf16_string_value(
+				     function,
+				     "volume device path\t\t\t",
+				     volume_information->device_path,
+				     volume_information->device_path_size,
+				     LIBUNA_ENDIAN_LITTLE,
+				     error ) != 1 )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-					 "%s: unable to determine size of volume device path string.",
+					 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+					 "%s: unable to print UTF-16 string value.",
 					 function );
 
 					goto on_error;
 				}
-				if( ( value_string_size > (size_t) SSIZE_MAX )
-				 || ( ( sizeof( system_character_t ) * value_string_size ) > (size_t) SSIZE_MAX ) )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
-					 "%s: invalid volume device path string size value exceeds maximum.",
-					 function );
-
-					goto on_error;
-				}
-				value_string = system_string_allocate(
-				                value_string_size );
-
-				if( value_string == NULL )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_MEMORY,
-					 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-					 "%s: unable to create volume device path string.",
-					 function );
-
-					goto on_error;
-				}
-#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
-				result = libuna_utf16_string_copy_from_utf16_stream(
-					  (libuna_utf16_character_t *) value_string,
-					  value_string_size,
-					  volume_information->device_path,
-					  volume_information->device_path_size,
-					  LIBUNA_ENDIAN_LITTLE,
-					  error );
-#else
-				result = libuna_utf8_string_copy_from_utf16_stream(
-					  (libuna_utf8_character_t *) value_string,
-					  value_string_size,
-					  volume_information->device_path,
-					  volume_information->device_path_size,
-					  LIBUNA_ENDIAN_LITTLE,
-					  error );
-#endif
-				if( result != 1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-					 "%s: unable to set volume device path string.",
-					 function );
-
-					goto on_error;
-				}
-				libcnotify_printf(
-				 "%s: volume device path\t\t\t: %" PRIs_SYSTEM "\n",
-				 function,
-				 value_string );
-
-				memory_free(
-				 value_string );
-
-				value_string = NULL;
 			}
 #endif
 		}
@@ -2281,19 +2059,6 @@ int libscca_io_handle_read_volumes_information(
 	return( 1 );
 
 on_error:
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( value_string != NULL )
-	{
-		memory_free(
-		 value_string );
-	}
-	if( filetime != NULL )
-	{
-		libfdatetime_filetime_free(
-		 &filetime,
-		 NULL );
-	}
-#endif
 	if( volume_information != NULL )
 	{
 		libscca_internal_volume_information_free(
