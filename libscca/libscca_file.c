@@ -1629,7 +1629,7 @@ int libscca_file_get_prefetch_hash(
 int libscca_file_get_last_run_time(
      libscca_file_t *file,
      int last_run_time_index,
-     uint64_t *last_run_time,
+     uint64_t *filetime,
      libcerror_error_t **error )
 {
 	libscca_internal_file_t *internal_file = NULL;
@@ -1691,18 +1691,18 @@ int libscca_file_get_last_run_time(
 
 		return( -1 );
 	}
-	if( last_run_time == NULL )
+	if( filetime == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid last run time.",
+		 "%s: invalid filetime.",
 		 function );
 
 		return( -1 );
 	}
-	*last_run_time = internal_file->file_information->last_run_time[ last_run_time_index ];
+	*filetime = internal_file->file_information->last_run_time[ last_run_time_index ];
 
 	return( 1 );
 }

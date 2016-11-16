@@ -1,4 +1,4 @@
-.Dd March 27, 2016
+.Dd November 16, 2016
 .Dt libscca 3
 .Os libscca
 .Sh NAME
@@ -75,7 +75,7 @@ File functions
 .Ft int
 .Fn libscca_file_get_prefetch_hash "libscca_file_t *file, uint32_t *prefetch_hash, libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_last_run_time "libscca_file_t *file, int last_run_time_index, uint64_t *last_run_time, libscca_error_t **error"
+.Fn libscca_file_get_last_run_time "libscca_file_t *file, int last_run_time_index, uint64_t *filetime, libscca_error_t **error"
 .Ft int
 .Fn libscca_file_get_run_count "libscca_file_t *file, uint32_t *run_count, libscca_error_t **error"
 .Ft int
@@ -123,7 +123,7 @@ Volume information functions
 .Ft int
 .Fn libscca_volume_information_free "libscca_volume_information_t **volume_information, libscca_error_t **error"
 .Ft int
-.Fn libscca_volume_information_get_creation_time "libscca_volume_information_t *volume_information, uint64_t *creation_time, libscca_error_t **error"
+.Fn libscca_volume_information_get_creation_time "libscca_volume_information_t *volume_information, uint64_t *filetime, libscca_error_t **error"
 .Ft int
 .Fn libscca_volume_information_get_serial_number "libscca_volume_information_t *volume_information, uint32_t *serial_number, libscca_error_t **error"
 .Ft int

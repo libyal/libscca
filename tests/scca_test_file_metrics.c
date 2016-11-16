@@ -33,6 +33,8 @@
 #include "scca_test_memory.h"
 #include "scca_test_unused.h"
 
+#include "../libscca/libscca_file_metrics.h"
+
 /* Tests the libscca_file_metrics_free function
  * Returns 1 if successful or 0 if not
  */
@@ -86,9 +88,25 @@ int main(
 	SCCA_TEST_UNREFERENCED_PARAMETER( argc )
 	SCCA_TEST_UNREFERENCED_PARAMETER( argv )
 
+#if defined( __GNUC__ )
+
+	/* TODO: add tests for libscca_file_metrics_initialize */
+
+#endif /* defined( __GNUC__ ) */
+
 	SCCA_TEST_RUN(
 	 "libscca_file_metrics_free",
 	 scca_test_file_metrics_free );
+
+	/* TODO: add tests for libscca_file_metrics_get_utf8_filename_size */
+
+	/* TODO: add tests for libscca_file_metrics_get_utf8_filename */
+
+	/* TODO: add tests for libscca_file_metrics_get_utf16_filename_size */
+
+	/* TODO: add tests for libscca_file_metrics_get_utf16_filename */
+
+	/* TODO: add tests for libscca_file_metrics_get_file_reference */
 
 	return( EXIT_SUCCESS );
 

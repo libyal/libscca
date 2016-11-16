@@ -38,7 +38,7 @@
 #include "scca_test_macros.h"
 #include "scca_test_memory.h"
 
-#if SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER ) && SIZEOF_WCHAR_T != 2 && SIZEOF_WCHAR_T != 4
 #error Unsupported size of wchar_t
 #endif
 
@@ -256,8 +256,8 @@ int scca_test_file_get_wide_source(
      libcerror_error_t **error )
 {
 	static char *function   = "scca_test_file_get_wide_source";
-	size_t wide_source_size = 0;
 	size_t source_length    = 0;
+	size_t wide_source_size = 0;
 
 #if !defined( HAVE_WIDE_SYSTEM_CHARACTER )
 	int result              = 0;
@@ -584,11 +584,17 @@ int scca_test_file_close_source(
 int scca_test_file_initialize(
      void )
 {
-	libcerror_error_t *error = NULL;
-	libscca_file_t *file     = NULL;
-	int result               = 0;
+	libcerror_error_t *error        = NULL;
+	libscca_file_t *file            = NULL;
+	int result                      = 0;
 
-	/* Test libscca_file_initialize
+#if defined( HAVE_SCCA_TEST_MEMORY )
+	int number_of_malloc_fail_tests = 1;
+	int number_of_memset_fail_tests = 1;
+	int test_number                 = 0;
+#endif
+
+	/* Test regular cases
 	 */
 	result = libscca_file_initialize(
 	          &file,
@@ -664,79 +670,89 @@ int scca_test_file_initialize(
 
 #if defined( HAVE_SCCA_TEST_MEMORY )
 
-	/* Test libscca_file_initialize with malloc failing
-	 */
-	scca_test_malloc_attempts_before_fail = 0;
-
-	result = libscca_file_initialize(
-	          &file,
-	          &error );
-
-	if( scca_test_malloc_attempts_before_fail != -1 )
+	for( test_number = 0;
+	     test_number < number_of_malloc_fail_tests;
+	     test_number++ )
 	{
-		scca_test_malloc_attempts_before_fail = -1;
+		/* Test libscca_file_initialize with malloc failing
+		 */
+		scca_test_malloc_attempts_before_fail = test_number;
 
-		if( file != NULL )
+		result = libscca_file_initialize(
+		          &file,
+		          &error );
+
+		if( scca_test_malloc_attempts_before_fail != -1 )
 		{
-			libscca_file_free(
-			 &file,
-			 NULL );
+			scca_test_malloc_attempts_before_fail = -1;
+
+			if( file != NULL )
+			{
+				libscca_file_free(
+				 &file,
+				 NULL );
+			}
+		}
+		else
+		{
+			SCCA_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
+
+			SCCA_TEST_ASSERT_IS_NULL(
+			 "file",
+			 file );
+
+			SCCA_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
+
+			libcerror_error_free(
+			 &error );
 		}
 	}
-	else
+	for( test_number = 0;
+	     test_number < number_of_memset_fail_tests;
+	     test_number++ )
 	{
-		SCCA_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+		/* Test libscca_file_initialize with memset failing
+		 */
+		scca_test_memset_attempts_before_fail = test_number;
 
-		SCCA_TEST_ASSERT_IS_NULL(
-		 "file",
-		 file );
+		result = libscca_file_initialize(
+		          &file,
+		          &error );
 
-		SCCA_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
-		libcerror_error_free(
-		 &error );
-	}
-	/* Test libscca_file_initialize with memset failing
-	 */
-	scca_test_memset_attempts_before_fail = 0;
-
-	result = libscca_file_initialize(
-	          &file,
-	          &error );
-
-	if( scca_test_memset_attempts_before_fail != -1 )
-	{
-		scca_test_memset_attempts_before_fail = -1;
-
-		if( file != NULL )
+		if( scca_test_memset_attempts_before_fail != -1 )
 		{
-			libscca_file_free(
-			 &file,
-			 NULL );
+			scca_test_memset_attempts_before_fail = -1;
+
+			if( file != NULL )
+			{
+				libscca_file_free(
+				 &file,
+				 NULL );
+			}
 		}
-	}
-	else
-	{
-		SCCA_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+		else
+		{
+			SCCA_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
 
-		SCCA_TEST_ASSERT_IS_NULL(
-		 "file",
-		 file );
+			SCCA_TEST_ASSERT_IS_NULL(
+			 "file",
+			 file );
 
-		SCCA_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+			SCCA_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
 
-		libcerror_error_free(
-		 &error );
+			libcerror_error_free(
+			 &error );
+		}
 	}
 #endif /* defined( HAVE_SCCA_TEST_MEMORY ) */
 
@@ -795,7 +811,7 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libscca_file_open functions
+/* Tests the libscca_file_open function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_open(
@@ -858,21 +874,28 @@ int scca_test_file_open(
          "error",
          error );
 
-	/* Clean up
+	/* Test error cases
 	 */
-	result = libscca_file_close(
+	result = libscca_file_open(
 	          file,
+	          narrow_source,
+	          LIBSCCA_OPEN_READ,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 0 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
          "error",
          error );
 
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
 	result = libscca_file_free(
 	          &file,
 	          &error );
@@ -909,7 +932,7 @@ on_error:
 
 #if defined( HAVE_WIDE_CHARACTER_TYPE )
 
-/* Tests the libscca_file_open_wide functions
+/* Tests the libscca_file_open_wide function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_open_wide(
@@ -972,21 +995,28 @@ int scca_test_file_open_wide(
          "error",
          error );
 
-	/* Clean up
+	/* Test error cases
 	 */
-	result = libscca_file_close(
+	result = libscca_file_open_wide(
 	          file,
+	          wide_source,
+	          LIBSCCA_OPEN_READ,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
-	 0 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
          "error",
          error );
 
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
 	result = libscca_file_free(
 	          &file,
 	          &error );
@@ -1023,29 +1053,266 @@ on_error:
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
 
-/* Tests the libscca_file_get_format_version functions
+/* Tests the libscca_file_close function
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_file_close(
+     void )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test error cases
+	 */
+	result = libscca_file_close(
+	          NULL,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libscca_file_open and libscca_file_close functions
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_file_open_close(
+     const system_character_t *source )
+{
+	libcerror_error_t *error = NULL;
+	libscca_file_t *file     = NULL;
+	int result               = 0;
+
+	/* Initialize test
+	 */
+	result = libscca_file_initialize(
+	          &file,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "file",
+         file );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test open and close
+	 */
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libscca_file_open_wide(
+	          file,
+	          source,
+	          LIBSCCA_OPEN_READ,
+	          &error );
+#else
+	result = libscca_file_open(
+	          file,
+	          source,
+	          LIBSCCA_OPEN_READ,
+	          &error );
+#endif
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	result = libscca_file_close(
+	          file,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test open and close a second time to validate clean up on close
+	 */
+#if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+	result = libscca_file_open_wide(
+	          file,
+	          source,
+	          LIBSCCA_OPEN_READ,
+	          &error );
+#else
+	result = libscca_file_open(
+	          file,
+	          source,
+	          LIBSCCA_OPEN_READ,
+	          &error );
+#endif
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	result = libscca_file_close(
+	          file,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 0 );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Clean up
+	 */
+	result = libscca_file_free(
+	          &file,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "file",
+         file );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( file != NULL )
+	{
+		libscca_file_free(
+		 &file,
+		 NULL );
+	}
+	return( 0 );
+}
+
+/* Tests the libscca_file_signal_abort function
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_file_signal_abort(
+     libscca_file_t *file )
+{
+	libcerror_error_t *error = NULL;
+	int result               = 0;
+
+	/* Test regular cases
+	 */
+	result = libscca_file_signal_abort(
+	          file,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+        SCCA_TEST_ASSERT_IS_NULL(
+         "error",
+         error );
+
+	/* Test error cases
+	 */
+	result = libscca_file_signal_abort(
+	          NULL,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+        SCCA_TEST_ASSERT_IS_NOT_NULL(
+         "error",
+         error );
+
+	libcerror_error_free(
+	 &error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libscca_file_get_format_version function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_get_format_version(
      libscca_file_t *file )
 {
-	libcerror_error_t *error = NULL;
-	uint32_t format_version  = 0;
-	int result               = 0;
+	libcerror_error_t *error  = NULL;
+	uint32_t format_version   = 0;
+	int format_version_is_set = 0;
+	int result                = 0;
 
+	/* Test regular cases
+	 */
 	result = libscca_file_get_format_version(
 	          file,
 	          &format_version,
 	          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	format_version_is_set = result;
 
 	/* Test error cases
 	 */
@@ -1059,30 +1326,32 @@ int scca_test_file_get_format_version(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
 
-	result = libscca_file_get_format_version(
-	          file,
-	          NULL,
-	          &error );
+	if( format_version_is_set != 0 )
+	{
+		result = libscca_file_get_format_version(
+		          file,
+		          NULL,
+		          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
 
-	libcerror_error_free(
-	 &error );
-
+		libcerror_error_free(
+		 &error );
+	}
 	return( 1 );
 
 on_error:
@@ -1094,35 +1363,40 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libscca_file_get_utf8_executable_filename_size functions
+/* Tests the libscca_file_get_utf8_executable_filename_size function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_get_utf8_executable_filename_size(
      libscca_file_t *file )
 {
-	libcerror_error_t *error = NULL;
-	size_t filename_size     = 0;
-	int result               = 0;
+	libcerror_error_t *error                 = NULL;
+	size_t utf8_executable_filename_size     = 0;
+	int result                               = 0;
+	int utf8_executable_filename_size_is_set = 0;
 
+	/* Test regular cases
+	 */
 	result = libscca_file_get_utf8_executable_filename_size(
 	          file,
-	          &filename_size,
+	          &utf8_executable_filename_size,
 	          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	utf8_executable_filename_size_is_set = result;
 
 	/* Test error cases
 	 */
 	result = libscca_file_get_utf8_executable_filename_size(
 	          NULL,
-	          &filename_size,
+	          &utf8_executable_filename_size,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -1130,30 +1404,32 @@ int scca_test_file_get_utf8_executable_filename_size(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
 
-	result = libscca_file_get_utf8_executable_filename_size(
-	          file,
-	          NULL,
-	          &error );
+	if( utf8_executable_filename_size_is_set != 0 )
+	{
+		result = libscca_file_get_utf8_executable_filename_size(
+		          file,
+		          NULL,
+		          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
 
-	libcerror_error_free(
-	 &error );
-
+		libcerror_error_free(
+		 &error );
+	}
 	return( 1 );
 
 on_error:
@@ -1165,35 +1441,158 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libscca_file_get_utf16_executable_filename_size functions
+/* Tests the libscca_file_get_utf8_executable_filename function
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_file_get_utf8_executable_filename(
+     libscca_file_t *file )
+{
+	uint8_t utf8_executable_filename[ 512 ];
+
+	libcerror_error_t *error            = NULL;
+	int result                          = 0;
+	int utf8_executable_filename_is_set = 0;
+
+	/* Test regular cases
+	 */
+	result = libscca_file_get_utf8_executable_filename(
+	          file,
+	          utf8_executable_filename,
+	          512,
+	          &error );
+
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	utf8_executable_filename_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libscca_file_get_utf8_executable_filename(
+	          NULL,
+	          utf8_executable_filename,
+	          512,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( utf8_executable_filename_is_set != 0 )
+	{
+		result = libscca_file_get_utf8_executable_filename(
+		          file,
+		          NULL,
+		          512,
+		          &error );
+
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+
+		result = libscca_file_get_utf8_executable_filename(
+		          file,
+		          utf8_executable_filename,
+		          0,
+		          &error );
+
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+	        SCCA_TEST_ASSERT_IS_NOT_NULL(
+	         "error",
+	         error );
+
+		libcerror_error_free(
+		 &error );
+
+		result = libscca_file_get_utf8_executable_filename(
+		          file,
+		          utf8_executable_filename,
+		          (size_t) SSIZE_MAX + 1,
+		          &error );
+
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libscca_file_get_utf16_executable_filename_size function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_get_utf16_executable_filename_size(
      libscca_file_t *file )
 {
-	libcerror_error_t *error = NULL;
-	size_t filename_size     = 0;
-	int result               = 0;
+	libcerror_error_t *error                  = NULL;
+	size_t utf16_executable_filename_size     = 0;
+	int result                                = 0;
+	int utf16_executable_filename_size_is_set = 0;
 
+	/* Test regular cases
+	 */
 	result = libscca_file_get_utf16_executable_filename_size(
 	          file,
-	          &filename_size,
+	          &utf16_executable_filename_size,
 	          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	utf16_executable_filename_size_is_set = result;
 
 	/* Test error cases
 	 */
 	result = libscca_file_get_utf16_executable_filename_size(
 	          NULL,
-	          &filename_size,
+	          &utf16_executable_filename_size,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -1201,30 +1600,32 @@ int scca_test_file_get_utf16_executable_filename_size(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
 
-	result = libscca_file_get_utf16_executable_filename_size(
-	          file,
-	          NULL,
-	          &error );
+	if( utf16_executable_filename_size_is_set != 0 )
+	{
+		result = libscca_file_get_utf16_executable_filename_size(
+		          file,
+		          NULL,
+		          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
 
-	libcerror_error_free(
-	 &error );
-
+		libcerror_error_free(
+		 &error );
+	}
 	return( 1 );
 
 on_error:
@@ -1236,7 +1637,125 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libscca_file_get_prefetch_hash functions
+/* Tests the libscca_file_get_utf16_executable_filename function
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_file_get_utf16_executable_filename(
+     libscca_file_t *file )
+{
+	uint16_t utf16_executable_filename[ 512 ];
+
+	libcerror_error_t *error             = NULL;
+	int result                           = 0;
+	int utf16_executable_filename_is_set = 0;
+
+	/* Test regular cases
+	 */
+	result = libscca_file_get_utf16_executable_filename(
+	          file,
+	          utf16_executable_filename,
+	          512,
+	          &error );
+
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	utf16_executable_filename_is_set = result;
+
+	/* Test error cases
+	 */
+	result = libscca_file_get_utf16_executable_filename(
+	          NULL,
+	          utf16_executable_filename,
+	          512,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	if( utf16_executable_filename_is_set != 0 )
+	{
+		result = libscca_file_get_utf16_executable_filename(
+		          file,
+		          NULL,
+		          512,
+		          &error );
+
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+
+		result = libscca_file_get_utf16_executable_filename(
+		          file,
+		          utf16_executable_filename,
+		          0,
+		          &error );
+
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+	        SCCA_TEST_ASSERT_IS_NOT_NULL(
+	         "error",
+	         error );
+
+		libcerror_error_free(
+		 &error );
+
+		result = libscca_file_get_utf16_executable_filename(
+		          file,
+		          utf16_executable_filename,
+		          (size_t) SSIZE_MAX + 1,
+		          &error );
+
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
+
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
+
+		libcerror_error_free(
+		 &error );
+	}
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	return( 0 );
+}
+
+/* Tests the libscca_file_get_prefetch_hash function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_get_prefetch_hash(
@@ -1244,21 +1763,26 @@ int scca_test_file_get_prefetch_hash(
 {
 	libcerror_error_t *error = NULL;
 	uint32_t prefetch_hash   = 0;
+	int prefetch_hash_is_set = 0;
 	int result               = 0;
 
+	/* Test regular cases
+	 */
 	result = libscca_file_get_prefetch_hash(
 	          file,
 	          &prefetch_hash,
 	          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	prefetch_hash_is_set = result;
 
 	/* Test error cases
 	 */
@@ -1272,30 +1796,32 @@ int scca_test_file_get_prefetch_hash(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
 
-	result = libscca_file_get_prefetch_hash(
-	          file,
-	          NULL,
-	          &error );
+	if( prefetch_hash_is_set != 0 )
+	{
+		result = libscca_file_get_prefetch_hash(
+		          file,
+		          NULL,
+		          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
 
-	libcerror_error_free(
-	 &error );
-
+		libcerror_error_free(
+		 &error );
+	}
 	return( 1 );
 
 on_error:
@@ -1399,7 +1925,7 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libscca_file_get_run_count functions
+/* Tests the libscca_file_get_run_count function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_get_run_count(
@@ -1408,20 +1934,25 @@ int scca_test_file_get_run_count(
 	libcerror_error_t *error = NULL;
 	uint32_t run_count       = 0;
 	int result               = 0;
+	int run_count_is_set     = 0;
 
+	/* Test regular cases
+	 */
 	result = libscca_file_get_run_count(
 	          file,
 	          &run_count,
 	          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	run_count_is_set = result;
 
 	/* Test error cases
 	 */
@@ -1435,30 +1966,32 @@ int scca_test_file_get_run_count(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
 
-	result = libscca_file_get_run_count(
-	          file,
-	          NULL,
-	          &error );
+	if( run_count_is_set != 0 )
+	{
+		result = libscca_file_get_run_count(
+		          file,
+		          NULL,
+		          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
 
-	libcerror_error_free(
-	 &error );
-
+		libcerror_error_free(
+		 &error );
+	}
 	return( 1 );
 
 on_error:
@@ -1470,29 +2003,34 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libscca_file_get_number_of_file_metrics_entries functions
+/* Tests the libscca_file_get_number_of_file_metrics_entries function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_get_number_of_file_metrics_entries(
      libscca_file_t *file )
 {
-	libcerror_error_t *error           = NULL;
-	int number_of_file_metrics_entries = 0;
-	int result                         = 0;
+	libcerror_error_t *error                  = NULL;
+	int number_of_file_metrics_entries        = 0;
+	int number_of_file_metrics_entries_is_set = 0;
+	int result                                = 0;
 
+	/* Test regular cases
+	 */
 	result = libscca_file_get_number_of_file_metrics_entries(
 	          file,
 	          &number_of_file_metrics_entries,
 	          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	number_of_file_metrics_entries_is_set = result;
 
 	/* Test error cases
 	 */
@@ -1506,30 +2044,32 @@ int scca_test_file_get_number_of_file_metrics_entries(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
 
-	result = libscca_file_get_number_of_file_metrics_entries(
-	          file,
-	          NULL,
-	          &error );
+	if( number_of_file_metrics_entries_is_set != 0 )
+	{
+		result = libscca_file_get_number_of_file_metrics_entries(
+		          file,
+		          NULL,
+		          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
 
-	libcerror_error_free(
-	 &error );
-
+		libcerror_error_free(
+		 &error );
+	}
 	return( 1 );
 
 on_error:
@@ -1541,29 +2081,34 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libscca_file_get_number_of_filenames functions
+/* Tests the libscca_file_get_number_of_filenames function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_get_number_of_filenames(
      libscca_file_t *file )
 {
-	libcerror_error_t *error = NULL;
-	int number_of_filenames  = 0;
-	int result               = 0;
+	libcerror_error_t *error       = NULL;
+	int number_of_filenames        = 0;
+	int number_of_filenames_is_set = 0;
+	int result                     = 0;
 
+	/* Test regular cases
+	 */
 	result = libscca_file_get_number_of_filenames(
 	          file,
 	          &number_of_filenames,
 	          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	number_of_filenames_is_set = result;
 
 	/* Test error cases
 	 */
@@ -1577,30 +2122,32 @@ int scca_test_file_get_number_of_filenames(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
 
-	result = libscca_file_get_number_of_filenames(
-	          file,
-	          NULL,
-	          &error );
+	if( number_of_filenames_is_set != 0 )
+	{
+		result = libscca_file_get_number_of_filenames(
+		          file,
+		          NULL,
+		          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
 
-	libcerror_error_free(
-	 &error );
-
+		libcerror_error_free(
+		 &error );
+	}
 	return( 1 );
 
 on_error:
@@ -1612,29 +2159,34 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the libscca_file_get_number_of_volumes functions
+/* Tests the libscca_file_get_number_of_volumes function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_file_get_number_of_volumes(
      libscca_file_t *file )
 {
-	libcerror_error_t *error = NULL;
-	int number_of_volumes    = 0;
-	int result               = 0;
+	libcerror_error_t *error     = NULL;
+	int number_of_volumes        = 0;
+	int number_of_volumes_is_set = 0;
+	int result                   = 0;
 
+	/* Test regular cases
+	 */
 	result = libscca_file_get_number_of_volumes(
 	          file,
 	          &number_of_volumes,
 	          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
+	SCCA_TEST_ASSERT_NOT_EQUAL_INT(
 	 "result",
 	 result,
-	 1 );
+	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	number_of_volumes_is_set = result;
 
 	/* Test error cases
 	 */
@@ -1648,30 +2200,32 @@ int scca_test_file_get_number_of_volumes(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
 
-	result = libscca_file_get_number_of_volumes(
-	          file,
-	          NULL,
-	          &error );
+	if( number_of_volumes_is_set != 0 )
+	{
+		result = libscca_file_get_number_of_volumes(
+		          file,
+		          NULL,
+		          &error );
 
-	SCCA_TEST_ASSERT_EQUAL_INT(
-	 "result",
-	 result,
-	 -1 );
+		SCCA_TEST_ASSERT_EQUAL_INT(
+		 "result",
+		 result,
+		 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+		SCCA_TEST_ASSERT_IS_NOT_NULL(
+		 "error",
+		 error );
 
-	libcerror_error_free(
-	 &error );
-
+		libcerror_error_free(
+		 &error );
+	}
 	return( 1 );
 
 on_error:
@@ -1853,8 +2407,6 @@ int main(
 	 "libscca_file_free",
 	 scca_test_file_free );
 
-	/* TODO add test for libscca_file_signal_abort */
-
 #if !defined( __BORLANDC__ ) || ( __BORLANDC__ >= 0x0560 )
 	if( source != NULL )
 	{
@@ -1878,7 +2430,14 @@ int main(
 
 #endif /* defined( LIBSCCA_HAVE_BFIO ) */
 
-		/* TODO add test for libscca_file_close */
+		SCCA_TEST_RUN(
+		 "libscca_file_close",
+		 scca_test_file_close );
+
+		SCCA_TEST_RUN_WITH_ARGS(
+		 "libscca_file_open_close",
+		 scca_test_file_open_close,
+		 source );
 
 		/* Initialize test
 		 */
@@ -1901,6 +2460,17 @@ int main(
 	         error );
 
 		SCCA_TEST_RUN_WITH_ARGS(
+		 "libscca_file_signal_abort",
+		 scca_test_file_signal_abort,
+		 file );
+
+#if defined( __GNUC__ )
+
+		/* TODO: add tests for libscca_file_open_read */
+
+#endif /* defined( __GNUC__ ) */
+
+		SCCA_TEST_RUN_WITH_ARGS(
 		 "libscca_file_get_format_version",
 		 scca_test_file_get_format_version,
 		 file );
@@ -1910,14 +2480,20 @@ int main(
 		 scca_test_file_get_utf8_executable_filename_size,
 		 file );
 
-		/* TODO add test for libscca_file_get_utf8_executable_filename */
+		SCCA_TEST_RUN_WITH_ARGS(
+		 "libscca_file_get_utf8_executable_filename",
+		 scca_test_file_get_utf8_executable_filename,
+		 file );
 
 		SCCA_TEST_RUN_WITH_ARGS(
 		 "libscca_file_get_utf16_executable_filename_size",
 		 scca_test_file_get_utf16_executable_filename_size,
 		 file );
 
-		/* TODO add test for libscca_file_get_utf16_executable_filename */
+		SCCA_TEST_RUN_WITH_ARGS(
+		 "libscca_file_get_utf16_executable_filename",
+		 scca_test_file_get_utf16_executable_filename,
+		 file );
 
 		SCCA_TEST_RUN_WITH_ARGS(
 		 "libscca_file_get_prefetch_hash",
@@ -1939,17 +2515,20 @@ int main(
 		 scca_test_file_get_number_of_file_metrics_entries,
 		 file );
 
-		/* TODO add test for libscca_file_get_file_metrics_entry */
+		/* TODO: add tests for libscca_file_get_file_metrics_entry */
 
 		SCCA_TEST_RUN_WITH_ARGS(
 		 "libscca_file_get_number_of_filenames",
 		 scca_test_file_get_number_of_filenames,
 		 file );
 
-		/* TODO add test for libscca_file_get_utf8_filename_size */
-		/* TODO add test for libscca_file_get_utf8_filename */
-		/* TODO add test for libscca_file_get_utf16_filename_size */
-		/* TODO add test for libscca_file_get_utf16_filename */
+		/* TODO: add tests for libscca_file_get_utf8_filename_size */
+
+		/* TODO: add tests for libscca_file_get_utf8_filename */
+
+		/* TODO: add tests for libscca_file_get_utf16_filename_size */
+
+		/* TODO: add tests for libscca_file_get_utf16_filename */
 
 		SCCA_TEST_RUN_WITH_ARGS(
 		 "libscca_file_get_number_of_volumes",

@@ -192,7 +192,7 @@ LIBSCCA_EXTERN \
 int libscca_file_get_last_run_time(
      libscca_file_t *file,
      int last_run_time_index,
-     uint64_t *last_run_time,
+     uint64_t *filetime,
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \

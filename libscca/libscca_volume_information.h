@@ -60,7 +60,7 @@ struct libscca_internal_volume_information
 };
 
 int libscca_volume_information_initialize(
-     libscca_internal_volume_information_t **volume_information,
+     libscca_volume_information_t **volume_information,
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \
@@ -69,13 +69,13 @@ int libscca_volume_information_free(
      libcerror_error_t **error );
 
 int libscca_internal_volume_information_free(
-     libscca_internal_volume_information_t **volume_information,
+     libscca_internal_volume_information_t **internal_volume_information,
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \
 int libscca_volume_information_get_creation_time(
      libscca_volume_information_t *volume_information,
-     uint64_t *creation_time,
+     uint64_t *filetime,
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \

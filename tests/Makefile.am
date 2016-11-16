@@ -13,7 +13,9 @@ AM_CPPFLAGS = \
 	@LIBBFIO_CPPFLAGS@ \
 	@LIBFCACHE_CPPFLAGS@ \
 	@LIBFDATA_CPPFLAGS@ \
+	@LIBFDATETIME_CPPFLAGS@ \
 	@LIBFVALUE_CPPFLAGS@ \
+	@LIBFWNT_CPPFLAGS@ \
 	@LIBCSYSTEM_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBSCCA_DLL_IMPORT@
@@ -153,6 +155,7 @@ scca_test_notify_LDADD = \
 	../libscca/libscca.la
 
 scca_test_support_SOURCES = \
+	scca_test_libbfio.h \
 	scca_test_libcerror.h \
 	scca_test_libclocale.h \
 	scca_test_libcsystem.h \
@@ -163,6 +166,9 @@ scca_test_support_SOURCES = \
 
 scca_test_support_LDADD = \
 	@LIBCSYSTEM_LIBADD@ \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \

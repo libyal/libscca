@@ -34,10 +34,11 @@
  * Returns 1 if successful or -1 on error
  */
 int libscca_volume_information_initialize(
-     libscca_internal_volume_information_t **volume_information,
+     libscca_volume_information_t **volume_information,
      libcerror_error_t **error )
 {
-	static char *function = "libscca_volume_information_initialize";
+	libscca_internal_volume_information_t *internal_volume_information = NULL;
+	static char *function                                              = "libscca_volume_information_initialize";
 
 	if( volume_information == NULL )
 	{
@@ -61,10 +62,10 @@ int libscca_volume_information_initialize(
 
 		return( -1 );
 	}
-	*volume_information = memory_allocate_structure(
-	                       libscca_internal_volume_information_t );
+	internal_volume_information = memory_allocate_structure(
+	                               libscca_internal_volume_information_t );
 
-	if( *volume_information == NULL )
+	if( internal_volume_information == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -76,7 +77,7 @@ int libscca_volume_information_initialize(
 		goto on_error;
 	}
 	if( memory_set(
-	     *volume_information,
+	     internal_volume_information,
 	     0,
 	     sizeof( libscca_internal_volume_information_t ) ) == NULL )
 	{
@@ -89,15 +90,15 @@ int libscca_volume_information_initialize(
 
 		goto on_error;
 	}
+	*volume_information = (libscca_volume_information_t *) internal_volume_information;
+
 	return( 1 );
 
 on_error:
-	if( *volume_information != NULL )
+	if( internal_volume_information != NULL )
 	{
 		memory_free(
-		 *volume_information );
-
-		*volume_information = NULL;
+		 internal_volume_information );
 	}
 	return( -1 );
 }
@@ -133,13 +134,13 @@ int libscca_volume_information_free(
  * Returns 1 if successful or -1 on error
  */
 int libscca_internal_volume_information_free(
-     libscca_internal_volume_information_t **volume_information,
+     libscca_internal_volume_information_t **internal_volume_information,
      libcerror_error_t **error )
 {
 	static char *function = "libscca_volume_information_free";
 	int result            = 1;
 
-	if( volume_information == NULL )
+	if( internal_volume_information == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -150,17 +151,17 @@ int libscca_internal_volume_information_free(
 
 		return( -1 );
 	}
-	if( *volume_information != NULL )
+	if( *internal_volume_information != NULL )
 	{
-		if( ( *volume_information )->device_path != NULL )
+		if( ( *internal_volume_information )->device_path != NULL )
 		{
 			memory_free(
-			 ( *volume_information )->device_path );
+			 ( *internal_volume_information )->device_path );
 		}
-		if( ( *volume_information )->directory_strings != NULL )
+		if( ( *internal_volume_information )->directory_strings != NULL )
 		{
 			if( libfvalue_value_free(
-			     &( ( *volume_information )->directory_strings ),
+			     &( ( *internal_volume_information )->directory_strings ),
 			     error ) != 1 )
 			{
 				libcerror_error_set(
@@ -174,20 +175,19 @@ int libscca_internal_volume_information_free(
 			}
 		}
 		memory_free(
-		 ( *volume_information ) );
+		 ( *internal_volume_information ) );
 
-		*volume_information = NULL;
+		*internal_volume_information = NULL;
 	}
 	return( result );
 }
 
-/* Retrieves the 64-bit filetime value containing the volume creation date and time
- * The timestamp is a 64-bit FILETIME date and time value
+/* Retrieves the 64-bit FILETIME value containing the volume creation date and time
  * Returns 1 if successful or -1 on error
  */
 int libscca_volume_information_get_creation_time(
      libscca_volume_information_t *volume_information,
-     uint64_t *creation_time,
+     uint64_t *filetime,
      libcerror_error_t **error )
 {
 	libscca_internal_volume_information_t *internal_volume_information = NULL;
@@ -206,18 +206,18 @@ int libscca_volume_information_get_creation_time(
 	}
 	internal_volume_information = (libscca_internal_volume_information_t *) volume_information;
 
-	if( creation_time == NULL )
+	if( filetime == NULL )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
 		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid creation time.",
+		 "%s: invalid filetime.",
 		 function );
 
 		return( -1 );
 	}
-	*creation_time = internal_volume_information->creation_time;
+	*filetime = internal_volume_information->creation_time;
 
 	return( 1 );
 }

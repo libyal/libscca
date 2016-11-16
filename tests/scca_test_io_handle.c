@@ -43,11 +43,17 @@
 int scca_test_io_handle_initialize(
      void )
 {
-	libcerror_error_t *error       = NULL;
-	libscca_io_handle_t *io_handle = NULL;
-	int result                     = 0;
+	libcerror_error_t *error        = NULL;
+	libscca_io_handle_t *io_handle  = NULL;
+	int result                      = 0;
 
-	/* Test io_handle initialization
+#if defined( HAVE_SCCA_TEST_MEMORY )
+	int number_of_malloc_fail_tests = 1;
+	int number_of_memset_fail_tests = 1;
+	int test_number                 = 0;
+#endif
+
+	/* Test regular cases
 	 */
 	result = libscca_io_handle_initialize(
 	          &io_handle,
@@ -123,79 +129,89 @@ int scca_test_io_handle_initialize(
 
 #if defined( HAVE_SCCA_TEST_MEMORY )
 
-	/* Test libscca_io_handle_initialize with malloc failing
-	 */
-	scca_test_malloc_attempts_before_fail = 0;
-
-	result = libscca_io_handle_initialize(
-	          &io_handle,
-	          &error );
-
-	if( scca_test_malloc_attempts_before_fail != -1 )
+	for( test_number = 0;
+	     test_number < number_of_malloc_fail_tests;
+	     test_number++ )
 	{
-		scca_test_malloc_attempts_before_fail = -1;
+		/* Test libscca_io_handle_initialize with malloc failing
+		 */
+		scca_test_malloc_attempts_before_fail = test_number;
 
-		if( io_handle != NULL )
+		result = libscca_io_handle_initialize(
+		          &io_handle,
+		          &error );
+
+		if( scca_test_malloc_attempts_before_fail != -1 )
 		{
-			libscca_io_handle_free(
-			 &io_handle,
-			 NULL );
+			scca_test_malloc_attempts_before_fail = -1;
+
+			if( io_handle != NULL )
+			{
+				libscca_io_handle_free(
+				 &io_handle,
+				 NULL );
+			}
+		}
+		else
+		{
+			SCCA_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
+
+			SCCA_TEST_ASSERT_IS_NULL(
+			 "io_handle",
+			 io_handle );
+
+			SCCA_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
+
+			libcerror_error_free(
+			 &error );
 		}
 	}
-	else
+	for( test_number = 0;
+	     test_number < number_of_memset_fail_tests;
+	     test_number++ )
 	{
-		SCCA_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+		/* Test libscca_io_handle_initialize with memset failing
+		 */
+		scca_test_memset_attempts_before_fail = test_number;
 
-		SCCA_TEST_ASSERT_IS_NULL(
-		 "io_handle",
-		 io_handle );
+		result = libscca_io_handle_initialize(
+		          &io_handle,
+		          &error );
 
-		SCCA_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
-
-		libcerror_error_free(
-		 &error );
-	}
-	/* Test libscca_io_handle_initialize with memset failing
-	 */
-	scca_test_memset_attempts_before_fail = 0;
-
-	result = libscca_io_handle_initialize(
-	          &io_handle,
-	          &error );
-
-	if( scca_test_memset_attempts_before_fail != -1 )
-	{
-		scca_test_memset_attempts_before_fail = -1;
-
-		if( io_handle != NULL )
+		if( scca_test_memset_attempts_before_fail != -1 )
 		{
-			libscca_io_handle_free(
-			 &io_handle,
-			 NULL );
+			scca_test_memset_attempts_before_fail = -1;
+
+			if( io_handle != NULL )
+			{
+				libscca_io_handle_free(
+				 &io_handle,
+				 NULL );
+			}
 		}
-	}
-	else
-	{
-		SCCA_TEST_ASSERT_EQUAL_INT(
-		 "result",
-		 result,
-		 -1 );
+		else
+		{
+			SCCA_TEST_ASSERT_EQUAL_INT(
+			 "result",
+			 result,
+			 -1 );
 
-		SCCA_TEST_ASSERT_IS_NULL(
-		 "io_handle",
-		 io_handle );
+			SCCA_TEST_ASSERT_IS_NULL(
+			 "io_handle",
+			 io_handle );
 
-		SCCA_TEST_ASSERT_IS_NOT_NULL(
-		 "error",
-		 error );
+			SCCA_TEST_ASSERT_IS_NOT_NULL(
+			 "error",
+			 error );
 
-		libcerror_error_free(
-		 &error );
+			libcerror_error_free(
+			 &error );
+		}
 	}
 #endif /* defined( HAVE_SCCA_TEST_MEMORY ) */
 
@@ -280,6 +296,24 @@ int main(
 	SCCA_TEST_RUN(
 	 "libscca_io_handle_free",
 	 scca_test_io_handle_free );
+
+	/* TODO: add tests for libscca_io_handle_clear */
+
+	/* TODO: add tests for libscca_io_handle_read_compressed_file_header */
+
+	/* TODO: add tests for libscca_io_handle_read_compressed_blocks */
+
+	/* TODO: add tests for libscca_io_handle_read_uncompressed_file_header */
+
+	/* TODO: add tests for libscca_io_handle_read_file_metrics_array */
+
+	/* TODO: add tests for libscca_io_handle_read_trace_chain_array */
+
+	/* TODO: add tests for libscca_io_handle_read_volumes_information */
+
+	/* TODO: add tests for libscca_io_handle_read_segment_data */
+
+	/* TODO: add tests for libscca_io_handle_seek_segment_offset */
 
 #endif /* defined( __GNUC__ ) */
 

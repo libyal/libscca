@@ -331,7 +331,7 @@ LIBSCCA_EXTERN \
 int libscca_file_get_last_run_time(
      libscca_file_t *file,
      int last_run_time_index,
-     uint64_t *last_run_time,
+     uint64_t *filetime,
      libscca_error_t **error );
 
 /* Retrieves the run count
@@ -511,14 +511,13 @@ int libscca_volume_information_free(
      libscca_volume_information_t **volume_information,
      libscca_error_t **error );
 
-/* Retrieves the 64-bit filetime value containing the volume creation date and time
- * The timestamp is a 64-bit FILETIME date and time value
+/* Retrieves the 64-bit FILETIME value containing the volume creation date and time
  * Returns 1 if successful or -1 on error
  */
 LIBSCCA_EXTERN \
 int libscca_volume_information_get_creation_time(
      libscca_volume_information_t *volume_information,
-     uint64_t *creation_time,
+     uint64_t *filetime,
      libscca_error_t **error );
 
 /* Retrieves the serial number

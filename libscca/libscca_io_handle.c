@@ -1577,7 +1577,7 @@ int libscca_io_handle_read_volumes_information(
 	     volume_index++ )
 	{
 		if( libscca_volume_information_initialize(
-		     &volume_information,
+		     (libscca_volume_information_t **) &volume_information,
 		     error ) != 1 )
 		{
 			libcerror_error_set(
