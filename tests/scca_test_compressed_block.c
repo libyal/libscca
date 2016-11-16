@@ -51,7 +51,7 @@ int scca_test_compressed_block_initialize(
 	 */
 	result = libscca_compressed_block_initialize(
 	          &compressed_block,
-	          16,
+	          4096,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -88,7 +88,7 @@ int scca_test_compressed_block_initialize(
 	 */
 	result = libscca_compressed_block_initialize(
 	          NULL,
-	          16,
+	          4096,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -107,7 +107,7 @@ int scca_test_compressed_block_initialize(
 
 	result = libscca_compressed_block_initialize(
 	          &compressed_block,
-	          16,
+	          4096,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -166,7 +166,7 @@ int scca_test_compressed_block_initialize(
 
 	result = libscca_compressed_block_initialize(
 	          &compressed_block,
-	          16,
+	          4096,
 	          &error );
 
 	if( scca_test_malloc_attempts_before_fail != -1 )
@@ -204,7 +204,7 @@ int scca_test_compressed_block_initialize(
 
 	result = libscca_compressed_block_initialize(
 	          &compressed_block,
-	          16,
+	          4096,
 	          &error );
 
 	if( scca_test_memset_attempts_before_fail != -1 )

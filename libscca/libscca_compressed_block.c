@@ -106,7 +106,12 @@ int libscca_compressed_block_initialize(
 		 "%s: unable to clear compressed block.",
 		 function );
 
-		goto on_error;
+		memory_free(
+		 *compressed_block );
+
+		*compressed_block = NULL;
+
+		return( -1 );
 	}
 	( *compressed_block )->data = (uint8_t *) memory_allocate(
 	                                           sizeof( uint8_t ) * data_size );
@@ -143,6 +148,11 @@ int libscca_compressed_block_initialize(
 on_error:
 	if( *compressed_block != NULL )
 	{
+		if( ( *compressed_block )->data != NULL )
+		{
+			memory_free(
+			 ( *compressed_block )->data );
+		}
 		memory_free(
 		 *compressed_block );
 
