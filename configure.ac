@@ -102,17 +102,8 @@ AX_LIBFWNT_CHECK_ENABLE
 dnl Check for library function support
 AX_LIBSCCA_CHECK_LOCAL
 
-dnl Check for enabling libcsystem for cross-platform C generic system functions
-AX_LIBCSYSTEM_CHECK_ENABLE
-
-dnl Check if sccatools should be build as static executables
-AX_COMMON_CHECK_ENABLE_STATIC_EXECUTABLES
-
-dnl Check if libscca should be build with verbose output
-AX_COMMON_CHECK_ENABLE_VERBOSE_OUTPUT
-
-dnl Check if libscca should be build with debug output
-AX_COMMON_CHECK_ENABLE_DEBUG_OUTPUT
+dnl Check for sccatools function support
+AX_SCCATOOLS_CHECK_LOCAL
 
 dnl Check if libevt python bindings (pyssca) should be build
 AX_PYTHON_CHECK_PYPREFIX
@@ -137,29 +128,6 @@ AS_IF(
 dnl Check for test function support
 AX_TESTS_CHECK_LOCAL
 
-dnl Check if DLL support is needed
-AS_IF(
- [test "x$enable_shared" = xyes],
- [AS_CASE(
-  [$host],
-  [*cygwin* | *mingw*],
-  [AC_DEFINE(
-   [HAVE_DLLMAIN],
-   [1],
-   [Define to 1 to enable the DllMain function.])
-  AC_SUBST(
-   [HAVE_DLLMAIN],
-   [1])
-
-  AS_IF(
-   [test "x$ac_cv_enable_static_executables" = xno],
-   [AC_SUBST(
-    [LIBSCCA_DLL_IMPORT],
-    ["-DLIBSCCA_DLL_IMPORT"])
-   ])
-  ])
- ])
-
 dnl Set additional compiler flags
 CFLAGS="$CFLAGS -Wall";
 
@@ -171,13 +139,6 @@ AS_IF(
   [Requires:])
  AC_SUBST(
   [libscca_spec_build_requires],
-  [BuildRequires:])
- ])
-
-AS_IF(
- [test "x$ac_cv_libcsystem" = xyes],
- [AC_SUBST(
-  [libscca_spec_tools_build_requires],
   [BuildRequires:])
  ])
 
@@ -216,7 +177,6 @@ AC_CONFIG_FILES([libfdatetime/Makefile])
 AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libscca/Makefile])
-AC_CONFIG_FILES([libcsystem/Makefile])
 AC_CONFIG_FILES([sccatools/Makefile])
 AC_CONFIG_FILES([pyscca/Makefile])
 AC_CONFIG_FILES([pyscca-python2/Makefile])
@@ -262,7 +222,6 @@ Building:
    libfdatetime support:                      $ac_cv_libfdatetime
    libfvalue support:                         $ac_cv_libfvalue
    libfwnt support:                           $ac_cv_libfwnt
-   libcsystem support:                        $ac_cv_libcsystem
 
 Features:
    Multi-threading support:                   $ac_cv_libcthreads_multi_threading

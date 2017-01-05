@@ -19,25 +19,31 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _SCCAOUTPUT_H )
-#define _SCCAOUTPUT_H
+#if !defined( _SCCATOOLS_OUTPUT_H )
+#define _SCCATOOLS_OUTPUT_H
 
 #include <common.h>
 #include <file_stream.h>
 #include <types.h>
 
+#include "sccatools_libcerror.h"
+
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-void sccaoutput_copyright_fprint(
+int sccatools_output_initialize(
+     int stdio_mode,
+     libcerror_error_t **error );
+
+void sccatools_output_copyright_fprint(
       FILE *stream );
 
-void sccaoutput_version_fprint(
+void sccatools_output_version_fprint(
       FILE *stream,
       const char *program );
 
-void sccaoutput_version_detailed_fprint(
+void sccatools_output_version_detailed_fprint(
       FILE *stream,
       const char *program );
 
@@ -45,5 +51,5 @@ void sccaoutput_version_detailed_fprint(
 }
 #endif
 
-#endif /* !defined( _SCCAOUTPUT_H ) */
+#endif /* !defined( _SCCATOOLS_OUTPUT_H ) */
 

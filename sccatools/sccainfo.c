@@ -33,13 +33,15 @@
 #include <stdlib.h>
 #endif
 
-#include "sccaoutput.h"
+#include "info_handle.h"
+#include "sccatools_getopt.h"
 #include "sccatools_libcerror.h"
 #include "sccatools_libclocale.h"
 #include "sccatools_libcnotify.h"
-#include "sccatools_libcsystem.h"
 #include "sccatools_libscca.h"
-#include "info_handle.h"
+#include "sccatools_output.h"
+#include "sccatools_signal.h"
+#include "sccatools_unused.h"
 
 info_handle_t *sccainfo_info_handle = NULL;
 int sccainfo_abort                  = 0;
@@ -68,12 +70,12 @@ void usage_fprint(
 /* Signal handler for sccainfo
  */
 void sccainfo_signal_handler(
-      libcsystem_signal_t signal LIBCSYSTEM_ATTRIBUTE_UNUSED )
+      sccatools_signal_t signal SCCATOOLS_ATTRIBUTE_UNUSED )
 {
 	libcerror_error_t *error = NULL;
 	static char *function   = "sccainfo_signal_handler";
 
-	LIBCSYSTEM_UNREFERENCED_PARAMETER( signal )
+	SCCATOOLS_UNREFERENCED_PARAMETER( signal )
 
 	sccainfo_abort = 1;
 
@@ -95,8 +97,13 @@ void sccainfo_signal_handler(
 	}
 	/* Force stdin to close otherwise any function reading it will remain blocked
 	 */
-	if( libcsystem_file_io_close(
+#if defined( WINAPI ) && !defined( __CYGWIN__ )
+	if( _close(
 	     0 ) != 0 )
+#else
+	if( close(
+	     0 ) != 0 )
+#endif
 	{
 		libcnotify_printf(
 		 "%s: unable to close stdin.\n",
@@ -134,21 +141,21 @@ int main( int argc, char * const argv[] )
 
 		goto on_error;
 	}
-	if( libcsystem_initialize(
+	if( sccatools_output_initialize(
 	     _IONBF,
 	     &error ) != 1 )
 	{
 		fprintf(
 		 stderr,
-		 "Unable to initialize system values.\n" );
+		 "Unable to initialize output settings.\n" );
 
 		goto on_error;
 	}
-	sccaoutput_version_fprint(
+	sccatools_output_version_fprint(
 	 stdout,
 	 program );
 
-	while( ( option = libcsystem_getopt(
+	while( ( option = sccatools_getopt(
 	                   argc,
 	                   argv,
 	                   _SYSTEM_STRING( "hvV" ) ) ) != (system_integer_t) -1 )
@@ -179,7 +186,7 @@ int main( int argc, char * const argv[] )
 				break;
 
 			case (system_integer_t) 'V':
-				sccaoutput_copyright_fprint(
+				sccatools_output_copyright_fprint(
 				 stdout );
 
 				return( EXIT_SUCCESS );

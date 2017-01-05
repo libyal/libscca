@@ -24,15 +24,73 @@
 #include <memory.h>
 #include <types.h>
 
-#include "sccaoutput.h"
+#include "sccatools_i18n.h"
 #include "sccatools_libbfio.h"
-#include "sccatools_libcsystem.h"
 #include "sccatools_libscca.h"
 #include "sccatools_libuna.h"
+#include "sccatools_output.h"
+
+/* Initializes output settings
+ * Returns 1 if successful or -1 on error
+ */
+int sccatools_output_initialize(
+     int stdio_mode,
+     libcerror_error_t **error )
+{
+	static char *function = "sccatools_output_initialize";
+
+	if( ( stdio_mode != _IOFBF )
+	 && ( stdio_mode != _IOLBF )
+	 && ( stdio_mode != _IONBF ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: unsupported standard IO mode.",
+		 function );
+
+		return( -1 );
+	}
+#if !defined( __BORLANDC__ )
+	if( setvbuf(
+	     stdout,
+	     NULL,
+	     stdio_mode,
+	     0 ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set IO mode of stdout.",
+		 function );
+
+		return( -1 );
+	}
+	if( setvbuf(
+	     stderr,
+	     NULL,
+	     stdio_mode,
+	     0 ) != 0 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+		 "%s: unable to set IO mode of stderr.",
+		 function );
+
+		return( -1 );
+	}
+#endif /* !defined( __BORLANDC__ ) */
+
+	return( 1 );
+}
 
 /* Prints the copyright information
  */
-void sccaoutput_copyright_fprint(
+void sccatools_output_copyright_fprint(
       FILE *stream )
 {
 	if( stream == NULL )
@@ -64,7 +122,7 @@ void sccaoutput_copyright_fprint(
 
 /* Prints the version information
  */
-void sccaoutput_version_fprint(
+void sccatools_output_version_fprint(
       FILE *stream,
       const char *program )
 {
@@ -85,7 +143,7 @@ void sccaoutput_version_fprint(
 
 /* Prints the detailed version information
  */
-void sccaoutput_version_detailed_fprint(
+void sccatools_output_version_detailed_fprint(
       FILE *stream,
       const char *program )
 {

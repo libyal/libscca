@@ -19,7 +19,6 @@ SUBDIRS = \
 	libfvalue \
 	libfwnt \
 	libscca \
-	libcsystem \
 	sccatools \
 	pyscca \
 	pyscca-python2 \
