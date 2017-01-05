@@ -1,7 +1,7 @@
 /*
- * Python object definition of the libscca volume information
+ * Python object wrapper of libscca_volume_information_t
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -28,7 +28,6 @@
 
 #include "pyscca_datetime.h"
 #include "pyscca_error.h"
-#include "pyscca_file.h"
 #include "pyscca_integer.h"
 #include "pyscca_libcerror.h"
 #include "pyscca_libscca.h"
@@ -38,26 +37,24 @@
 
 PyMethodDef pyscca_volume_information_object_methods[] = {
 
-	/* Functions to access the volume information values */
-
 	{ "get_creation_time",
 	  (PyCFunction) pyscca_volume_information_get_creation_time,
 	  METH_NOARGS,
-	  "get_creation_time() -> Datetime\n"
+	  "get_creation_time() -> Datetime or None\n"
 	  "\n"
-	  "Returns the creation date and time." },
+	  "Retrieves the creation time." },
 
 	{ "get_creation_time_as_integer",
 	  (PyCFunction) pyscca_volume_information_get_creation_time_as_integer,
 	  METH_NOARGS,
-	  "get_creation_time_as_integer() -> Integer\n"
+	  "get_creation_time_as_integer() -> Integer or None\n"
 	  "\n"
-	  "Returns the creation date and time as a 64-bit integer containing a FILETIME value." },
+	  "Retrieves the creation time as a 64-bit integer containing a FILETIME value." },
 
 	{ "get_serial_number",
 	  (PyCFunction) pyscca_volume_information_get_serial_number,
 	  METH_NOARGS,
-	  "get_serial_number() -> Integer\n"
+	  "get_serial_number() -> Integer or None\n"
 	  "\n"
 	  "Retrieves the serial number." },
 
@@ -77,7 +74,7 @@ PyGetSetDef pyscca_volume_information_object_get_set_definitions[] = {
 	{ "creation_time",
 	  (getter) pyscca_volume_information_get_creation_time,
 	  (setter) 0,
-	  "The creation date and time.",
+	  "The creation time.",
 	  NULL },
 
 	{ "serial_number",
@@ -195,8 +192,9 @@ PyTypeObject pyscca_volume_information_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_volume_information_new(
+           PyTypeObject *type_object,
            libscca_volume_information_t *volume_information,
-           pyscca_file_t *file_object )
+           PyObject *parent_object )
 {
 	pyscca_volume_information_t *pyscca_volume_information = NULL;
 	static char *function                                  = "pyscca_volume_information_new";
@@ -204,7 +202,7 @@ PyObject *pyscca_volume_information_new(
 	if( volume_information == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid volume information.",
 		 function );
 
@@ -212,7 +210,7 @@ PyObject *pyscca_volume_information_new(
 	}
 	pyscca_volume_information = PyObject_New(
 	                             struct pyscca_volume_information,
-	                             &pyscca_volume_information_type_object );
+	                             type_object );
 
 	if( pyscca_volume_information == NULL )
 	{
@@ -234,10 +232,10 @@ PyObject *pyscca_volume_information_new(
 		goto on_error;
 	}
 	pyscca_volume_information->volume_information = volume_information;
-	pyscca_volume_information->file_object        = file_object;
+	pyscca_volume_information->parent_object      = parent_object;
 
 	Py_IncRef(
-	 (PyObject *) pyscca_volume_information->file_object );
+	 (PyObject *) pyscca_volume_information->parent_object );
 
 	return( (PyObject *) pyscca_volume_information );
 
@@ -261,7 +259,7 @@ int pyscca_volume_information_init(
 	if( pyscca_volume_information == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid volume information.",
 		 function );
 
@@ -279,14 +277,15 @@ int pyscca_volume_information_init(
 void pyscca_volume_information_free(
       pyscca_volume_information_t *pyscca_volume_information )
 {
-	libcerror_error_t *error    = NULL;
 	struct _typeobject *ob_type = NULL;
+	libcerror_error_t *error    = NULL;
 	static char *function       = "pyscca_volume_information_free";
+	int result                  = 0;
 
 	if( pyscca_volume_information == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid volume information.",
 		 function );
 
@@ -295,7 +294,7 @@ void pyscca_volume_information_free(
 	if( pyscca_volume_information->volume_information == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid volume information - missing libscca volume information.",
 		 function );
 
@@ -322,9 +321,15 @@ void pyscca_volume_information_free(
 
 		return;
 	}
-	if( libscca_volume_information_free(
-	     &( pyscca_volume_information->volume_information ),
-	     &error ) != 1 )
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_volume_information_free(
+	          &( pyscca_volume_information->volume_information ),
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
 	{
 		pyscca_error_raise(
 		 error,
@@ -335,27 +340,27 @@ void pyscca_volume_information_free(
 		libcerror_error_free(
 		 &error );
 	}
-	if( pyscca_volume_information->file_object != NULL )
+	if( pyscca_volume_information->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyscca_volume_information->file_object );
+		 (PyObject *) pyscca_volume_information->parent_object );
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyscca_volume_information );
 }
 
-/* Retrieves the creation date and time
+/* Retrieves the creation time
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_volume_information_get_creation_time(
            pyscca_volume_information_t *pyscca_volume_information,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error   = NULL;
-	PyObject *date_time_object = NULL;
-	static char *function      = "pyscca_volume_information_get_creation_time";
-	uint64_t filetime          = 0;
-	int result                 = 0;
+	PyObject *datetime_object = NULL;
+	libcerror_error_t *error  = NULL;
+	static char *function     = "pyscca_volume_information_get_creation_time";
+	uint64_t filetime         = 0;
+	int result                = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
 
@@ -377,7 +382,7 @@ PyObject *pyscca_volume_information_get_creation_time(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyscca_error_raise(
 		 error,
@@ -390,21 +395,28 @@ PyObject *pyscca_volume_information_get_creation_time(
 
 		return( NULL );
 	}
-	date_time_object = pyscca_datetime_new_from_filetime(
-	                    filetime );
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
 
-	return( date_time_object );
+		return( Py_None );
+	}
+	datetime_object = pyscca_datetime_new_from_filetime(
+	                   filetime );
+
+	return( datetime_object );
 }
 
-/* Retrieves the creation date and time as an integer
+/* Retrieves the creation time as an integer
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_volume_information_get_creation_time_as_integer(
            pyscca_volume_information_t *pyscca_volume_information,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyscca_volume_information_get_creation_time_as_integer";
 	uint64_t filetime        = 0;
 	int result               = 0;
@@ -429,7 +441,7 @@ PyObject *pyscca_volume_information_get_creation_time_as_integer(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyscca_error_raise(
 		 error,
@@ -441,6 +453,13 @@ PyObject *pyscca_volume_information_get_creation_time_as_integer(
 		 &error );
 
 		return( NULL );
+	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
 	}
 	integer_object = pyscca_integer_unsigned_new_from_64bit(
 	                  (uint64_t) filetime );
@@ -455,9 +474,10 @@ PyObject *pyscca_volume_information_get_serial_number(
            pyscca_volume_information_t *pyscca_volume_information,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
+	PyObject *integer_object = NULL;
 	libcerror_error_t *error = NULL;
 	static char *function    = "pyscca_volume_information_get_serial_number";
-	uint32_t serial_number   = 0;
+	uint32_t value_32bit     = 0;
 	int result               = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
@@ -465,7 +485,7 @@ PyObject *pyscca_volume_information_get_serial_number(
 	if( pyscca_volume_information == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid volume information.",
 		 function );
 
@@ -475,12 +495,12 @@ PyObject *pyscca_volume_information_get_serial_number(
 
 	result = libscca_volume_information_get_serial_number(
 	          pyscca_volume_information->volume_information,
-	          &serial_number,
+	          &value_32bit,
 	          &error );
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyscca_error_raise(
 		 error,
@@ -493,8 +513,17 @@ PyObject *pyscca_volume_information_get_serial_number(
 
 		return( NULL );
 	}
-	return( PyLong_FromUnsignedLong(
-	         (unsigned long) serial_number ) );
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	integer_object = PyLong_FromUnsignedLong(
+	                  (unsigned long) value_32bit );
+
+	return( integer_object );
 }
 
 /* Retrieves the device path
@@ -504,12 +533,12 @@ PyObject *pyscca_volume_information_get_device_path(
            pyscca_volume_information_t *pyscca_volume_information,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *string_object  = NULL;
+	libcerror_error_t *error = NULL;
 	const char *errors       = NULL;
-	uint8_t *device_path     = NULL;
 	static char *function    = "pyscca_volume_information_get_device_path";
-	size_t device_path_size  = 0;
+	char *utf8_string        = NULL;
+	size_t utf8_string_size  = 0;
 	int result               = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
@@ -517,7 +546,7 @@ PyObject *pyscca_volume_information_get_device_path(
 	if( pyscca_volume_information == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid volume information.",
 		 function );
 
@@ -527,7 +556,7 @@ PyObject *pyscca_volume_information_get_device_path(
 
 	result = libscca_volume_information_get_utf8_device_path_size(
 	          pyscca_volume_information->volume_information,
-	          &device_path_size,
+	          &utf8_string_size,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -537,7 +566,7 @@ PyObject *pyscca_volume_information_get_device_path(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve device path size.",
+		 "%s: unable to determine size of device path as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -546,21 +575,21 @@ PyObject *pyscca_volume_information_get_device_path(
 		goto on_error;
 	}
 	else if( ( result == 0 )
-	      || ( device_path_size == 0 ) )
+	      || ( utf8_string_size == 0 ) )
 	{
 		Py_IncRef(
 		 Py_None );
 
 		return( Py_None );
 	}
-	device_path = (uint8_t *) PyMem_Malloc(
-	                           sizeof( uint8_t ) * device_path_size );
+	utf8_string = (char *) PyMem_Malloc(
+	                        sizeof( char ) * utf8_string_size );
 
-	if( device_path == NULL )
+	if( utf8_string == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
-		 "%s: unable to create device path.",
+		 PyExc_MemoryError,
+		 "%s: unable to create UTF-8 string.",
 		 function );
 
 		goto on_error;
@@ -568,10 +597,10 @@ PyObject *pyscca_volume_information_get_device_path(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libscca_volume_information_get_utf8_device_path(
-		  pyscca_volume_information->volume_information,
-		  device_path,
-		  device_path_size,
-		  &error );
+	          pyscca_volume_information->volume_information,
+	          (uint8_t *) utf8_string,
+	          utf8_string_size,
+	          &error );
 
 	Py_END_ALLOW_THREADS
 
@@ -580,7 +609,7 @@ PyObject *pyscca_volume_information_get_device_path(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve device path.",
+		 "%s: unable to retrieve device path as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -588,25 +617,33 @@ PyObject *pyscca_volume_information_get_device_path(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8
-	 * otherwise it makes the end of string character is part
-	 * of the string
+	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
+	 * the end of string character is part of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
-			 (char *) device_path,
-			 (Py_ssize_t) device_path_size - 1,
-			 errors );
+	                 utf8_string,
+	                 (Py_ssize_t) utf8_string_size - 1,
+	                 errors );
 
+	if( string_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to convert UTF-8 string into Unicode object.",
+		 function );
+
+		goto on_error;
+	}
 	PyMem_Free(
-	 device_path );
+	 utf8_string );
 
 	return( string_object );
 
 on_error:
-	if( device_path != NULL )
+	if( utf8_string != NULL )
 	{
 		PyMem_Free(
-		 device_path );
+		 utf8_string );
 	}
 	return( NULL );
 }

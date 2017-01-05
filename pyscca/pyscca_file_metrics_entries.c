@@ -1,7 +1,7 @@
 /*
- * Python object definition of the file metrics entries sequence and iterator
+ * Python object definition of the sequence and iterator object of file metrics entries
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #endif
 
-#include "pyscca_file.h"
 #include "pyscca_file_metrics.h"
 #include "pyscca_file_metrics_entries.h"
 #include "pyscca_libcerror.h"
@@ -98,7 +97,7 @@ PyTypeObject pyscca_file_metrics_entries_type_object = {
 	/* tp_flags */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
 	/* tp_doc */
-	"internal pyscca file metrics entries sequence and iterator object",
+	"pyscca internal sequence and iterator object of file metrics entries",
 	/* tp_traverse */
 	0,
 	/* tp_clear */
@@ -155,72 +154,72 @@ PyTypeObject pyscca_file_metrics_entries_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_metrics_entries_new(
-           pyscca_file_t *file_object,
-           PyObject* (*get_file_metrics_entry_by_index)(
-                        pyscca_file_t *file_object,
-                        int entry_index ),
-           int number_of_entries )
+           PyObject *parent_object,
+           PyObject* (*get_item_by_index)(
+                        PyObject *parent_object,
+                        int index ),
+           int number_of_items )
 {
-	pyscca_file_metrics_entries_t *pyscca_file_metrics_entries = NULL;
-	static char *function                                      = "pyscca_file_metrics_entries_new";
+	pyscca_file_metrics_entries_t *file_metrics_entries_object = NULL;
+	static char *function                                     = "pyscca_file_metrics_entries_new";
 
-	if( file_object == NULL )
+	if( parent_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file object.",
+		 "%s: invalid parent object.",
 		 function );
 
 		return( NULL );
 	}
-	if( get_file_metrics_entry_by_index == NULL )
+	if( get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid get file metrics entry by index function.",
+		 "%s: invalid get item by index function.",
 		 function );
 
 		return( NULL );
 	}
 	/* Make sure the file metrics entries values are initialized
 	 */
-	pyscca_file_metrics_entries = PyObject_New(
+	file_metrics_entries_object = PyObject_New(
 	                               struct pyscca_file_metrics_entries,
 	                               &pyscca_file_metrics_entries_type_object );
 
-	if( pyscca_file_metrics_entries == NULL )
+	if( file_metrics_entries_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize file metrics entries.",
+		 "%s: unable to create file metrics entries object.",
 		 function );
 
 		goto on_error;
 	}
 	if( pyscca_file_metrics_entries_init(
-	     pyscca_file_metrics_entries ) != 0 )
+	     file_metrics_entries_object ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize file metrics entries.",
+		 "%s: unable to initialize file metrics entries object.",
 		 function );
 
 		goto on_error;
 	}
-	pyscca_file_metrics_entries->file_object                     = file_object;
-	pyscca_file_metrics_entries->get_file_metrics_entry_by_index = get_file_metrics_entry_by_index;
-	pyscca_file_metrics_entries->number_of_entries               = number_of_entries;
+	file_metrics_entries_object->parent_object     = parent_object;
+	file_metrics_entries_object->get_item_by_index = get_item_by_index;
+	file_metrics_entries_object->number_of_items   = number_of_items;
 
 	Py_IncRef(
-	 (PyObject *) pyscca_file_metrics_entries->file_object );
+	 (PyObject *) file_metrics_entries_object->parent_object );
 
-	return( (PyObject *) pyscca_file_metrics_entries );
+	return( (PyObject *) file_metrics_entries_object );
 
 on_error:
-	if( pyscca_file_metrics_entries != NULL )
+	if( file_metrics_entries_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyscca_file_metrics_entries );
+		 (PyObject *) file_metrics_entries_object );
 	}
 	return( NULL );
 }
@@ -229,25 +228,25 @@ on_error:
  * Returns 0 if successful or -1 on error
  */
 int pyscca_file_metrics_entries_init(
-     pyscca_file_metrics_entries_t *pyscca_file_metrics_entries )
+     pyscca_file_metrics_entries_t *file_metrics_entries_object )
 {
 	static char *function = "pyscca_file_metrics_entries_init";
 
-	if( pyscca_file_metrics_entries == NULL )
+	if( file_metrics_entries_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries.",
+		 "%s: invalid file metrics entries object.",
 		 function );
 
 		return( -1 );
 	}
 	/* Make sure the file metrics entries values are initialized
 	 */
-	pyscca_file_metrics_entries->file_object                     = NULL;
-	pyscca_file_metrics_entries->get_file_metrics_entry_by_index = NULL;
-	pyscca_file_metrics_entries->entry_index                     = 0;
-	pyscca_file_metrics_entries->number_of_entries               = 0;
+	file_metrics_entries_object->parent_object     = NULL;
+	file_metrics_entries_object->get_item_by_index = NULL;
+	file_metrics_entries_object->current_index     = 0;
+	file_metrics_entries_object->number_of_items   = 0;
 
 	return( 0 );
 }
@@ -255,22 +254,22 @@ int pyscca_file_metrics_entries_init(
 /* Frees a file metrics entries object
  */
 void pyscca_file_metrics_entries_free(
-      pyscca_file_metrics_entries_t *pyscca_file_metrics_entries )
+      pyscca_file_metrics_entries_t *file_metrics_entries_object )
 {
 	struct _typeobject *ob_type = NULL;
 	static char *function       = "pyscca_file_metrics_entries_free";
 
-	if( pyscca_file_metrics_entries == NULL )
+	if( file_metrics_entries_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries.",
+		 "%s: invalid file metrics entries object.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           pyscca_file_metrics_entries );
+	           file_metrics_entries_object );
 
 	if( ob_type == NULL )
 	{
@@ -290,72 +289,72 @@ void pyscca_file_metrics_entries_free(
 
 		return;
 	}
-	if( pyscca_file_metrics_entries->file_object != NULL )
+	if( file_metrics_entries_object->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyscca_file_metrics_entries->file_object );
+		 (PyObject *) file_metrics_entries_object->parent_object );
 	}
 	ob_type->tp_free(
-	 (PyObject*) pyscca_file_metrics_entries );
+	 (PyObject*) file_metrics_entries_object );
 }
 
 /* The file metrics entries len() function
  */
 Py_ssize_t pyscca_file_metrics_entries_len(
-            pyscca_file_metrics_entries_t *pyscca_file_metrics_entries )
+            pyscca_file_metrics_entries_t *file_metrics_entries_object )
 {
 	static char *function = "pyscca_file_metrics_entries_len";
 
-	if( pyscca_file_metrics_entries == NULL )
+	if( file_metrics_entries_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries.",
+		 "%s: invalid file metrics entries object.",
 		 function );
 
 		return( -1 );
 	}
-	return( (Py_ssize_t) pyscca_file_metrics_entries->number_of_entries );
+	return( (Py_ssize_t) file_metrics_entries_object->number_of_items );
 }
 
 /* The file metrics entries getitem() function
  */
 PyObject *pyscca_file_metrics_entries_getitem(
-           pyscca_file_metrics_entries_t *pyscca_file_metrics_entries,
+           pyscca_file_metrics_entries_t *file_metrics_entries_object,
            Py_ssize_t item_index )
 {
 	PyObject *file_metrics_object = NULL;
 	static char *function         = "pyscca_file_metrics_entries_getitem";
 
-	if( pyscca_file_metrics_entries == NULL )
+	if( file_metrics_entries_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries.",
+		 "%s: invalid file metrics entries object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_file_metrics_entries->get_file_metrics_entry_by_index == NULL )
+	if( file_metrics_entries_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries - missing get file metrics entry by index function.",
+		 "%s: invalid file metrics entries object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_file_metrics_entries->number_of_entries < 0 )
+	if( file_metrics_entries_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries - invalid number of entries.",
+		 "%s: invalid file metrics entries object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
 	if( ( item_index < 0 )
-	 || ( item_index >= (Py_ssize_t) pyscca_file_metrics_entries->number_of_entries ) )
+	 || ( item_index >= (Py_ssize_t) file_metrics_entries_object->number_of_items ) )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
@@ -364,8 +363,8 @@ PyObject *pyscca_file_metrics_entries_getitem(
 
 		return( NULL );
 	}
-	file_metrics_object = pyscca_file_metrics_entries->get_file_metrics_entry_by_index(
-	                       pyscca_file_metrics_entries->file_object,
+	file_metrics_object = file_metrics_entries_object->get_item_by_index(
+	                       file_metrics_entries_object->parent_object,
 	                       (int) item_index );
 
 	return( file_metrics_object );
@@ -374,83 +373,83 @@ PyObject *pyscca_file_metrics_entries_getitem(
 /* The file metrics entries iter() function
  */
 PyObject *pyscca_file_metrics_entries_iter(
-           pyscca_file_metrics_entries_t *pyscca_file_metrics_entries )
+           pyscca_file_metrics_entries_t *file_metrics_entries_object )
 {
 	static char *function = "pyscca_file_metrics_entries_iter";
 
-	if( pyscca_file_metrics_entries == NULL )
+	if( file_metrics_entries_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries.",
+		 "%s: invalid file metrics entries object.",
 		 function );
 
 		return( NULL );
 	}
 	Py_IncRef(
-	 (PyObject *) pyscca_file_metrics_entries );
+	 (PyObject *) file_metrics_entries_object );
 
-	return( (PyObject *) pyscca_file_metrics_entries );
+	return( (PyObject *) file_metrics_entries_object );
 }
 
-/* The file_metrics_entries iternext() function
+/* The file metrics entries iternext() function
  */
 PyObject *pyscca_file_metrics_entries_iternext(
-           pyscca_file_metrics_entries_t *pyscca_file_metrics_entries )
+           pyscca_file_metrics_entries_t *file_metrics_entries_object )
 {
 	PyObject *file_metrics_object = NULL;
 	static char *function         = "pyscca_file_metrics_entries_iternext";
 
-	if( pyscca_file_metrics_entries == NULL )
+	if( file_metrics_entries_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries.",
+		 "%s: invalid file metrics entries object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_file_metrics_entries->get_file_metrics_entry_by_index == NULL )
+	if( file_metrics_entries_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries - missing get file metrics entry information by index function.",
+		 "%s: invalid file metrics entries object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_file_metrics_entries->entry_index < 0 )
+	if( file_metrics_entries_object->current_index < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries - invalid entry index.",
+		 "%s: invalid file metrics entries object - invalid current index.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_file_metrics_entries->number_of_entries < 0 )
+	if( file_metrics_entries_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file metrics entries - invalid number of entries.",
+		 "%s: invalid file metrics entries object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_file_metrics_entries->entry_index >= pyscca_file_metrics_entries->number_of_entries )
+	if( file_metrics_entries_object->current_index >= file_metrics_entries_object->number_of_items )
 	{
 		PyErr_SetNone(
 		 PyExc_StopIteration );
 
 		return( NULL );
 	}
-	file_metrics_object = pyscca_file_metrics_entries->get_file_metrics_entry_by_index(
-	                       pyscca_file_metrics_entries->file_object,
-	                       pyscca_file_metrics_entries->entry_index );
+	file_metrics_object = file_metrics_entries_object->get_item_by_index(
+	                       file_metrics_entries_object->parent_object,
+	                       file_metrics_entries_object->current_index );
 
 	if( file_metrics_object != NULL )
 	{
-		pyscca_file_metrics_entries->entry_index++;
+		file_metrics_entries_object->current_index++;
 	}
 	return( file_metrics_object );
 }

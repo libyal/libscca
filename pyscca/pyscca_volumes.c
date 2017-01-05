@@ -1,7 +1,7 @@
 /*
- * Python object definition of the volumes sequence and iterator
+ * Python object definition of the sequence and iterator object of volumes
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #endif
 
-#include "pyscca_file.h"
 #include "pyscca_libcerror.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
@@ -98,7 +97,7 @@ PyTypeObject pyscca_volumes_type_object = {
 	/* tp_flags */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
 	/* tp_doc */
-	"internal pyscca volumes sequence and iterator object",
+	"pyscca internal sequence and iterator object of volumes",
 	/* tp_traverse */
 	0,
 	/* tp_clear */
@@ -155,72 +154,72 @@ PyTypeObject pyscca_volumes_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_volumes_new(
-           pyscca_file_t *file_object,
-           PyObject* (*get_volume_information_by_index)(
-                        pyscca_file_t *file_object,
-                        int volume_index ),
-           int number_of_volumes )
+           PyObject *parent_object,
+           PyObject* (*get_item_by_index)(
+                        PyObject *parent_object,
+                        int index ),
+           int number_of_items )
 {
-	pyscca_volumes_t *pyscca_volumes = NULL;
+	pyscca_volumes_t *volumes_object = NULL;
 	static char *function            = "pyscca_volumes_new";
 
-	if( file_object == NULL )
+	if( parent_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file object.",
+		 "%s: invalid parent object.",
 		 function );
 
 		return( NULL );
 	}
-	if( get_volume_information_by_index == NULL )
+	if( get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid get volume information by index function.",
+		 "%s: invalid get item by index function.",
 		 function );
 
 		return( NULL );
 	}
 	/* Make sure the volumes values are initialized
 	 */
-	pyscca_volumes = PyObject_New(
+	volumes_object = PyObject_New(
 	                  struct pyscca_volumes,
 	                  &pyscca_volumes_type_object );
 
-	if( pyscca_volumes == NULL )
+	if( volumes_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize volumes.",
+		 "%s: unable to create volumes object.",
 		 function );
 
 		goto on_error;
 	}
 	if( pyscca_volumes_init(
-	     pyscca_volumes ) != 0 )
+	     volumes_object ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize volumes.",
+		 "%s: unable to initialize volumes object.",
 		 function );
 
 		goto on_error;
 	}
-	pyscca_volumes->file_object                     = file_object;
-	pyscca_volumes->get_volume_information_by_index = get_volume_information_by_index;
-	pyscca_volumes->number_of_volumes               = number_of_volumes;
+	volumes_object->parent_object     = parent_object;
+	volumes_object->get_item_by_index = get_item_by_index;
+	volumes_object->number_of_items   = number_of_items;
 
 	Py_IncRef(
-	 (PyObject *) pyscca_volumes->file_object );
+	 (PyObject *) volumes_object->parent_object );
 
-	return( (PyObject *) pyscca_volumes );
+	return( (PyObject *) volumes_object );
 
 on_error:
-	if( pyscca_volumes != NULL )
+	if( volumes_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyscca_volumes );
+		 (PyObject *) volumes_object );
 	}
 	return( NULL );
 }
@@ -229,25 +228,25 @@ on_error:
  * Returns 0 if successful or -1 on error
  */
 int pyscca_volumes_init(
-     pyscca_volumes_t *pyscca_volumes )
+     pyscca_volumes_t *volumes_object )
 {
 	static char *function = "pyscca_volumes_init";
 
-	if( pyscca_volumes == NULL )
+	if( volumes_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes.",
+		 "%s: invalid volumes object.",
 		 function );
 
 		return( -1 );
 	}
 	/* Make sure the volumes values are initialized
 	 */
-	pyscca_volumes->file_object                     = NULL;
-	pyscca_volumes->get_volume_information_by_index = NULL;
-	pyscca_volumes->volume_index                    = 0;
-	pyscca_volumes->number_of_volumes               = 0;
+	volumes_object->parent_object     = NULL;
+	volumes_object->get_item_by_index = NULL;
+	volumes_object->current_index     = 0;
+	volumes_object->number_of_items   = 0;
 
 	return( 0 );
 }
@@ -255,22 +254,22 @@ int pyscca_volumes_init(
 /* Frees a volumes object
  */
 void pyscca_volumes_free(
-      pyscca_volumes_t *pyscca_volumes )
+      pyscca_volumes_t *volumes_object )
 {
 	struct _typeobject *ob_type = NULL;
 	static char *function       = "pyscca_volumes_free";
 
-	if( pyscca_volumes == NULL )
+	if( volumes_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes.",
+		 "%s: invalid volumes object.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           pyscca_volumes );
+	           volumes_object );
 
 	if( ob_type == NULL )
 	{
@@ -290,72 +289,72 @@ void pyscca_volumes_free(
 
 		return;
 	}
-	if( pyscca_volumes->file_object != NULL )
+	if( volumes_object->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyscca_volumes->file_object );
+		 (PyObject *) volumes_object->parent_object );
 	}
 	ob_type->tp_free(
-	 (PyObject*) pyscca_volumes );
+	 (PyObject*) volumes_object );
 }
 
 /* The volumes len() function
  */
 Py_ssize_t pyscca_volumes_len(
-            pyscca_volumes_t *pyscca_volumes )
+            pyscca_volumes_t *volumes_object )
 {
 	static char *function = "pyscca_volumes_len";
 
-	if( pyscca_volumes == NULL )
+	if( volumes_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes.",
+		 "%s: invalid volumes object.",
 		 function );
 
 		return( -1 );
 	}
-	return( (Py_ssize_t) pyscca_volumes->number_of_volumes );
+	return( (Py_ssize_t) volumes_object->number_of_items );
 }
 
 /* The volumes getitem() function
  */
 PyObject *pyscca_volumes_getitem(
-           pyscca_volumes_t *pyscca_volumes,
+           pyscca_volumes_t *volumes_object,
            Py_ssize_t item_index )
 {
-	PyObject *volume_object = NULL;
-	static char *function   = "pyscca_volumes_getitem";
+	PyObject *volume_information_object = NULL;
+	static char *function               = "pyscca_volumes_getitem";
 
-	if( pyscca_volumes == NULL )
+	if( volumes_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes.",
+		 "%s: invalid volumes object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_volumes->get_volume_information_by_index == NULL )
+	if( volumes_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes - missing get volume by index function.",
+		 "%s: invalid volumes object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_volumes->number_of_volumes < 0 )
+	if( volumes_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes - invalid number of volumes.",
+		 "%s: invalid volumes object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
 	if( ( item_index < 0 )
-	 || ( item_index >= (Py_ssize_t) pyscca_volumes->number_of_volumes ) )
+	 || ( item_index >= (Py_ssize_t) volumes_object->number_of_items ) )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
@@ -364,94 +363,94 @@ PyObject *pyscca_volumes_getitem(
 
 		return( NULL );
 	}
-	volume_object = pyscca_volumes->get_volume_information_by_index(
-	                 pyscca_volumes->file_object,
-	                 (int) item_index );
+	volume_information_object = volumes_object->get_item_by_index(
+	                             volumes_object->parent_object,
+	                             (int) item_index );
 
-	return( volume_object );
+	return( volume_information_object );
 }
 
 /* The volumes iter() function
  */
 PyObject *pyscca_volumes_iter(
-           pyscca_volumes_t *pyscca_volumes )
+           pyscca_volumes_t *volumes_object )
 {
 	static char *function = "pyscca_volumes_iter";
 
-	if( pyscca_volumes == NULL )
+	if( volumes_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes.",
+		 "%s: invalid volumes object.",
 		 function );
 
 		return( NULL );
 	}
 	Py_IncRef(
-	 (PyObject *) pyscca_volumes );
+	 (PyObject *) volumes_object );
 
-	return( (PyObject *) pyscca_volumes );
+	return( (PyObject *) volumes_object );
 }
 
 /* The volumes iternext() function
  */
 PyObject *pyscca_volumes_iternext(
-           pyscca_volumes_t *pyscca_volumes )
+           pyscca_volumes_t *volumes_object )
 {
-	PyObject *volume_object = NULL;
-	static char *function   = "pyscca_volumes_iternext";
+	PyObject *volume_information_object = NULL;
+	static char *function               = "pyscca_volumes_iternext";
 
-	if( pyscca_volumes == NULL )
+	if( volumes_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes.",
+		 "%s: invalid volumes object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_volumes->get_volume_information_by_index == NULL )
+	if( volumes_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes - missing get volume information by index function.",
+		 "%s: invalid volumes object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_volumes->volume_index < 0 )
+	if( volumes_object->current_index < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes - invalid volume index.",
+		 "%s: invalid volumes object - invalid current index.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_volumes->number_of_volumes < 0 )
+	if( volumes_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid volumes - invalid number of volumes.",
+		 "%s: invalid volumes object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_volumes->volume_index >= pyscca_volumes->number_of_volumes )
+	if( volumes_object->current_index >= volumes_object->number_of_items )
 	{
 		PyErr_SetNone(
 		 PyExc_StopIteration );
 
 		return( NULL );
 	}
-	volume_object = pyscca_volumes->get_volume_information_by_index(
-	                 pyscca_volumes->file_object,
-	                 pyscca_volumes->volume_index );
+	volume_information_object = volumes_object->get_item_by_index(
+	                             volumes_object->parent_object,
+	                             volumes_object->current_index );
 
-	if( volume_object != NULL )
+	if( volume_information_object != NULL )
 	{
-		pyscca_volumes->volume_index++;
+		volumes_object->current_index++;
 	}
-	return( volume_object );
+	return( volume_information_object );
 }
 

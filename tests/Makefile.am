@@ -16,7 +16,6 @@ AM_CPPFLAGS = \
 	@LIBFDATETIME_CPPFLAGS@ \
 	@LIBFVALUE_CPPFLAGS@ \
 	@LIBFWNT_CPPFLAGS@ \
-	@LIBCSYSTEM_CPPFLAGS@ \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBSCCA_DLL_IMPORT@
 
@@ -28,17 +27,15 @@ endif
 TESTS = \
 	test_api_functions.sh \
 	test_api_types.sh \
-	test_sccainfo.sh \
 	$(TESTS_PYSCCA)
 
 check_SCRIPTS = \
-	pyscca_test_get_version.py \
-	pyscca_test_open_close.py \
+	pyscca_test_file.py \
+	pyscca_test_support.py \
 	test_api_functions.sh \
 	test_api_types.sh \
 	test_python_functions.sh \
-	test_runner.sh \
-	test_sccainfo.sh
+	test_runner.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
@@ -78,16 +75,16 @@ scca_test_error_LDADD = \
 
 scca_test_file_SOURCES = \
 	scca_test_file.c \
+	scca_test_getopt.c scca_test_getopt.h \
 	scca_test_libcerror.h \
 	scca_test_libclocale.h \
-	scca_test_libcsystem.h \
+	scca_test_libcnotify.h \
 	scca_test_libscca.h \
 	scca_test_libuna.h \
 	scca_test_macros.h \
 	scca_test_memory.c scca_test_memory.h
 
 scca_test_file_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
@@ -155,17 +152,17 @@ scca_test_notify_LDADD = \
 	../libscca/libscca.la
 
 scca_test_support_SOURCES = \
+	scca_test_getopt.c scca_test_getopt.h \
 	scca_test_libbfio.h \
 	scca_test_libcerror.h \
 	scca_test_libclocale.h \
-	scca_test_libcsystem.h \
+	scca_test_libcnotify.h \
 	scca_test_libscca.h \
 	scca_test_libuna.h \
 	scca_test_macros.h \
 	scca_test_support.c
 
 scca_test_support_LDADD = \
-	@LIBCSYSTEM_LIBADD@ \
 	@LIBBFIO_LIBADD@ \
 	@LIBCPATH_LIBADD@ \
 	@LIBCFILE_LIBADD@ \

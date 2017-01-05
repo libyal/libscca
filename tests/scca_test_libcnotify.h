@@ -19,8 +19,8 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSCCA_LIBCNOTIFY_H )
-#define _LIBSCCA_LIBCNOTIFY_H
+#if !defined( _SCCA_TEST_LIBCNOTIFY_H )
+#define _SCCA_TEST_LIBCNOTIFY_H
 
 #include <common.h>
 
@@ -46,5 +46,5 @@
 
 #endif /* defined( HAVE_LOCAL_LIBCNOTIFY ) */
 
-#endif /* !defined( _LIBSCCA_LIBCNOTIFY_H ) */
+#endif /* !defined( _SCCA_TEST_LIBCNOTIFY_H ) */
 

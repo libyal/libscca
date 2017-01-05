@@ -1,7 +1,7 @@
 /*
- * Python object definition of the volumes sequence and iterator
+ * Python object definition of the sequence and iterator object of volumes
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -25,7 +25,6 @@
 #include <common.h>
 #include <types.h>
 
-#include "pyscca_file.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
 
@@ -41,52 +40,52 @@ struct pyscca_volumes
 	 */
 	PyObject_HEAD
 
-	/* The file object
+	/* The parent object
 	 */
-	pyscca_file_t *file_object;
+	PyObject *parent_object;
 
-	/* The get volume information by index callback function
+	/* The get item by index callback function
 	 */
-	PyObject* (*get_volume_information_by_index)(
-	             pyscca_file_t *file_object,
-	             int volume_index );
+	PyObject* (*get_item_by_index)(
+	             PyObject *parent_object,
+	             int index );
 
-	/* The (current) volume index
+	/* The current index
 	 */
-	int volume_index;
+	int current_index;
 
-	/* The number of volumes
+	/* The number of items
 	 */
-	int number_of_volumes;
+	int number_of_items;
 };
 
 extern PyTypeObject pyscca_volumes_type_object;
 
 PyObject *pyscca_volumes_new(
-           pyscca_file_t *file_object,
-           PyObject* (*get_volume_information_by_index)(
-                        pyscca_file_t *file_object,
-                        int volume_index ),
-           int number_of_volumes );
+           PyObject *parent_object,
+           PyObject* (*get_item_by_index)(
+                        PyObject *parent_object,
+                        int index ),
+           int number_of_items );
 
 int pyscca_volumes_init(
-     pyscca_volumes_t *pyscca_volumes );
+     pyscca_volumes_t *volumes_object );
 
 void pyscca_volumes_free(
-      pyscca_volumes_t *pyscca_volumes );
+      pyscca_volumes_t *volumes_object );
 
 Py_ssize_t pyscca_volumes_len(
-            pyscca_volumes_t *pyscca_volumes );
+            pyscca_volumes_t *volumes_object );
 
 PyObject *pyscca_volumes_getitem(
-           pyscca_volumes_t *pyscca_volumes,
+           pyscca_volumes_t *volumes_object,
            Py_ssize_t item_index );
 
 PyObject *pyscca_volumes_iter(
-           pyscca_volumes_t *pyscca_volumes );
+           pyscca_volumes_t *volumes_object );
 
 PyObject *pyscca_volumes_iternext(
-           pyscca_volumes_t *pyscca_volumes );
+           pyscca_volumes_t *volumes_object );
 
 #if defined( __cplusplus )
 }

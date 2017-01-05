@@ -1,7 +1,7 @@
 /*
  * The internal libscca header
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -27,11 +27,11 @@
 /* If Cygwin libtool DLL support is enabled set LIBSCCA_DLL_IMPORT
  * before including libscca.h
  */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
+#if defined( _WIN32 ) && defined( DLL_IMPORT ) && !defined( HAVE_STATIC_EXECUTABLES )
 #define LIBSCCA_DLL_IMPORT
 #endif
 
 #include <libscca.h>
 
-#endif
+#endif /* !defined( _SCCATOOLS_LIBSCCA_H ) */
 

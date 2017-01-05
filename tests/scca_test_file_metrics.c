@@ -1,7 +1,7 @@
 /*
- * Library file_metrics type testing program
+ * Library file_metrics type test program
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -73,6 +73,10 @@ on_error:
 	return( 0 );
 }
 
+#if defined( __GNUC__ )
+
+#endif /* defined( __GNUC__ ) */
+
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -98,6 +102,8 @@ int main(
 	 "libscca_file_metrics_free",
 	 scca_test_file_metrics_free );
 
+#if defined( __GNUC__ )
+
 	/* TODO: add tests for libscca_file_metrics_get_utf8_filename_size */
 
 	/* TODO: add tests for libscca_file_metrics_get_utf8_filename */
@@ -107,6 +113,8 @@ int main(
 	/* TODO: add tests for libscca_file_metrics_get_utf16_filename */
 
 	/* TODO: add tests for libscca_file_metrics_get_file_reference */
+
+#endif /* defined( __GNUC__ ) */
 
 	return( EXIT_SUCCESS );
 

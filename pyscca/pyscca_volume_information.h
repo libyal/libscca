@@ -1,7 +1,7 @@
 /*
- * Python object definition of the libscca volume information
+ * Python object wrapper of libscca_volume_information_t
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -25,7 +25,6 @@
 #include <common.h>
 #include <types.h>
 
-#include "pyscca_file.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
 
@@ -45,17 +44,18 @@ struct pyscca_volume_information
 	 */
 	libscca_volume_information_t *volume_information;
 
-	/* The file object
+	/* The parent object
 	 */
-	pyscca_file_t *file_object;
+	PyObject *parent_object;
 };
 
 extern PyMethodDef pyscca_volume_information_object_methods[];
 extern PyTypeObject pyscca_volume_information_type_object;
 
 PyObject *pyscca_volume_information_new(
+           PyTypeObject *type_object,
            libscca_volume_information_t *volume_information,
-           pyscca_file_t *file_object );
+           PyObject *parent_object );
 
 int pyscca_volume_information_init(
      pyscca_volume_information_t *pyscca_volume_information );

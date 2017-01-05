@@ -1,7 +1,7 @@
 /*
- * Python object definition of the libscca file metrics
+ * Python object wrapper of libscca_file_metrics_t
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -25,7 +25,6 @@
 #include <common.h>
 #include <types.h>
 
-#include "pyscca_file.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
 
@@ -45,17 +44,18 @@ struct pyscca_file_metrics
 	 */
 	libscca_file_metrics_t *file_metrics;
 
-	/* The file object
+	/* The parent object
 	 */
-	pyscca_file_t *file_object;
+	PyObject *parent_object;
 };
 
 extern PyMethodDef pyscca_file_metrics_object_methods[];
 extern PyTypeObject pyscca_file_metrics_type_object;
 
 PyObject *pyscca_file_metrics_new(
+           PyTypeObject *type_object,
            libscca_file_metrics_t *file_metrics,
-           pyscca_file_t *file_object );
+           PyObject *parent_object );
 
 int pyscca_file_metrics_init(
      pyscca_file_metrics_t *pyscca_file_metrics );

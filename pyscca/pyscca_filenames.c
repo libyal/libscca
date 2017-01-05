@@ -1,7 +1,7 @@
 /*
- * Python object definition of the filenames sequence and iterator
+ * Python object definition of the sequence and iterator object of filenames
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -20,14 +20,12 @@
  */
 
 #include <common.h>
-#include <memory.h>
 #include <types.h>
 
 #if defined( HAVE_STDLIB_H ) || defined( HAVE_WINAPI )
 #include <stdlib.h>
 #endif
 
-#include "pyscca_file.h"
 #include "pyscca_filenames.h"
 #include "pyscca_libcerror.h"
 #include "pyscca_libscca.h"
@@ -98,7 +96,7 @@ PyTypeObject pyscca_filenames_type_object = {
 	/* tp_flags */
 	Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_ITER,
 	/* tp_doc */
-	"internal pyscca filenames sequence and iterator object",
+	"pyscca internal sequence and iterator object of filenames",
 	/* tp_traverse */
 	0,
 	/* tp_clear */
@@ -155,72 +153,72 @@ PyTypeObject pyscca_filenames_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_filenames_new(
-           pyscca_file_t *file_object,
-           PyObject* (*get_filename_by_index)(
-                        pyscca_file_t *file_object,
-                        int filename_index ),
-           int number_of_filenames )
+           PyObject *parent_object,
+           PyObject* (*get_item_by_index)(
+                        PyObject *parent_object,
+                        int index ),
+           int number_of_items )
 {
-	pyscca_filenames_t *pyscca_filenames = NULL;
+	pyscca_filenames_t *filenames_object = NULL;
 	static char *function                = "pyscca_filenames_new";
 
-	if( file_object == NULL )
+	if( parent_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid file object.",
+		 "%s: invalid parent object.",
 		 function );
 
 		return( NULL );
 	}
-	if( get_filename_by_index == NULL )
+	if( get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid get filename by index function.",
+		 "%s: invalid get item by index function.",
 		 function );
 
 		return( NULL );
 	}
 	/* Make sure the filenames values are initialized
 	 */
-	pyscca_filenames = PyObject_New(
+	filenames_object = PyObject_New(
 	                    struct pyscca_filenames,
 	                    &pyscca_filenames_type_object );
 
-	if( pyscca_filenames == NULL )
+	if( filenames_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize filenames.",
+		 "%s: unable to create filenames object.",
 		 function );
 
 		goto on_error;
 	}
 	if( pyscca_filenames_init(
-	     pyscca_filenames ) != 0 )
+	     filenames_object ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to initialize filenames.",
+		 "%s: unable to initialize filenames object.",
 		 function );
 
 		goto on_error;
 	}
-	pyscca_filenames->file_object           = file_object;
-	pyscca_filenames->get_filename_by_index = get_filename_by_index;
-	pyscca_filenames->number_of_filenames   = number_of_filenames;
+	filenames_object->parent_object     = parent_object;
+	filenames_object->get_item_by_index = get_item_by_index;
+	filenames_object->number_of_items   = number_of_items;
 
 	Py_IncRef(
-	 (PyObject *) pyscca_filenames->file_object );
+	 (PyObject *) filenames_object->parent_object );
 
-	return( (PyObject *) pyscca_filenames );
+	return( (PyObject *) filenames_object );
 
 on_error:
-	if( pyscca_filenames != NULL )
+	if( filenames_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyscca_filenames );
+		 (PyObject *) filenames_object );
 	}
 	return( NULL );
 }
@@ -229,25 +227,25 @@ on_error:
  * Returns 0 if successful or -1 on error
  */
 int pyscca_filenames_init(
-     pyscca_filenames_t *pyscca_filenames )
+     pyscca_filenames_t *filenames_object )
 {
 	static char *function = "pyscca_filenames_init";
 
-	if( pyscca_filenames == NULL )
+	if( filenames_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames.",
+		 "%s: invalid filenames object.",
 		 function );
 
 		return( -1 );
 	}
 	/* Make sure the filenames values are initialized
 	 */
-	pyscca_filenames->file_object           = NULL;
-	pyscca_filenames->get_filename_by_index = NULL;
-	pyscca_filenames->filename_index        = 0;
-	pyscca_filenames->number_of_filenames   = 0;
+	filenames_object->parent_object     = NULL;
+	filenames_object->get_item_by_index = NULL;
+	filenames_object->current_index     = 0;
+	filenames_object->number_of_items   = 0;
 
 	return( 0 );
 }
@@ -255,22 +253,22 @@ int pyscca_filenames_init(
 /* Frees a filenames object
  */
 void pyscca_filenames_free(
-      pyscca_filenames_t *pyscca_filenames )
+      pyscca_filenames_t *filenames_object )
 {
 	struct _typeobject *ob_type = NULL;
 	static char *function       = "pyscca_filenames_free";
 
-	if( pyscca_filenames == NULL )
+	if( filenames_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames.",
+		 "%s: invalid filenames object.",
 		 function );
 
 		return;
 	}
 	ob_type = Py_TYPE(
-	           pyscca_filenames );
+	           filenames_object );
 
 	if( ob_type == NULL )
 	{
@@ -290,72 +288,72 @@ void pyscca_filenames_free(
 
 		return;
 	}
-	if( pyscca_filenames->file_object != NULL )
+	if( filenames_object->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyscca_filenames->file_object );
+		 (PyObject *) filenames_object->parent_object );
 	}
 	ob_type->tp_free(
-	 (PyObject*) pyscca_filenames );
+	 (PyObject*) filenames_object );
 }
 
 /* The filenames len() function
  */
 Py_ssize_t pyscca_filenames_len(
-            pyscca_filenames_t *pyscca_filenames )
+            pyscca_filenames_t *filenames_object )
 {
 	static char *function = "pyscca_filenames_len";
 
-	if( pyscca_filenames == NULL )
+	if( filenames_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames.",
+		 "%s: invalid filenames object.",
 		 function );
 
 		return( -1 );
 	}
-	return( (Py_ssize_t) pyscca_filenames->number_of_filenames );
+	return( (Py_ssize_t) filenames_object->number_of_items );
 }
 
 /* The filenames getitem() function
  */
 PyObject *pyscca_filenames_getitem(
-           pyscca_filenames_t *pyscca_filenames,
+           pyscca_filenames_t *filenames_object,
            Py_ssize_t item_index )
 {
 	PyObject *filename_object = NULL;
 	static char *function     = "pyscca_filenames_getitem";
 
-	if( pyscca_filenames == NULL )
+	if( filenames_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames.",
+		 "%s: invalid filenames object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_filenames->get_filename_by_index == NULL )
+	if( filenames_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames - missing get filename by index function.",
+		 "%s: invalid filenames object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_filenames->number_of_filenames < 0 )
+	if( filenames_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames - invalid number of filenames.",
+		 "%s: invalid filenames object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
 	if( ( item_index < 0 )
-	 || ( item_index >= (Py_ssize_t) pyscca_filenames->number_of_filenames ) )
+	 || ( item_index >= (Py_ssize_t) filenames_object->number_of_items ) )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
@@ -364,8 +362,8 @@ PyObject *pyscca_filenames_getitem(
 
 		return( NULL );
 	}
-	filename_object = pyscca_filenames->get_filename_by_index(
-	                   pyscca_filenames->file_object,
+	filename_object = filenames_object->get_item_by_index(
+	                   filenames_object->parent_object,
 	                   (int) item_index );
 
 	return( filename_object );
@@ -374,83 +372,83 @@ PyObject *pyscca_filenames_getitem(
 /* The filenames iter() function
  */
 PyObject *pyscca_filenames_iter(
-           pyscca_filenames_t *pyscca_filenames )
+           pyscca_filenames_t *filenames_object )
 {
 	static char *function = "pyscca_filenames_iter";
 
-	if( pyscca_filenames == NULL )
+	if( filenames_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames.",
+		 "%s: invalid filenames object.",
 		 function );
 
 		return( NULL );
 	}
 	Py_IncRef(
-	 (PyObject *) pyscca_filenames );
+	 (PyObject *) filenames_object );
 
-	return( (PyObject *) pyscca_filenames );
+	return( (PyObject *) filenames_object );
 }
 
 /* The filenames iternext() function
  */
 PyObject *pyscca_filenames_iternext(
-           pyscca_filenames_t *pyscca_filenames )
+           pyscca_filenames_t *filenames_object )
 {
 	PyObject *filename_object = NULL;
 	static char *function     = "pyscca_filenames_iternext";
 
-	if( pyscca_filenames == NULL )
+	if( filenames_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames.",
+		 "%s: invalid filenames object.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_filenames->get_filename_by_index == NULL )
+	if( filenames_object->get_item_by_index == NULL )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames - missing get filename by index function.",
+		 "%s: invalid filenames object - missing get item by index function.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_filenames->filename_index < 0 )
+	if( filenames_object->current_index < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames - invalid filename index.",
+		 "%s: invalid filenames object - invalid current index.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_filenames->number_of_filenames < 0 )
+	if( filenames_object->number_of_items < 0 )
 	{
 		PyErr_Format(
 		 PyExc_ValueError,
-		 "%s: invalid filenames - invalid number of filenames.",
+		 "%s: invalid filenames object - invalid number of items.",
 		 function );
 
 		return( NULL );
 	}
-	if( pyscca_filenames->filename_index >= pyscca_filenames->number_of_filenames )
+	if( filenames_object->current_index >= filenames_object->number_of_items )
 	{
 		PyErr_SetNone(
 		 PyExc_StopIteration );
 
 		return( NULL );
 	}
-	filename_object = pyscca_filenames->get_filename_by_index(
-	                   pyscca_filenames->file_object,
-	                   pyscca_filenames->filename_index );
+	filename_object = filenames_object->get_item_by_index(
+	                   filenames_object->parent_object,
+	                   filenames_object->current_index );
 
 	if( filename_object != NULL )
 	{
-		pyscca_filenames->filename_index++;
+		filenames_object->current_index++;
 	}
 	return( filename_object );
 }

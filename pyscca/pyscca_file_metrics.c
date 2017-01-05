@@ -1,7 +1,7 @@
 /*
- * Python object definition of the libscca file metrics
+ * Python object wrapper of libscca_file_metrics_t
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -27,7 +27,6 @@
 #endif
 
 #include "pyscca_error.h"
-#include "pyscca_file.h"
 #include "pyscca_file_metrics.h"
 #include "pyscca_integer.h"
 #include "pyscca_libcerror.h"
@@ -36,8 +35,6 @@
 #include "pyscca_unused.h"
 
 PyMethodDef pyscca_file_metrics_object_methods[] = {
-
-	/* Functions to access the file metrics values */
 
 	{ "get_filename",
 	  (PyCFunction) pyscca_file_metrics_get_filename,
@@ -174,8 +171,9 @@ PyTypeObject pyscca_file_metrics_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_metrics_new(
+           PyTypeObject *type_object,
            libscca_file_metrics_t *file_metrics,
-           pyscca_file_t *file_object )
+           PyObject *parent_object )
 {
 	pyscca_file_metrics_t *pyscca_file_metrics = NULL;
 	static char *function                      = "pyscca_file_metrics_new";
@@ -183,7 +181,7 @@ PyObject *pyscca_file_metrics_new(
 	if( file_metrics == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file metrics.",
 		 function );
 
@@ -191,7 +189,7 @@ PyObject *pyscca_file_metrics_new(
 	}
 	pyscca_file_metrics = PyObject_New(
 	                       struct pyscca_file_metrics,
-	                       &pyscca_file_metrics_type_object );
+	                       type_object );
 
 	if( pyscca_file_metrics == NULL )
 	{
@@ -212,11 +210,11 @@ PyObject *pyscca_file_metrics_new(
 
 		goto on_error;
 	}
-	pyscca_file_metrics->file_metrics = file_metrics;
-	pyscca_file_metrics->file_object  = file_object;
+	pyscca_file_metrics->file_metrics  = file_metrics;
+	pyscca_file_metrics->parent_object = parent_object;
 
 	Py_IncRef(
-	 (PyObject *) pyscca_file_metrics->file_object );
+	 (PyObject *) pyscca_file_metrics->parent_object );
 
 	return( (PyObject *) pyscca_file_metrics );
 
@@ -240,7 +238,7 @@ int pyscca_file_metrics_init(
 	if( pyscca_file_metrics == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file metrics.",
 		 function );
 
@@ -258,14 +256,15 @@ int pyscca_file_metrics_init(
 void pyscca_file_metrics_free(
       pyscca_file_metrics_t *pyscca_file_metrics )
 {
-	libcerror_error_t *error    = NULL;
 	struct _typeobject *ob_type = NULL;
+	libcerror_error_t *error    = NULL;
 	static char *function       = "pyscca_file_metrics_free";
+	int result                  = 0;
 
 	if( pyscca_file_metrics == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file metrics.",
 		 function );
 
@@ -274,7 +273,7 @@ void pyscca_file_metrics_free(
 	if( pyscca_file_metrics->file_metrics == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file metrics - missing libscca file metrics.",
 		 function );
 
@@ -301,9 +300,15 @@ void pyscca_file_metrics_free(
 
 		return;
 	}
-	if( libscca_file_metrics_free(
-	     &( pyscca_file_metrics->file_metrics ),
-	     &error ) != 1 )
+	Py_BEGIN_ALLOW_THREADS
+
+	result = libscca_file_metrics_free(
+	          &( pyscca_file_metrics->file_metrics ),
+	          &error );
+
+	Py_END_ALLOW_THREADS
+
+	if( result != 1 )
 	{
 		pyscca_error_raise(
 		 error,
@@ -314,10 +319,10 @@ void pyscca_file_metrics_free(
 		libcerror_error_free(
 		 &error );
 	}
-	if( pyscca_file_metrics->file_object != NULL )
+	if( pyscca_file_metrics->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyscca_file_metrics->file_object );
+		 (PyObject *) pyscca_file_metrics->parent_object );
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyscca_file_metrics );
@@ -330,12 +335,12 @@ PyObject *pyscca_file_metrics_get_filename(
            pyscca_file_metrics_t *pyscca_file_metrics,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *string_object  = NULL;
+	libcerror_error_t *error = NULL;
 	const char *errors       = NULL;
-	uint8_t *filename        = NULL;
 	static char *function    = "pyscca_file_metrics_get_filename";
-	size_t filename_size     = 0;
+	char *utf8_string        = NULL;
+	size_t utf8_string_size  = 0;
 	int result               = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
@@ -343,7 +348,7 @@ PyObject *pyscca_file_metrics_get_filename(
 	if( pyscca_file_metrics == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file metrics.",
 		 function );
 
@@ -353,7 +358,7 @@ PyObject *pyscca_file_metrics_get_filename(
 
 	result = libscca_file_metrics_get_utf8_filename_size(
 	          pyscca_file_metrics->file_metrics,
-	          &filename_size,
+	          &utf8_string_size,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -363,7 +368,7 @@ PyObject *pyscca_file_metrics_get_filename(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve filename size.",
+		 "%s: unable to determine size of filename as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -372,21 +377,21 @@ PyObject *pyscca_file_metrics_get_filename(
 		goto on_error;
 	}
 	else if( ( result == 0 )
-	      || ( filename_size == 0 ) )
+	      || ( utf8_string_size == 0 ) )
 	{
 		Py_IncRef(
 		 Py_None );
 
 		return( Py_None );
 	}
-	filename = (uint8_t *) PyMem_Malloc(
-	                        sizeof( uint8_t ) * filename_size );
+	utf8_string = (char *) PyMem_Malloc(
+	                        sizeof( char ) * utf8_string_size );
 
-	if( filename == NULL )
+	if( utf8_string == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
-		 "%s: unable to create filename.",
+		 PyExc_MemoryError,
+		 "%s: unable to create UTF-8 string.",
 		 function );
 
 		goto on_error;
@@ -394,10 +399,10 @@ PyObject *pyscca_file_metrics_get_filename(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libscca_file_metrics_get_utf8_filename(
-		  pyscca_file_metrics->file_metrics,
-		  filename,
-		  filename_size,
-		  &error );
+	          pyscca_file_metrics->file_metrics,
+	          (uint8_t *) utf8_string,
+	          utf8_string_size,
+	          &error );
 
 	Py_END_ALLOW_THREADS
 
@@ -406,7 +411,7 @@ PyObject *pyscca_file_metrics_get_filename(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve filename.",
+		 "%s: unable to retrieve filename as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -414,25 +419,33 @@ PyObject *pyscca_file_metrics_get_filename(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8
-	 * otherwise it makes the end of string character is part
-	 * of the string
+	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
+	 * the end of string character is part of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
-			 (char *) filename,
-			 (Py_ssize_t) filename_size - 1,
-			 errors );
+	                 utf8_string,
+	                 (Py_ssize_t) utf8_string_size - 1,
+	                 errors );
 
+	if( string_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to convert UTF-8 string into Unicode object.",
+		 function );
+
+		goto on_error;
+	}
 	PyMem_Free(
-	 filename );
+	 utf8_string );
 
 	return( string_object );
 
 on_error:
-	if( filename != NULL )
+	if( utf8_string != NULL )
 	{
 		PyMem_Free(
-		 filename );
+		 utf8_string );
 	}
 	return( NULL );
 }
@@ -444,10 +457,10 @@ PyObject *pyscca_file_metrics_get_file_reference(
            pyscca_file_metrics_t *pyscca_file_metrics,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyscca_file_metrics_get_file_reference";
-	uint64_t file_reference  = 0;
+	uint64_t value_64bit     = 0;
 	int result               = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
@@ -455,7 +468,7 @@ PyObject *pyscca_file_metrics_get_file_reference(
 	if( pyscca_file_metrics == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file metrics.",
 		 function );
 
@@ -465,12 +478,12 @@ PyObject *pyscca_file_metrics_get_file_reference(
 
 	result = libscca_file_metrics_get_file_reference(
 	          pyscca_file_metrics->file_metrics,
-	          &file_reference,
+	          &value_64bit,
 	          &error );
 
 	Py_END_ALLOW_THREADS
 
-	if( result == -1 )
+	if( result != 1 )
 	{
 		pyscca_error_raise(
 		 error,
@@ -483,15 +496,8 @@ PyObject *pyscca_file_metrics_get_file_reference(
 
 		return( NULL );
 	}
-	else if( result == 0 )
-	{
-		Py_IncRef(
-		 Py_None );
-
-		return( Py_None );
-	}
 	integer_object = pyscca_integer_unsigned_new_from_64bit(
-	                  file_reference );
+	                  (uint64_t) value_64bit );
 
 	return( integer_object );
 }

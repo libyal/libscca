@@ -1,7 +1,7 @@
 /*
- * Python object definition of the libscca file
+ * Python object wrapper of libscca_file_t
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -36,7 +36,6 @@
 #include "pyscca_integer.h"
 #include "pyscca_libbfio.h"
 #include "pyscca_libcerror.h"
-#include "pyscca_libclocale.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
 #include "pyscca_unused.h"
@@ -44,13 +43,15 @@
 #include "pyscca_volumes.h"
 
 #if !defined( LIBSCCA_HAVE_BFIO )
+
 LIBSCCA_EXTERN \
 int libscca_file_open_file_io_handle(
      libscca_file_t *file,
      libbfio_handle_t *file_io_handle,
      int access_flags,
      libscca_error_t **error );
-#endif
+
+#endif /* !defined( LIBSCCA_HAVE_BFIO ) */
 
 PyMethodDef pyscca_file_object_methods[] = {
 
@@ -60,8 +61,6 @@ PyMethodDef pyscca_file_object_methods[] = {
 	  "signal_abort() -> None\n"
 	  "\n"
 	  "Signals the file to abort the current activity." },
-
-	/* Functions to access the file */
 
 	{ "open",
 	  (PyCFunction) pyscca_file_open,
@@ -84,14 +83,12 @@ PyMethodDef pyscca_file_object_methods[] = {
 	  "\n"
 	  "Closes a file." },
 
-	/* Functions to access the metadata */
-
 	{ "get_format_version",
 	  (PyCFunction) pyscca_file_get_format_version,
 	  METH_NOARGS,
-	  "get_format_version() -> Integer\n"
+	  "get_format_version() -> Integer or None\n"
 	  "\n"
-	  "Retrieves the format version" },
+	  "Retrieves the format version." },
 
 	{ "get_executable_filename",
 	  (PyCFunction) pyscca_file_get_executable_filename,
@@ -103,78 +100,72 @@ PyMethodDef pyscca_file_object_methods[] = {
 	{ "get_prefetch_hash",
 	  (PyCFunction) pyscca_file_get_prefetch_hash,
 	  METH_NOARGS,
-	  "get_prefetch_hash() -> Integer\n"
+	  "get_prefetch_hash() -> Integer or None\n"
 	  "\n"
-	  "Retrieves the prefetch hash" },
+	  "Retrieves the prefetch hash." },
 
 	{ "get_last_run_time",
 	  (PyCFunction) pyscca_file_get_last_run_time,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "get_last_run_time(last_run_time_index) -> Datetime\n"
+	  "get_last_run_time(last_run_time_index) -> Datetime or None\n"
 	  "\n"
-	  "Returns the last run date and time." },
+	  "Retrieves the last run time specified by the index." },
 
 	{ "get_last_run_time_as_integer",
 	  (PyCFunction) pyscca_file_get_last_run_time_as_integer,
 	  METH_VARARGS | METH_KEYWORDS,
-	  "get_last_run_time_as_integer(last_run_time_index) -> Integer\n"
+	  "get_last_run_time_as_integer(last_run_time_index) -> Integer or None\n"
 	  "\n"
-	  "Returns the last run date and time as a 64-bit integer containing a FILETIME value." },
+	  "Retrieves the last run time specified by the index as a 64-bit integer containing a FILETIME value." },
 
 	{ "get_run_count",
 	  (PyCFunction) pyscca_file_get_run_count,
 	  METH_NOARGS,
-	  "get_run_count() -> Integer\n"
+	  "get_run_count() -> Integer or None\n"
 	  "\n"
-	  "Retrieves the run count" },
-
-	/* Functions to access the file metrics entries */
+	  "Retrieves the run count." },
 
 	{ "get_number_of_file_metrics_entries",
 	  (PyCFunction) pyscca_file_get_number_of_file_metrics_entries,
 	  METH_NOARGS,
-	  "get_number_of_file_metrics_entries() -> Integer\n"
+	  "get_number_of_file_metrics_entries() -> Integer or None\n"
 	  "\n"
-	  "Retrieves the number of file metrics entries" },
+	  "Retrieves the number of file metrics entries." },
 
 	{ "get_file_metrics_entry",
 	  (PyCFunction) pyscca_file_get_file_metrics_entry,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "get_file_metrics_entry(entry_index) -> Object or None\n"
 	  "\n"
-	  "Retrieves a specific file metrics entry." },
-
-	/* Functions to access the filenames */
+	  "Retrieves the file metrics entry specified by the index." },
 
 	{ "get_number_of_filenames",
 	  (PyCFunction) pyscca_file_get_number_of_filenames,
 	  METH_NOARGS,
-	  "get_number_of_filenames() -> Integer\n"
+	  "get_number_of_filenames() -> Integer or None\n"
 	  "\n"
-	  "Retrieves the number of filenames" },
+	  "Retrieves the number of filenames." },
 
 	{ "get_filename",
 	  (PyCFunction) pyscca_file_get_filename,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "get_filename(filename_index) -> Unicode string or None\n"
 	  "\n"
-	  "Retrieves a specific filename." },
-
-	/* Functions to access the volumes */
+	  "Retrieves the filename specified by the index." },
 
 	{ "get_number_of_volumes",
 	  (PyCFunction) pyscca_file_get_number_of_volumes,
 	  METH_NOARGS,
-	  "get_number_of_volumes() -> Integer\n"
+	  "get_number_of_volumes() -> Integer or None\n"
 	  "\n"
-	  "Retrieves the number of volumes" },
+	  "Retrieves the number of volumes." },
 
 	{ "get_volume_information",
 	  (PyCFunction) pyscca_file_get_volume_information,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "get_volume_information(volume_index) -> Object or None\n"
 	  "\n"
-	  "Retrieves a specific volume." },
+	  "Retrieves the volume information specified by the index." },
 
 	/* Sentinel */
 	{ NULL, NULL, 0, NULL }
@@ -185,7 +176,7 @@ PyGetSetDef pyscca_file_object_get_set_definitions[] = {
 	{ "format_version",
 	  (getter) pyscca_file_get_format_version,
 	  (setter) 0,
-	  "The format version",
+	  "The format version.",
 	  NULL },
 
 	{ "executable_filename",
@@ -197,31 +188,31 @@ PyGetSetDef pyscca_file_object_get_set_definitions[] = {
 	{ "prefetch_hash",
 	  (getter) pyscca_file_get_prefetch_hash,
 	  (setter) 0,
-	  "The prefetch hash",
+	  "The prefetch hash.",
 	  NULL },
 
 	{ "run_count",
 	  (getter) pyscca_file_get_run_count,
 	  (setter) 0,
-	  "The run count",
+	  "The run count.",
 	  NULL },
 
 	{ "number_of_file_metrics_entries",
 	  (getter) pyscca_file_get_number_of_file_metrics_entries,
 	  (setter) 0,
-	  "The number of file metrics entries",
+	  "The number of file metrics entries.",
 	  NULL },
 
 	{ "file_metrics_entries",
 	  (getter) pyscca_file_get_file_metrics_entries,
 	  (setter) 0,
-	  "The file metrics entries",
+	  "The file metrics entries.",
 	  NULL },
 
 	{ "number_of_filenames",
 	  (getter) pyscca_file_get_number_of_filenames,
 	  (setter) 0,
-	  "The number of filenames",
+	  "The number of filenames.",
 	  NULL },
 
 	{ "filenames",
@@ -233,13 +224,13 @@ PyGetSetDef pyscca_file_object_get_set_definitions[] = {
 	{ "number_of_volumes",
 	  (getter) pyscca_file_get_number_of_volumes,
 	  (setter) 0,
-	  "The number of volumes",
+	  "The number of volumes.",
 	  NULL },
 
 	{ "volumes",
 	  (getter) pyscca_file_get_volumes,
 	  (setter) 0,
-	  "The volumes",
+	  "The volumes.",
 	  NULL },
 
 	/* Sentinel */
@@ -348,11 +339,11 @@ PyObject *pyscca_file_new(
            void )
 {
 	pyscca_file_t *pyscca_file = NULL;
-	static char *function    = "pyscca_file_new";
+	static char *function      = "pyscca_file_new";
 
 	pyscca_file = PyObject_New(
-	              struct pyscca_file,
-	              &pyscca_file_type_object );
+	               struct pyscca_file,
+	               &pyscca_file_type_object );
 
 	if( pyscca_file == NULL )
 	{
@@ -406,7 +397,7 @@ PyObject *pyscca_file_new_open(
 	return( pyscca_file );
 }
 
-/* Creates a new file object and opens it
+/* Creates a new file object and opens it using a file-like object
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_new_open_file_object(
@@ -434,8 +425,8 @@ PyObject *pyscca_file_new_open_file_object(
 int pyscca_file_init(
      pyscca_file_t *pyscca_file )
 {
-	static char *function    = "pyscca_file_init";
 	libcerror_error_t *error = NULL;
+	static char *function    = "pyscca_file_init";
 
 	if( pyscca_file == NULL )
 	{
@@ -472,8 +463,8 @@ int pyscca_file_init(
 void pyscca_file_free(
       pyscca_file_t *pyscca_file )
 {
-	libcerror_error_t *error    = NULL;
 	struct _typeobject *ob_type = NULL;
+	libcerror_error_t *error    = NULL;
 	static char *function       = "pyscca_file_free";
 	int result                  = 0;
 
@@ -598,9 +589,9 @@ PyObject *pyscca_file_open(
 {
 	PyObject *string_object      = NULL;
 	libcerror_error_t *error     = NULL;
+	const char *filename_narrow  = NULL;
 	static char *function        = "pyscca_file_open";
 	static char *keyword_list[]  = { "filename", "mode", NULL };
-	const char *filename_narrow  = NULL;
 	char *mode                   = NULL;
 	int result                   = 0;
 
@@ -654,7 +645,7 @@ PyObject *pyscca_file_open(
 	if( result == -1 )
 	{
 		pyscca_error_fetch_and_raise(
-	         PyExc_RuntimeError,
+		 PyExc_RuntimeError,
 		 "%s: unable to determine if string object is of type unicode.",
 		 function );
 
@@ -671,7 +662,7 @@ PyObject *pyscca_file_open(
 
 		result = libscca_file_open_wide(
 		          pyscca_file->file,
-	                  filename_wide,
+		          filename_wide,
 		          LIBSCCA_OPEN_READ,
 		          &error );
 
@@ -691,16 +682,16 @@ PyObject *pyscca_file_open(
 		}
 #if PY_MAJOR_VERSION >= 3
 		filename_narrow = PyBytes_AsString(
-				   utf8_string_object );
+		                   utf8_string_object );
 #else
 		filename_narrow = PyString_AsString(
-				   utf8_string_object );
+		                   utf8_string_object );
 #endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libscca_file_open(
 		          pyscca_file->file,
-	                  filename_narrow,
+		          filename_narrow,
 		          LIBSCCA_OPEN_READ,
 		          &error );
 
@@ -731,17 +722,17 @@ PyObject *pyscca_file_open(
 
 #if PY_MAJOR_VERSION >= 3
 	result = PyObject_IsInstance(
-		  string_object,
-		  (PyObject *) &PyBytes_Type );
+	          string_object,
+	          (PyObject *) &PyBytes_Type );
 #else
 	result = PyObject_IsInstance(
-		  string_object,
-		  (PyObject *) &PyString_Type );
+	          string_object,
+	          (PyObject *) &PyString_Type );
 #endif
 	if( result == -1 )
 	{
 		pyscca_error_fetch_and_raise(
-	         PyExc_RuntimeError,
+		 PyExc_RuntimeError,
 		 "%s: unable to determine if string object is of type string.",
 		 function );
 
@@ -753,16 +744,16 @@ PyObject *pyscca_file_open(
 
 #if PY_MAJOR_VERSION >= 3
 		filename_narrow = PyBytes_AsString(
-				   string_object );
+		                   string_object );
 #else
 		filename_narrow = PyString_AsString(
-				   string_object );
+		                   string_object );
 #endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libscca_file_open(
 		          pyscca_file->file,
-	                  filename_narrow,
+		          filename_narrow,
 		          LIBSCCA_OPEN_READ,
 		          &error );
 
@@ -804,9 +795,9 @@ PyObject *pyscca_file_open_file_object(
 {
 	PyObject *file_object       = NULL;
 	libcerror_error_t *error    = NULL;
-	char *mode                  = NULL;
-	static char *keyword_list[] = { "file_object", "mode", NULL };
 	static char *function       = "pyscca_file_open_file_object";
+	static char *keyword_list[] = { "file_object", "mode", NULL };
+	char *mode                  = NULL;
 	int result                  = 0;
 
 	if( pyscca_file == NULL )
@@ -838,6 +829,16 @@ PyObject *pyscca_file_open_file_object(
 		 mode );
 
 		return( NULL );
+	}
+	if( pyscca_file->file_io_handle != NULL )
+	{
+		pyscca_error_raise(
+		 error,
+		 PyExc_IOError,
+		 "%s: invalid file - file IO handle already set.",
+		 function );
+
+		goto on_error;
 	}
 	if( pyscca_file_object_initialize(
 	     &( pyscca_file->file_io_handle ),
@@ -973,6 +974,7 @@ PyObject *pyscca_file_get_format_version(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
+	PyObject *integer_object = NULL;
 	libcerror_error_t *error = NULL;
 	static char *function    = "pyscca_file_get_format_version";
 	uint32_t format_version  = 0;
@@ -983,7 +985,7 @@ PyObject *pyscca_file_get_format_version(
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1011,8 +1013,10 @@ PyObject *pyscca_file_get_format_version(
 
 		return( NULL );
 	}
-	return( PyLong_FromUnsignedLong(
-	         (unsigned long) format_version ) );
+	integer_object = PyLong_FromUnsignedLong(
+	                  (unsigned long) format_version );
+
+	return( integer_object );
 }
 
 /* Retrieves the executable filename
@@ -1022,20 +1026,20 @@ PyObject *pyscca_file_get_executable_filename(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error        = NULL;
-	PyObject *string_object         = NULL;
-	const char *errors              = NULL;
-	uint8_t *executable_filename    = NULL;
-	static char *function           = "pyscca_file_get_executable_filename";
-	size_t executable_filename_size = 0;
-	int result                      = 0;
+	PyObject *string_object  = NULL;
+	libcerror_error_t *error = NULL;
+	const char *errors       = NULL;
+	static char *function    = "pyscca_file_get_executable_filename";
+	char *utf8_string        = NULL;
+	size_t utf8_string_size  = 0;
+	int result               = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1045,7 +1049,7 @@ PyObject *pyscca_file_get_executable_filename(
 
 	result = libscca_file_get_utf8_executable_filename_size(
 	          pyscca_file->file,
-	          &executable_filename_size,
+	          &utf8_string_size,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1055,7 +1059,7 @@ PyObject *pyscca_file_get_executable_filename(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve executable filename size.",
+		 "%s: unable to determine size of executable filename as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -1064,21 +1068,21 @@ PyObject *pyscca_file_get_executable_filename(
 		goto on_error;
 	}
 	else if( ( result == 0 )
-	      || ( executable_filename_size == 0 ) )
+	      || ( utf8_string_size == 0 ) )
 	{
 		Py_IncRef(
 		 Py_None );
 
 		return( Py_None );
 	}
-	executable_filename = (uint8_t *) PyMem_Malloc(
-	                                   sizeof( uint8_t ) * executable_filename_size );
+	utf8_string = (char *) PyMem_Malloc(
+	                        sizeof( char ) * utf8_string_size );
 
-	if( executable_filename == NULL )
+	if( utf8_string == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
-		 "%s: unable to create executable filename.",
+		 PyExc_MemoryError,
+		 "%s: unable to create UTF-8 string.",
 		 function );
 
 		goto on_error;
@@ -1086,10 +1090,10 @@ PyObject *pyscca_file_get_executable_filename(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libscca_file_get_utf8_executable_filename(
-		  pyscca_file->file,
-		  executable_filename,
-		  executable_filename_size,
-		  &error );
+	          pyscca_file->file,
+	          (uint8_t *) utf8_string,
+	          utf8_string_size,
+	          &error );
 
 	Py_END_ALLOW_THREADS
 
@@ -1098,7 +1102,7 @@ PyObject *pyscca_file_get_executable_filename(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve executable filename.",
+		 "%s: unable to retrieve executable filename as UTF-8 string.",
 		 function );
 
 		libcerror_error_free(
@@ -1106,25 +1110,33 @@ PyObject *pyscca_file_get_executable_filename(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8
-	 * otherwise it makes the end of string character is part
-	 * of the string
+	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
+	 * the end of string character is part of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
-			 (char *) executable_filename,
-			 (Py_ssize_t) executable_filename_size - 1,
-			 errors );
+	                 utf8_string,
+	                 (Py_ssize_t) utf8_string_size - 1,
+	                 errors );
 
+	if( string_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to convert UTF-8 string into Unicode object.",
+		 function );
+
+		goto on_error;
+	}
 	PyMem_Free(
-	 executable_filename );
+	 utf8_string );
 
 	return( string_object );
 
 on_error:
-	if( executable_filename != NULL )
+	if( utf8_string != NULL )
 	{
 		PyMem_Free(
-		 executable_filename );
+		 utf8_string );
 	}
 	return( NULL );
 }
@@ -1136,9 +1148,10 @@ PyObject *pyscca_file_get_prefetch_hash(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
+	PyObject *integer_object = NULL;
 	libcerror_error_t *error = NULL;
 	static char *function    = "pyscca_file_get_prefetch_hash";
-	uint32_t prefetch_hash   = 0;
+	uint32_t value_32bit     = 0;
 	int result               = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
@@ -1146,7 +1159,7 @@ PyObject *pyscca_file_get_prefetch_hash(
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1156,12 +1169,12 @@ PyObject *pyscca_file_get_prefetch_hash(
 
 	result = libscca_file_get_prefetch_hash(
 	          pyscca_file->file,
-	          &prefetch_hash,
+	          &value_32bit,
 	          &error );
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyscca_error_raise(
 		 error,
@@ -1174,8 +1187,17 @@ PyObject *pyscca_file_get_prefetch_hash(
 
 		return( NULL );
 	}
-	return( PyLong_FromUnsignedLong(
-	         (unsigned long) prefetch_hash ) );
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	integer_object = PyLong_FromUnsignedLong(
+	                  (unsigned long) value_32bit );
+
+	return( integer_object );
 }
 
 /* Retrieves the last run date and time
@@ -1317,9 +1339,10 @@ PyObject *pyscca_file_get_run_count(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
+	PyObject *integer_object = NULL;
 	libcerror_error_t *error = NULL;
 	static char *function    = "pyscca_file_get_run_count";
-	uint32_t run_count       = 0;
+	uint32_t value_32bit     = 0;
 	int result               = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
@@ -1327,7 +1350,7 @@ PyObject *pyscca_file_get_run_count(
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1337,12 +1360,12 @@ PyObject *pyscca_file_get_run_count(
 
 	result = libscca_file_get_run_count(
 	          pyscca_file->file,
-	          &run_count,
+	          &value_32bit,
 	          &error );
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyscca_error_raise(
 		 error,
@@ -1355,8 +1378,17 @@ PyObject *pyscca_file_get_run_count(
 
 		return( NULL );
 	}
-	return( PyLong_FromUnsignedLong(
-	         (unsigned long) run_count ) );
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
+	}
+	integer_object = PyLong_FromUnsignedLong(
+	                  (unsigned long) value_32bit );
+
+	return( integer_object );
 }
 
 /* Retrieves the number of file metrics entries
@@ -1366,18 +1398,18 @@ PyObject *pyscca_file_get_number_of_file_metrics_entries(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
-	PyObject *integer_object = NULL;
-	static char *function    = "pyscca_file_get_number_of_file_metrics_entries";
-	int number_of_entries    = 0;
-	int result               = 0;
+	PyObject *integer_object           = NULL;
+	libcerror_error_t *error           = NULL;
+	static char *function              = "pyscca_file_get_number_of_file_metrics_entries";
+	int number_of_file_metrics_entries = 0;
+	int result                         = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1387,7 +1419,7 @@ PyObject *pyscca_file_get_number_of_file_metrics_entries(
 
 	result = libscca_file_get_number_of_file_metrics_entries(
 	          pyscca_file->file,
-	          &number_of_entries,
+	          &number_of_file_metrics_entries,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1407,31 +1439,31 @@ PyObject *pyscca_file_get_number_of_file_metrics_entries(
 	}
 #if PY_MAJOR_VERSION >= 3
 	integer_object = PyLong_FromLong(
-	                  (long) number_of_entries );
+	                  (long) number_of_file_metrics_entries );
 #else
 	integer_object = PyInt_FromLong(
-	                  (long) number_of_entries );
+	                  (long) number_of_file_metrics_entries );
 #endif
 	return( integer_object );
 }
 
-/* Retrieves a specific file metric entry by index
+/* Retrieves a specific file metrics entry by index
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_get_file_metrics_entry_by_index(
-           pyscca_file_t *pyscca_file,
+           PyObject *pyscca_file,
            int entry_index )
 {
-	libcerror_error_t *error             = NULL;
-	libscca_file_metrics_t *file_metrics = NULL;
-	PyObject *file_metrics_object        = NULL;
-	static char *function                = "pyscca_file_get_file_metrics_entry_by_index";
-	int result                           = 0;
+	PyObject *file_metrics_entry_object        = NULL;
+	libcerror_error_t *error                   = NULL;
+	libscca_file_metrics_t *file_metrics_entry = NULL;
+	static char *function                      = "pyscca_file_get_file_metrics_entry_by_index";
+	int result                                 = 0;
 
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1440,9 +1472,9 @@ PyObject *pyscca_file_get_file_metrics_entry_by_index(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libscca_file_get_file_metrics_entry(
-	          pyscca_file->file,
+	          ( (pyscca_file_t *) pyscca_file )->file,
 	          entry_index,
-	          &file_metrics,
+	          &file_metrics_entry,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1461,11 +1493,12 @@ PyObject *pyscca_file_get_file_metrics_entry_by_index(
 
 		goto on_error;
 	}
-	file_metrics_object = pyscca_file_metrics_new(
-	                       file_metrics,
-	                       pyscca_file );
+	file_metrics_entry_object = pyscca_file_metrics_new(
+	                             &pyscca_file_metrics_type_object,
+	                             file_metrics_entry,
+	                             (PyObject *) pyscca_file );
 
-	if( file_metrics_object == NULL )
+	if( file_metrics_entry_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
@@ -1474,13 +1507,13 @@ PyObject *pyscca_file_get_file_metrics_entry_by_index(
 
 		goto on_error;
 	}
-	return( file_metrics_object );
+	return( file_metrics_entry_object );
 
 on_error:
-	if( file_metrics != NULL )
+	if( file_metrics_entry != NULL )
 	{
 		libscca_file_metrics_free(
-		 &file_metrics,
+		 &file_metrics_entry,
 		 NULL );
 	}
 	return( NULL );
@@ -1494,9 +1527,9 @@ PyObject *pyscca_file_get_file_metrics_entry(
            PyObject *arguments,
            PyObject *keywords )
 {
-	PyObject *file_metrics_object = NULL;
-	static char *keyword_list[]   = { "entry_index", NULL };
-	int entry_index               = 0;
+	PyObject *file_metrics_entry_object = NULL;
+	static char *keyword_list[]         = { "entry_index", NULL };
+	int entry_index        = 0;
 
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
@@ -1507,32 +1540,32 @@ PyObject *pyscca_file_get_file_metrics_entry(
 	{
 		return( NULL );
 	}
-	file_metrics_object = pyscca_file_get_file_metrics_entry_by_index(
-	                       pyscca_file,
-	                       entry_index );
+	file_metrics_entry_object = pyscca_file_get_file_metrics_entry_by_index(
+	                             (PyObject *) pyscca_file,
+	                             entry_index );
 
-	return( file_metrics_object );
+	return( file_metrics_entry_object );
 }
 
-/* Retrieves a file metrics entries sequence and iterator object for the file metrics entries
+/* Retrieves a sequence and iterator object for the file metrics entries
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_get_file_metrics_entries(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error              = NULL;
-	PyObject *file_metrics_entries_object = NULL;
-	static char *function                 = "pyscca_file_get_file_metrics_entries";
-	int number_of_entries                 = 0;
-	int result                            = 0;
+	PyObject *sequence_object          = NULL;
+	libcerror_error_t *error           = NULL;
+	static char *function              = "pyscca_file_get_file_metrics_entries";
+	int number_of_file_metrics_entries = 0;
+	int result                         = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1542,7 +1575,7 @@ PyObject *pyscca_file_get_file_metrics_entries(
 
 	result = libscca_file_get_number_of_file_metrics_entries(
 	          pyscca_file->file,
-	          &number_of_entries,
+	          &number_of_file_metrics_entries,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1560,22 +1593,22 @@ PyObject *pyscca_file_get_file_metrics_entries(
 
 		return( NULL );
 	}
-	file_metrics_entries_object = pyscca_file_metrics_entries_new(
-	                               pyscca_file,
-	                               &pyscca_file_get_file_metrics_entry_by_index,
-	                               number_of_entries );
+	sequence_object = pyscca_file_metrics_entries_new(
+	                   (PyObject *) pyscca_file,
+	                   &pyscca_file_get_file_metrics_entry_by_index,
+	                   number_of_file_metrics_entries );
 
-	if( file_metrics_entries_object == NULL )
+	if( sequence_object == NULL )
 	{
 		pyscca_error_raise(
 		 error,
 		 PyExc_MemoryError,
-		 "%s: unable to create file metrics entries object.",
+		 "%s: unable to create sequence object.",
 		 function );
 
 		return( NULL );
 	}
-	return( file_metrics_entries_object );
+	return( sequence_object );
 }
 
 /* Retrieves the number of filenames
@@ -1585,8 +1618,8 @@ PyObject *pyscca_file_get_number_of_filenames(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyscca_file_get_number_of_filenames";
 	int number_of_filenames  = 0;
 	int result               = 0;
@@ -1596,7 +1629,7 @@ PyObject *pyscca_file_get_number_of_filenames(
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1638,21 +1671,21 @@ PyObject *pyscca_file_get_number_of_filenames(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_get_filename_by_index(
-           pyscca_file_t *pyscca_file,
+           PyObject *pyscca_file,
            int filename_index )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *string_object  = NULL;
-	uint8_t *filename        = NULL;
+	libcerror_error_t *error = NULL;
+	uint8_t *utf8_string     = NULL;
 	const char *errors       = NULL;
 	static char *function    = "pyscca_file_get_filename_by_index";
-	size_t filename_size     = 0;
+	size_t utf8_string_size  = 0;
 	int result               = 0;
 
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1661,9 +1694,9 @@ PyObject *pyscca_file_get_filename_by_index(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libscca_file_get_utf8_filename_size(
-	          pyscca_file->file,
+	          ( (pyscca_file_t *) pyscca_file )->file,
 	          filename_index,
-	          &filename_size,
+	          &utf8_string_size,
 	          &error );
 
 	Py_END_ALLOW_THREADS
@@ -1673,7 +1706,7 @@ PyObject *pyscca_file_get_filename_by_index(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve filename: %d size.",
+		 "%s: unable to determine size of filename: %d as UTF-8 string.",
 		 function,
 		 filename_index );
 
@@ -1683,34 +1716,33 @@ PyObject *pyscca_file_get_filename_by_index(
 		goto on_error;
 	}
 	else if( ( result == 0 )
-	      || ( filename_size == 0 ) )
+	      || ( utf8_string_size == 0 ) )
 	{
 		Py_IncRef(
 		 Py_None );
 
 		return( Py_None );
 	}
-	filename = (uint8_t *) PyMem_Malloc(
-	                        sizeof( uint8_t ) * filename_size );
+	utf8_string = (uint8_t *) PyMem_Malloc(
+	                           sizeof( uint8_t ) * utf8_string_size );
 
-	if( filename == NULL )
+	if( utf8_string == NULL )
 	{
 		PyErr_Format(
-		 PyExc_IOError,
-		 "%s: unable to create filename: %d.",
-		 function,
-		 filename_index );
+		 PyExc_MemoryError,
+		 "%s: unable to create UTF-8 string.",
+		 function );
 
 		goto on_error;
 	}
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libscca_file_get_utf8_filename(
-		  pyscca_file->file,
-		  filename_index,
-		  filename,
-		  filename_size,
-		  &error );
+	          ( (pyscca_file_t *) pyscca_file )->file,
+	          filename_index,
+	          utf8_string,
+	          utf8_string_size,
+	          &error );
 
 	Py_END_ALLOW_THREADS
 
@@ -1719,7 +1751,7 @@ PyObject *pyscca_file_get_filename_by_index(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve filename: %d.",
+		 "%s: unable to retrieve filename: %d as UTF-8 string.",
 		 function,
 		 filename_index );
 
@@ -1728,25 +1760,33 @@ PyObject *pyscca_file_get_filename_by_index(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8
-	 * otherwise it makes the end of string character is part
-	 * of the string
+	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
+	 * the end of string character is part of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
-			 (char *) filename,
-			 (Py_ssize_t) filename_size - 1,
-			 errors );
+	                 (char *) utf8_string,
+	                 (Py_ssize_t) utf8_string_size - 1,
+	                 errors );
 
+	if( string_object == NULL )
+	{
+		PyErr_Format(
+		 PyExc_IOError,
+		 "%s: unable to convert UTF-8 string into Unicode object.",
+		 function );
+
+		goto on_error;
+	}
 	PyMem_Free(
-	 filename );
+	 utf8_string );
 
 	return( string_object );
 
 on_error:
-	if( filename != NULL )
+	if( utf8_string != NULL )
 	{
 		PyMem_Free(
-		 filename );
+		 utf8_string );
 	}
 	return( NULL );
 }
@@ -1773,31 +1813,31 @@ PyObject *pyscca_file_get_filename(
 		return( NULL );
 	}
 	string_object = pyscca_file_get_filename_by_index(
-	                 pyscca_file,
+	                 (PyObject *) pyscca_file,
 	                 filename_index );
 
 	return( string_object );
 }
 
-/* Retrieves a filenames sequence and iterator object for the filenames
+/* Retrieves a sequence and iterator object for the filenames
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_get_filenames(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error   = NULL;
-	PyObject *filenames_object = NULL;
-	static char *function      = "pyscca_file_get_filenames";
-	int number_of_filenames    = 0;
-	int result                 = 0;
+	PyObject *sequence_object = NULL;
+	libcerror_error_t *error  = NULL;
+	static char *function     = "pyscca_file_get_filenames";
+	int number_of_filenames   = 0;
+	int result                = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1825,21 +1865,21 @@ PyObject *pyscca_file_get_filenames(
 
 		return( NULL );
 	}
-	filenames_object = pyscca_filenames_new(
-	                    pyscca_file,
-	                    &pyscca_file_get_filename_by_index,
-	                    number_of_filenames );
+	sequence_object = pyscca_filenames_new(
+	                   (PyObject *) pyscca_file,
+	                   &pyscca_file_get_filename_by_index,
+	                   number_of_filenames );
 
-	if( filenames_object == NULL )
+	if( sequence_object == NULL )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
-		 "%s: unable to create filenames object.",
+		 "%s: unable to create sequence object.",
 		 function );
 
 		return( NULL );
 	}
-	return( filenames_object );
+	return( sequence_object );
 }
 
 /* Retrieves the number of volumes
@@ -1849,8 +1889,8 @@ PyObject *pyscca_file_get_number_of_volumes(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
 	PyObject *integer_object = NULL;
+	libcerror_error_t *error = NULL;
 	static char *function    = "pyscca_file_get_number_of_volumes";
 	int number_of_volumes    = 0;
 	int result               = 0;
@@ -1860,7 +1900,7 @@ PyObject *pyscca_file_get_number_of_volumes(
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1902,19 +1942,19 @@ PyObject *pyscca_file_get_number_of_volumes(
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_get_volume_information_by_index(
-           pyscca_file_t *pyscca_file,
+           PyObject *pyscca_file,
            int volume_index )
 {
+	PyObject *volume_information_object              = NULL;
 	libcerror_error_t *error                         = NULL;
 	libscca_volume_information_t *volume_information = NULL;
-	PyObject *volume_information_object              = NULL;
 	static char *function                            = "pyscca_file_get_volume_information_by_index";
 	int result                                       = 0;
 
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -1923,7 +1963,7 @@ PyObject *pyscca_file_get_volume_information_by_index(
 	Py_BEGIN_ALLOW_THREADS
 
 	result = libscca_file_get_volume_information(
-	          pyscca_file->file,
+	          ( (pyscca_file_t *) pyscca_file )->file,
 	          volume_index,
 	          &volume_information,
 	          &error );
@@ -1945,8 +1985,9 @@ PyObject *pyscca_file_get_volume_information_by_index(
 		goto on_error;
 	}
 	volume_information_object = pyscca_volume_information_new(
+	                             &pyscca_volume_information_type_object,
 	                             volume_information,
-	                             pyscca_file );
+	                             (PyObject *) pyscca_file );
 
 	if( volume_information_object == NULL )
 	{
@@ -1991,31 +2032,31 @@ PyObject *pyscca_file_get_volume_information(
 		return( NULL );
 	}
 	volume_information_object = pyscca_file_get_volume_information_by_index(
-	                             pyscca_file,
+	                             (PyObject *) pyscca_file,
 	                             volume_index );
 
 	return( volume_information_object );
 }
 
-/* Retrieves a volumes sequence and iterator object for the volumes
+/* Retrieves a sequence and iterator object for the volumes
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_get_volumes(
            pyscca_file_t *pyscca_file,
            PyObject *arguments PYSCCA_ATTRIBUTE_UNUSED )
 {
-	libcerror_error_t *error = NULL;
-	PyObject *volumes_object = NULL;
-	static char *function    = "pyscca_file_get_volumes";
-	int number_of_volumes    = 0;
-	int result               = 0;
+	PyObject *sequence_object = NULL;
+	libcerror_error_t *error  = NULL;
+	static char *function     = "pyscca_file_get_volumes";
+	int number_of_volumes     = 0;
+	int result                = 0;
 
 	PYSCCA_UNREFERENCED_PARAMETER( arguments )
 
 	if( pyscca_file == NULL )
 	{
 		PyErr_Format(
-		 PyExc_TypeError,
+		 PyExc_ValueError,
 		 "%s: invalid file.",
 		 function );
 
@@ -2043,21 +2084,21 @@ PyObject *pyscca_file_get_volumes(
 
 		return( NULL );
 	}
-	volumes_object = pyscca_volumes_new(
-	                  pyscca_file,
-	                  &pyscca_file_get_volume_information_by_index,
-	                  number_of_volumes );
+	sequence_object = pyscca_volumes_new(
+	                   (PyObject *) pyscca_file,
+	                   &pyscca_file_get_volume_information_by_index,
+	                   number_of_volumes );
 
-	if( volumes_object == NULL )
+	if( sequence_object == NULL )
 	{
 		pyscca_error_raise(
 		 error,
 		 PyExc_MemoryError,
-		 "%s: unable to create volumes object.",
+		 "%s: unable to create sequence object.",
 		 function );
 
 		return( NULL );
 	}
-	return( volumes_object );
+	return( sequence_object );
 }
 

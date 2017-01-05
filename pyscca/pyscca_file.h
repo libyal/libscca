@@ -1,7 +1,7 @@
 /*
- * Python object definition of the libscca file
+ * Python object wrapper of libscca_file_t
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -121,7 +121,7 @@ PyObject *pyscca_file_get_number_of_file_metrics_entries(
            PyObject *arguments );
 
 PyObject *pyscca_file_get_file_metrics_entry_by_index(
-           pyscca_file_t *pyscca_file,
+           PyObject *pyscca_file,
            int entry_index );
 
 PyObject *pyscca_file_get_file_metrics_entry(
@@ -138,7 +138,7 @@ PyObject *pyscca_file_get_number_of_filenames(
            PyObject *arguments );
 
 PyObject *pyscca_file_get_filename_by_index(
-           pyscca_file_t *pyscca_file,
+           PyObject *pyscca_file,
            int filename_index );
 
 PyObject *pyscca_file_get_filename(
@@ -155,7 +155,7 @@ PyObject *pyscca_file_get_number_of_volumes(
            PyObject *arguments );
 
 PyObject *pyscca_file_get_volume_information_by_index(
-           pyscca_file_t *pyscca_file,
+           PyObject *pyscca_file,
            int volume_index );
 
 PyObject *pyscca_file_get_volume_information(

@@ -1,5 +1,5 @@
 /*
- * Error functions
+ * GetOpt functions
  *
  * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -19,56 +19,50 @@
  * along with this software.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSCCA_INTERNAL_ERROR_H )
-#define _LIBSCCA_INTERNAL_ERROR_H
+#if !defined( _SCCA_TEST_GETOPT_H )
+#define _SCCA_TEST_GETOPT_H
 
 #include <common.h>
-#include <file_stream.h>
 #include <types.h>
 
-#if !defined( HAVE_LOCAL_LIBSCCA )
-#include <libscca/error.h>
+/* unistd.h is included here to export getopt, optarg, optind and optopt
+ */
+#if defined( HAVE_UNISTD_H )
+#include <unistd.h>
 #endif
-
-#include "libscca_extern.h"
 
 #if defined( __cplusplus )
 extern "C" {
 #endif
 
-#if !defined( HAVE_LOCAL_LIBSCCA )
+#if defined( HAVE_GETOPT )
+#define scca_test_getopt( argument_count, argument_values, options_string ) \
+	getopt( argument_count, argument_values, options_string )
 
-LIBSCCA_EXTERN \
-void libscca_error_free(
-      libscca_error_t **error );
+#else
 
-LIBSCCA_EXTERN \
-int libscca_error_fprint(
-     libscca_error_t *error,
-     FILE *stream );
+#if !defined( __CYGWIN__ )
+extern int optind;
+extern system_character_t *optarg;
+extern system_integer_t optopt;
 
-LIBSCCA_EXTERN \
-int libscca_error_sprint(
-     libscca_error_t *error,
-     char *string,
-     size_t size );
+#else
+int optind;
+system_character_t *optarg;
+system_integer_t optopt;
 
-LIBSCCA_EXTERN \
-int libscca_error_backtrace_fprint(
-     libscca_error_t *error,
-     FILE *stream );
+#endif /* !defined( __CYGWIN__ ) */
 
-LIBSCCA_EXTERN \
-int libscca_error_backtrace_sprint(
-     libscca_error_t *error,
-     char *string,
-     size_t size );
+system_integer_t scca_test_getopt(
+                  int argument_count,
+                  system_character_t * const argument_values[],
+                  const system_character_t *options_string );
 
-#endif /* !defined( HAVE_LOCAL_LIBSCCA ) */
+#endif /* defined( HAVE_GETOPT ) */
 
 #if defined( __cplusplus )
 }
 #endif
 
-#endif /* !defined( _LIBSCCA_INTERNAL_ERROR_H ) */
+#endif /* !defined( _SCCA_TEST_GETOPT_H ) */
 

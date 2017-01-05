@@ -1,7 +1,7 @@
 /*
  * The internal extern definition
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -38,9 +38,9 @@
 #include <libscca/extern.h>
 
 #else
-#define LIBSCCA_EXTERN	extern
+#define LIBSCCA_EXTERN	/* extern */
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSCCA ) */
 
 #endif /* !defined( _LIBSCCA_INTERNAL_EXTERN_H ) */
 

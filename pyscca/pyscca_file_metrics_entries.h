@@ -1,7 +1,7 @@
 /*
- * Python object definition of the file metrics entries sequence and iterator
+ * Python object definition of the sequence and iterator object of file metrics entries
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -25,7 +25,6 @@
 #include <common.h>
 #include <types.h>
 
-#include "pyscca_file.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
 
@@ -41,52 +40,52 @@ struct pyscca_file_metrics_entries
 	 */
 	PyObject_HEAD
 
-	/* The file object
+	/* The parent object
 	 */
-	pyscca_file_t *file_object;
+	PyObject *parent_object;
 
-	/* The get file metrics entry by index callback function
+	/* The get item by index callback function
 	 */
-	PyObject* (*get_file_metrics_entry_by_index)(
-	             pyscca_file_t *file_object,
-	             int entry_index );
+	PyObject* (*get_item_by_index)(
+	             PyObject *parent_object,
+	             int index );
 
-	/* The (current) entry index
+	/* The current index
 	 */
-	int entry_index;
+	int current_index;
 
-	/* The number of file metrics entries
+	/* The number of items
 	 */
-	int number_of_entries;
+	int number_of_items;
 };
 
 extern PyTypeObject pyscca_file_metrics_entries_type_object;
 
 PyObject *pyscca_file_metrics_entries_new(
-           pyscca_file_t *file_object,
-           PyObject* (*get_file_metrics_entry_by_index)(
-                        pyscca_file_t *file_object,
-                        int entry_index ),
-           int number_of_entries );
+           PyObject *parent_object,
+           PyObject* (*get_item_by_index)(
+                        PyObject *parent_object,
+                        int index ),
+           int number_of_items );
 
 int pyscca_file_metrics_entries_init(
-     pyscca_file_metrics_entries_t *pyscca_file_metrics_entries );
+     pyscca_file_metrics_entries_t *file_metrics_entries_object );
 
 void pyscca_file_metrics_entries_free(
-      pyscca_file_metrics_entries_t *pyscca_file_metrics_entries );
+      pyscca_file_metrics_entries_t *file_metrics_entries_object );
 
 Py_ssize_t pyscca_file_metrics_entries_len(
-            pyscca_file_metrics_entries_t *pyscca_file_metrics_entries );
+            pyscca_file_metrics_entries_t *file_metrics_entries_object );
 
 PyObject *pyscca_file_metrics_entries_getitem(
-           pyscca_file_metrics_entries_t *pyscca_file_metrics_entries,
+           pyscca_file_metrics_entries_t *file_metrics_entries_object,
            Py_ssize_t item_index );
 
 PyObject *pyscca_file_metrics_entries_iter(
-           pyscca_file_metrics_entries_t *pyscca_file_metrics_entries );
+           pyscca_file_metrics_entries_t *file_metrics_entries_object );
 
 PyObject *pyscca_file_metrics_entries_iternext(
-           pyscca_file_metrics_entries_t *pyscca_file_metrics_entries );
+           pyscca_file_metrics_entries_t *file_metrics_entries_object );
 
 #if defined( __cplusplus )
 }

@@ -1,7 +1,7 @@
 /*
  * Date and time functions
  *
- * Copyright (c) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -36,6 +36,9 @@ PyObject *pyscca_datetime_new_from_fat_date_time(
 
 PyObject *pyscca_datetime_new_from_filetime(
            uint64_t filetime );
+
+PyObject *pyscca_datetime_new_from_floatingtime(
+           uint64_t floatingtime );
 
 PyObject *pyscca_datetime_new_from_posix_time(
            uint32_t posix_time );

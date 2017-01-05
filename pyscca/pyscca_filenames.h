@@ -1,7 +1,7 @@
 /*
- * Python object definition of the filenames sequence and iterator
+ * Python object definition of the sequence and iterator object of filenames
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -20,12 +20,11 @@
  */
 
 #if !defined( _PYSCCA_FILENAMES_H )
-#define _PYSCCA_STRINGS_H
+#define _PYSCCA_FILENAMES_H
 
 #include <common.h>
 #include <types.h>
 
-#include "pyscca_file.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
 
@@ -41,52 +40,52 @@ struct pyscca_filenames
 	 */
 	PyObject_HEAD
 
-	/* The file object
+	/* The parent object
 	 */
-	pyscca_file_t *file_object;
+	PyObject *parent_object;
 
-	/* The get filename by index callback function
+	/* The get item by index callback function
 	 */
-	PyObject* (*get_filename_by_index)(
-	             pyscca_file_t *file_object,
-	             int filename_index );
+	PyObject* (*get_item_by_index)(
+	             PyObject *parent_object,
+	             int index );
 
-	/* The (current) filename index
+	/* The current index
 	 */
-	int filename_index;
+	int current_index;
 
-	/* The number of filenames
+	/* The number of items
 	 */
-	int number_of_filenames;
+	int number_of_items;
 };
 
 extern PyTypeObject pyscca_filenames_type_object;
 
 PyObject *pyscca_filenames_new(
-           pyscca_file_t *file_object,
-           PyObject* (*get_filename_by_index)(
-                        pyscca_file_t *file_object,
-                        int filename_index ),
-           int number_of_filenames );
+           PyObject *parent_object,
+           PyObject* (*get_item_by_index)(
+                        PyObject *parent_object,
+                        int index ),
+           int number_of_items );
 
 int pyscca_filenames_init(
-     pyscca_filenames_t *pyscca_filenames );
+     pyscca_filenames_t *filenames_object );
 
 void pyscca_filenames_free(
-      pyscca_filenames_t *pyscca_filenames );
+      pyscca_filenames_t *filenames_object );
 
 Py_ssize_t pyscca_filenames_len(
-            pyscca_filenames_t *pyscca_filenames );
+            pyscca_filenames_t *filenames_object );
 
 PyObject *pyscca_filenames_getitem(
-           pyscca_filenames_t *pyscca_filenames,
+           pyscca_filenames_t *filenames_object,
            Py_ssize_t item_index );
 
 PyObject *pyscca_filenames_iter(
-           pyscca_filenames_t *pyscca_filenames );
+           pyscca_filenames_t *filenames_object );
 
 PyObject *pyscca_filenames_iternext(
-           pyscca_filenames_t *pyscca_filenames );
+           pyscca_filenames_t *filenames_object );
 
 #if defined( __cplusplus )
 }

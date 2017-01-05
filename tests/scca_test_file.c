@@ -1,7 +1,7 @@
 /*
- * Library file type testing program
+ * Library file type test program
  *
- * Copyright (C) 2011-2016, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2017, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -30,9 +30,9 @@
 #include <stdlib.h>
 #endif
 
+#include "scca_test_getopt.h"
 #include "scca_test_libcerror.h"
 #include "scca_test_libclocale.h"
-#include "scca_test_libcsystem.h"
 #include "scca_test_libscca.h"
 #include "scca_test_libuna.h"
 #include "scca_test_macros.h"
@@ -2370,7 +2370,7 @@ int main(
 	system_integer_t option    = 0;
 	int result                 = 0;
 
-	while( ( option = libcsystem_getopt(
+	while( ( option = scca_test_getopt(
 	                   argc,
 	                   argv,
 	                   _SYSTEM_STRING( "" ) ) ) != (system_integer_t) -1 )
