@@ -483,7 +483,7 @@ PyObject *pyscca_file_metrics_get_file_reference(
 
 	Py_END_ALLOW_THREADS
 
-	if( result != 1 )
+	if( result == -1 )
 	{
 		pyscca_error_raise(
 		 error,
@@ -495,6 +495,13 @@ PyObject *pyscca_file_metrics_get_file_reference(
 		 &error );
 
 		return( NULL );
+	}
+	else if( result == 0 )
+	{
+		Py_IncRef(
+		 Py_None );
+
+		return( Py_None );
 	}
 	integer_object = pyscca_integer_unsigned_new_from_64bit(
 	                  (uint64_t) value_64bit );

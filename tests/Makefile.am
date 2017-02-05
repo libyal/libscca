@@ -21,20 +21,20 @@ AM_CPPFLAGS = \
 
 if HAVE_PYTHON_TESTS
 TESTS_PYSCCA = \
-	test_python_functions.sh
+	test_python_module.sh
 endif
 
 TESTS = \
-	test_api_functions.sh \
-	test_api_types.sh \
+	test_library.sh \
+	test_sccainfo.sh \
 	$(TESTS_PYSCCA)
 
 check_SCRIPTS = \
 	pyscca_test_file.py \
 	pyscca_test_support.py \
-	test_api_functions.sh \
-	test_api_types.sh \
-	test_python_functions.sh \
+	test_library.sh \
+	test_python_module.sh \
+	test_sccainfo.sh \
 	test_runner.sh
 
 EXTRA_DIST = \
