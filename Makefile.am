@@ -34,13 +34,12 @@ DPKG_FILES = \
 	dpkg/compat \
 	dpkg/control \
 	dpkg/copyright \
-	dpkg/copyright.in \
 	dpkg/rules \
-	dpkg/libscca.docs \
-	dpkg/libscca-dev.docs \
-	dpkg/libscca-python.docs \
-	dpkg/libscca-python3.docs \
-	dpkg/libscca-tools.docs \
+	dpkg/libscca.install \
+	dpkg/libscca-dev.install \
+	dpkg/libscca-python.install \
+	dpkg/libscca-python3.install \
+	dpkg/libscca-tools.install \
 	dpkg/source/format
 
 GETTEXT_FILES = \
