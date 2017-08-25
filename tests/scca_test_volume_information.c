@@ -72,8 +72,8 @@ int scca_test_volume_information_initialize(
          "error",
          error );
 
-	result = libscca_volume_information_free(
-	          &volume_information,
+	result = libscca_internal_volume_information_free(
+	          (libscca_internal_volume_information_t **) &volume_information,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -147,8 +147,8 @@ int scca_test_volume_information_initialize(
 
 			if( volume_information != NULL )
 			{
-				libscca_volume_information_free(
-				 &volume_information,
+				libscca_internal_volume_information_free(
+				 (libscca_internal_volume_information_t **) &volume_information,
 				 NULL );
 			}
 		}
@@ -189,8 +189,8 @@ int scca_test_volume_information_initialize(
 
 			if( volume_information != NULL )
 			{
-				libscca_volume_information_free(
-				 &volume_information,
+				libscca_internal_volume_information_free(
+				 (libscca_internal_volume_information_t **) &volume_information,
 				 NULL );
 			}
 		}
@@ -225,8 +225,8 @@ on_error:
 	}
 	if( volume_information != NULL )
 	{
-		libscca_volume_information_free(
-		 &volume_information,
+		libscca_internal_volume_information_free(
+		 (libscca_internal_volume_information_t **) &volume_information,
 		 NULL );
 	}
 	return( 0 );
@@ -363,8 +363,8 @@ int scca_test_volume_information_get_creation_time(
 	}
 	/* Clean up
 	 */
-	result = libscca_volume_information_free(
-	          &volume_information,
+	result = libscca_internal_volume_information_free(
+	          (libscca_internal_volume_information_t **) &volume_information,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -390,8 +390,8 @@ on_error:
 	}
 	if( volume_information != NULL )
 	{
-		libscca_volume_information_free(
-		 &volume_information,
+		libscca_internal_volume_information_free(
+		 (libscca_internal_volume_information_t **) &volume_information,
 		 NULL );
 	}
 	return( 0 );
@@ -486,8 +486,8 @@ int scca_test_volume_information_get_serial_number(
 	}
 	/* Clean up
 	 */
-	result = libscca_volume_information_free(
-	          &volume_information,
+	result = libscca_internal_volume_information_free(
+	          (libscca_internal_volume_information_t **) &volume_information,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -513,8 +513,8 @@ on_error:
 	}
 	if( volume_information != NULL )
 	{
-		libscca_volume_information_free(
-		 &volume_information,
+		libscca_internal_volume_information_free(
+		 (libscca_internal_volume_information_t **) &volume_information,
 		 NULL );
 	}
 	return( 0 );
@@ -609,8 +609,8 @@ int scca_test_volume_information_get_utf8_device_path_size(
 	}
 	/* Clean up
 	 */
-	result = libscca_volume_information_free(
-	          &volume_information,
+	result = libscca_internal_volume_information_free(
+	          (libscca_internal_volume_information_t **) &volume_information,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -636,8 +636,8 @@ on_error:
 	}
 	if( volume_information != NULL )
 	{
-		libscca_volume_information_free(
-		 &volume_information,
+		libscca_internal_volume_information_free(
+		 (libscca_internal_volume_information_t **) &volume_information,
 		 NULL );
 	}
 	return( 0 );
@@ -772,8 +772,8 @@ int scca_test_volume_information_get_utf8_device_path(
 	}
 	/* Clean up
 	 */
-	result = libscca_volume_information_free(
-	          &volume_information,
+	result = libscca_internal_volume_information_free(
+	          (libscca_internal_volume_information_t **) &volume_information,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -799,8 +799,8 @@ on_error:
 	}
 	if( volume_information != NULL )
 	{
-		libscca_volume_information_free(
-		 &volume_information,
+		libscca_internal_volume_information_free(
+		 (libscca_internal_volume_information_t **) &volume_information,
 		 NULL );
 	}
 	return( 0 );
@@ -895,8 +895,8 @@ int scca_test_volume_information_get_utf16_device_path_size(
 	}
 	/* Clean up
 	 */
-	result = libscca_volume_information_free(
-	          &volume_information,
+	result = libscca_internal_volume_information_free(
+	          (libscca_internal_volume_information_t **) &volume_information,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -922,8 +922,8 @@ on_error:
 	}
 	if( volume_information != NULL )
 	{
-		libscca_volume_information_free(
-		 &volume_information,
+		libscca_internal_volume_information_free(
+		 (libscca_internal_volume_information_t **) &volume_information,
 		 NULL );
 	}
 	return( 0 );
@@ -1058,8 +1058,8 @@ int scca_test_volume_information_get_utf16_device_path(
 	}
 	/* Clean up
 	 */
-	result = libscca_volume_information_free(
-	          &volume_information,
+	result = libscca_internal_volume_information_free(
+	          (libscca_internal_volume_information_t **) &volume_information,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -1085,8 +1085,8 @@ on_error:
 	}
 	if( volume_information != NULL )
 	{
-		libscca_volume_information_free(
-		 &volume_information,
+		libscca_internal_volume_information_free(
+		 (libscca_internal_volume_information_t **) &volume_information,
 		 NULL );
 	}
 	return( 0 );

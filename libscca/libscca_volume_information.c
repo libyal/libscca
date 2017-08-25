@@ -137,7 +137,7 @@ int libscca_internal_volume_information_free(
      libscca_internal_volume_information_t **internal_volume_information,
      libcerror_error_t **error )
 {
-	static char *function = "libscca_volume_information_free";
+	static char *function = "libscca_internal_volume_information_free";
 	int result            = 1;
 
 	if( internal_volume_information == NULL )
