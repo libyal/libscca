@@ -73,9 +73,9 @@ on_error:
 	return( 0 );
 }
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT )
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
 
 /* The main program
  */
@@ -92,17 +92,17 @@ int main(
 	SCCA_TEST_UNREFERENCED_PARAMETER( argc )
 	SCCA_TEST_UNREFERENCED_PARAMETER( argv )
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT )
 
 	/* TODO: add tests for libscca_file_metrics_initialize */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
 
 	SCCA_TEST_RUN(
 	 "libscca_file_metrics_free",
 	 scca_test_file_metrics_free );
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT )
 
 	/* TODO: add tests for libscca_file_metrics_get_utf8_filename_size */
 
@@ -114,7 +114,7 @@ int main(
 
 	/* TODO: add tests for libscca_file_metrics_get_file_reference */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 

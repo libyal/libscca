@@ -2464,11 +2464,11 @@ int main(
 		 scca_test_file_signal_abort,
 		 file );
 
-#if defined( __GNUC__ )
+#if defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT )
 
 		/* TODO: add tests for libscca_file_open_read */
 
-#endif /* defined( __GNUC__ ) */
+#endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
 
 		SCCA_TEST_RUN_WITH_ARGS(
 		 "libscca_file_get_format_version",
