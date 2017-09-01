@@ -64,13 +64,13 @@ int scca_test_volume_information_initialize(
 	 result,
 	 1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "volume_information",
-         volume_information );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "volume_information",
+	 volume_information );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libscca_internal_volume_information_free(
 	          (libscca_internal_volume_information_t **) &volume_information,
@@ -81,13 +81,13 @@ int scca_test_volume_information_initialize(
 	 result,
 	 1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "volume_information",
-         volume_information );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "volume_information",
+	 volume_information );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -100,9 +100,9 @@ int scca_test_volume_information_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -118,9 +118,9 @@ int scca_test_volume_information_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -254,9 +254,9 @@ int scca_test_volume_information_free(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );

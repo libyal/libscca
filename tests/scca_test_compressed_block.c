@@ -59,13 +59,13 @@ int scca_test_compressed_block_initialize(
 	 result,
 	 1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "compressed_block",
-         compressed_block );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "compressed_block",
+	 compressed_block );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libscca_compressed_block_free(
 	          &compressed_block,
@@ -76,13 +76,13 @@ int scca_test_compressed_block_initialize(
 	 result,
 	 1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "compressed_block",
-         compressed_block );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "compressed_block",
+	 compressed_block );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -96,9 +96,9 @@ int scca_test_compressed_block_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -115,9 +115,9 @@ int scca_test_compressed_block_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -134,9 +134,9 @@ int scca_test_compressed_block_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -151,9 +151,9 @@ int scca_test_compressed_block_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -275,9 +275,9 @@ int scca_test_compressed_block_free(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );

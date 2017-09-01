@@ -64,13 +64,13 @@ int scca_test_io_handle_initialize(
 	 result,
 	 1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "io_handle",
-         io_handle );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "io_handle",
+	 io_handle );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libscca_io_handle_free(
 	          &io_handle,
@@ -81,13 +81,13 @@ int scca_test_io_handle_initialize(
 	 result,
 	 1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "io_handle",
-         io_handle );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "io_handle",
+	 io_handle );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -100,9 +100,9 @@ int scca_test_io_handle_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -118,9 +118,9 @@ int scca_test_io_handle_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -252,9 +252,9 @@ int scca_test_io_handle_free(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );

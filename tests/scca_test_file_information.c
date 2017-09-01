@@ -58,13 +58,13 @@ int scca_test_file_information_initialize(
 	 result,
 	 1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "file_information",
-         file_information );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "file_information",
+	 file_information );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	result = libscca_file_information_free(
 	          &file_information,
@@ -75,13 +75,13 @@ int scca_test_file_information_initialize(
 	 result,
 	 1 );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "file_information",
-         file_information );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "file_information",
+	 file_information );
 
-        SCCA_TEST_ASSERT_IS_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
 
 	/* Test error cases
 	 */
@@ -94,9 +94,9 @@ int scca_test_file_information_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -112,9 +112,9 @@ int scca_test_file_information_initialize(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
@@ -236,9 +236,9 @@ int scca_test_file_information_free(
 	 result,
 	 -1 );
 
-        SCCA_TEST_ASSERT_IS_NOT_NULL(
-         "error",
-         error );
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
 
 	libcerror_error_free(
 	 &error );
