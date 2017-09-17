@@ -1,3 +1,7 @@
+dnl Checks for required headers and functions
+dnl
+dnl Version: 20170917
+
 dnl Function to detect if libscca dependencies are available
 AC_DEFUN([AX_LIBSCCA_CHECK_LOCAL],
   [dnl Check for internationalization functions in libscca/libscca_i18n.c 
