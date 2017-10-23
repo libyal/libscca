@@ -409,7 +409,7 @@ int libscca_file_information_read(
 			{
 				result = libscca_debug_print_filetime_value(
 					  function,
-					  "last run time: %d\t\t\t\t",
+					  "last run time:\t\t\t\t",
 				          &( ( (scca_file_information_v17_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
 					  8,
 					  LIBFDATETIME_ENDIAN_LITTLE,
@@ -420,7 +420,7 @@ int libscca_file_information_read(
 			{
 				result = libscca_debug_print_filetime_value(
 					  function,
-					  "last run time: %d\t\t\t\t",
+					  "last run time:\t\t\t\t",
 				          &( ( (scca_file_information_v23_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
 					  8,
 					  LIBFDATETIME_ENDIAN_LITTLE,
@@ -432,7 +432,7 @@ int libscca_file_information_read(
 			{
 				result = libscca_debug_print_filetime_value(
 					  function,
-					  "last run time: %d\t\t\t\t",
+					  "last run time:\t\t\t\t",
 				          &( ( (scca_file_information_v26_t *) file_information_data )->last_run_time[ last_run_time_index * 8 ] ),
 					  8,
 					  LIBFDATETIME_ENDIAN_LITTLE,

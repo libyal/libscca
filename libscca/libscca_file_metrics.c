@@ -26,6 +26,7 @@
 #include "libscca_definitions.h"
 #include "libscca_file_metrics.h"
 #include "libscca_libcerror.h"
+#include "libscca_libcnotify.h"
 #include "libscca_libuna.h"
 
 #include "scca_file_metrics_array.h"
@@ -337,7 +338,7 @@ int libscca_file_metrics_read_data(
 			 value_32bit );
 		}
 		libcnotify_printf(
-		 "%s: filename string offset\t\t: 0x%08" PRIx32 "\n",
+		 "%s: filename string offset\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 internal_file_metrics->filename_string_offset );
 
@@ -361,7 +362,7 @@ int libscca_file_metrics_read_data(
 		 value_32bit );
 
 		libcnotify_printf(
-		 "%s: flags\t\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: flags\t\t\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 internal_file_metrics->flags );
 

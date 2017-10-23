@@ -793,10 +793,6 @@ int libscca_io_handle_read_file_metrics_array(
 	uint32_t file_metrics_entry_index    = 0;
 	int entry_index                      = 0;
 
-#if defined( HAVE_DEBUG_OUTPUT )
-	uint32_t value_32bit                 = 0;
-#endif
-
 	if( io_handle == NULL )
 	{
 		libcerror_error_set(
