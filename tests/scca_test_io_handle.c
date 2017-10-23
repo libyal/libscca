@@ -270,6 +270,104 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libscca_io_handle_clear function
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_io_handle_clear(
+     void )
+{
+	libcerror_error_t *error       = NULL;
+	libscca_io_handle_t *io_handle = NULL;
+	int result                     = 0;
+
+	/* Initialize test
+	 */
+	result = libscca_io_handle_initialize(
+	          &io_handle,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "io_handle",
+	 io_handle );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libscca_io_handle_clear(
+	          io_handle,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libscca_io_handle_clear(
+	          NULL,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libscca_io_handle_free(
+	          &io_handle,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "io_handle",
+	 io_handle );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( io_handle != NULL )
+	{
+		libscca_io_handle_free(
+		 &io_handle,
+		 NULL );
+	}
+	return( 0 );
+}
+
 #endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
 
 /* The main program
@@ -297,7 +395,9 @@ int main(
 	 "libscca_io_handle_free",
 	 scca_test_io_handle_free );
 
-	/* TODO: add tests for libscca_io_handle_clear */
+	SCCA_TEST_RUN(
+	 "libscca_io_handle_clear",
+	 scca_test_io_handle_clear );
 
 	/* TODO: add tests for libscca_io_handle_read_compressed_file_header */
 
