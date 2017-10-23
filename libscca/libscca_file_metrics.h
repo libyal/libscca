@@ -27,6 +27,7 @@
 
 #include "libscca_extern.h"
 #include "libscca_filename_strings.h"
+#include "libscca_io_handle.h"
 #include "libscca_libcerror.h"
 #include "libscca_types.h"
 
@@ -68,7 +69,7 @@ struct libscca_internal_file_metrics
 };
 
 int libscca_file_metrics_initialize(
-     libscca_internal_file_metrics_t **file_metrics,
+     libscca_file_metrics_t **file_metrics,
      libscca_filename_strings_t *filename_strings,
      libcerror_error_t **error );
 
@@ -79,6 +80,13 @@ int libscca_file_metrics_free(
 
 int libscca_internal_file_metrics_free(
      libscca_internal_file_metrics_t **file_metrics,
+     libcerror_error_t **error );
+
+int libscca_file_metrics_read_data(
+     libscca_file_metrics_t *file_metrics,
+     libscca_io_handle_t *io_handle,
+     const uint8_t *data,
+     size_t data_size,
      libcerror_error_t **error );
 
 LIBSCCA_EXTERN \

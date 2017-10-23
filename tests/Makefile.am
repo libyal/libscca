@@ -34,8 +34,8 @@ check_SCRIPTS = \
 	pyscca_test_support.py \
 	test_library.sh \
 	test_python_module.sh \
-	test_sccainfo.sh \
-	test_runner.sh
+	test_runner.sh \
+	test_sccainfo.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
@@ -75,17 +75,24 @@ scca_test_error_LDADD = \
 
 scca_test_file_SOURCES = \
 	scca_test_file.c \
+	scca_test_functions.c scca_test_functions.h \
 	scca_test_getopt.c scca_test_getopt.h \
+	scca_test_libbfio.h \
 	scca_test_libcerror.h \
 	scca_test_libclocale.h \
 	scca_test_libcnotify.h \
 	scca_test_libscca.h \
 	scca_test_libuna.h \
 	scca_test_macros.h \
-	scca_test_memory.c scca_test_memory.h
+	scca_test_memory.c scca_test_memory.h \
+	scca_test_unused.h
 
 scca_test_file_LDADD = \
+	@LIBBFIO_LIBADD@ \
+	@LIBCPATH_LIBADD@ \
+	@LIBCFILE_LIBADD@ \
 	@LIBUNA_LIBADD@ \
+	@LIBCSPLIT_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
@@ -152,6 +159,7 @@ scca_test_notify_LDADD = \
 	../libscca/libscca.la
 
 scca_test_support_SOURCES = \
+	scca_test_functions.c scca_test_functions.h \
 	scca_test_getopt.c scca_test_getopt.h \
 	scca_test_libbfio.h \
 	scca_test_libcerror.h \
@@ -160,7 +168,8 @@ scca_test_support_SOURCES = \
 	scca_test_libscca.h \
 	scca_test_libuna.h \
 	scca_test_macros.h \
-	scca_test_support.c
+	scca_test_support.c \
+	scca_test_unused.h
 
 scca_test_support_LDADD = \
 	@LIBBFIO_LIBADD@ \

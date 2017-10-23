@@ -28,16 +28,19 @@
 #include "libscca_libcerror.h"
 #include "libscca_libuna.h"
 
+#include "scca_file_metrics_array.h"
+
 /* Creates file metrics
  * Make sure the value file_metrics is referencing, is set to NULL
  * Returns 1 if successful or -1 on error
  */
 int libscca_file_metrics_initialize(
-     libscca_internal_file_metrics_t **file_metrics,
+     libscca_file_metrics_t **file_metrics,
      libscca_filename_strings_t *filename_strings,
      libcerror_error_t **error )
 {
-	static char *function = "libscca_file_metrics_initialize";
+	libscca_internal_file_metrics_t *internal_file_metrics = NULL;
+	static char *function                                  = "libscca_file_metrics_initialize";
 
 	if( file_metrics == NULL )
 	{
@@ -72,10 +75,10 @@ int libscca_file_metrics_initialize(
 
 		return( -1 );
 	}
-	*file_metrics = memory_allocate_structure(
-	                 libscca_internal_file_metrics_t );
+	internal_file_metrics = memory_allocate_structure(
+	                         libscca_internal_file_metrics_t );
 
-	if( *file_metrics == NULL )
+	if( internal_file_metrics == NULL )
 	{
 		libcerror_error_set(
 		 error,
@@ -87,7 +90,7 @@ int libscca_file_metrics_initialize(
 		goto on_error;
 	}
 	if( memory_set(
-	     *file_metrics,
+	     internal_file_metrics,
 	     0,
 	     sizeof( libscca_internal_file_metrics_t ) ) == NULL )
 	{
@@ -99,23 +102,21 @@ int libscca_file_metrics_initialize(
 		 function );
 
 		memory_free(
-		 *file_metrics );
-
-		*file_metrics = NULL;
+		 internal_file_metrics );
 
 		return( -1 );
 	}
-	( *file_metrics )->filename_strings = filename_strings;
+	internal_file_metrics->filename_strings = filename_strings;
+
+	*file_metrics = (libscca_file_metrics_t *) internal_file_metrics;
 
 	return( 1 );
 
 on_error:
-	if( *file_metrics != NULL )
+	if( internal_file_metrics != NULL )
 	{
 		memory_free(
-		 *file_metrics );
-
-		*file_metrics = NULL;
+		 internal_file_metrics );
 	}
 	return( -1 );
 }
@@ -174,6 +175,218 @@ int libscca_internal_file_metrics_free(
 
 		*file_metrics = NULL;
 	}
+	return( 1 );
+}
+
+/* Reads file metrics from data
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_file_metrics_read_data(
+     libscca_file_metrics_t *file_metrics,
+     libscca_io_handle_t *io_handle,
+     const uint8_t *data,
+     size_t data_size,
+     libcerror_error_t **error )
+{
+	libscca_internal_file_metrics_t *internal_file_metrics = NULL;
+	static char *function                                  = "libscca_file_metrics_read_data";
+	size_t file_metrics_data_size                          = 0;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+	uint32_t value_32bit                                   = 0;
+#endif
+
+	if( file_metrics == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid file metrics.",
+		 function );
+
+		return( -1 );
+	}
+	internal_file_metrics = (libscca_internal_file_metrics_t *) file_metrics;
+
+	if( io_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid IO handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( io_handle->format_version == 17 )
+	{
+		file_metrics_data_size = sizeof( scca_file_metrics_array_entry_v17_t );
+	}
+	else if( ( io_handle->format_version == 23 )
+	      || ( io_handle->format_version == 26 )
+	      || ( io_handle->format_version == 30 ) )
+	{
+		file_metrics_data_size = sizeof( scca_file_metrics_array_entry_v23_t );
+	}
+	if( data == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid data.",
+		 function );
+
+		return( -1 );
+	}
+	if( data_size < file_metrics_data_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+		 "%s: invalid data size value too small.",
+		 function );
+
+		return( -1 );
+	}
+	if( data_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid data size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: file metrics data:\n",
+		 function );
+		libcnotify_print_data(
+		 data,
+		 file_metrics_data_size,
+		 0 );
+	}
+#endif
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (scca_file_metrics_array_entry_v17_t *) data )->start_time,
+	 internal_file_metrics->start_time );
+
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (scca_file_metrics_array_entry_v17_t *) data )->duration,
+	 internal_file_metrics->duration );
+
+	if( io_handle->format_version == 17 )
+	{
+		byte_stream_copy_to_uint32_little_endian(
+		 ( (scca_file_metrics_array_entry_v17_t *) data )->filename_string_offset,
+		 internal_file_metrics->filename_string_offset );
+
+		byte_stream_copy_to_uint32_little_endian(
+		 ( (scca_file_metrics_array_entry_v17_t *) data )->flags,
+		 internal_file_metrics->flags );
+	}
+	else if( ( io_handle->format_version == 23 )
+	      || ( io_handle->format_version == 26 )
+	      || ( io_handle->format_version == 30 ) )
+	{
+		byte_stream_copy_to_uint32_little_endian(
+		 ( (scca_file_metrics_array_entry_v23_t *) data )->filename_string_offset,
+		 internal_file_metrics->filename_string_offset );
+
+		byte_stream_copy_to_uint32_little_endian(
+		 ( (scca_file_metrics_array_entry_v23_t *) data )->flags,
+		 internal_file_metrics->flags );
+
+		byte_stream_copy_to_uint64_little_endian(
+		 ( (scca_file_metrics_array_entry_v23_t *) data )->file_reference,
+		 internal_file_metrics->file_reference );
+
+		internal_file_metrics->file_reference_is_set = 1;
+	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: start time\t\t\t\t: %" PRIu32 " ms\n",
+		 function,
+		 internal_file_metrics->start_time );
+
+		libcnotify_printf(
+		 "%s: duration\t\t\t\t: %" PRIu32 " ms\n",
+		 function,
+		 internal_file_metrics->duration );
+
+		if( ( io_handle->format_version == 23 )
+		 || ( io_handle->format_version == 26 )
+		 || ( io_handle->format_version == 30 ) )
+		{
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_metrics_array_entry_v23_t *) data )->average_duration,
+			 value_32bit );
+			libcnotify_printf(
+			 "%s: average duration\t\t\t: %" PRIu32 " ms\n",
+			 function,
+			 value_32bit );
+		}
+		libcnotify_printf(
+		 "%s: filename string offset\t\t: 0x%08" PRIx32 "\n",
+		 function,
+		 internal_file_metrics->filename_string_offset );
+
+		if( io_handle->format_version == 17 )
+		{
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_metrics_array_entry_v17_t *) data )->filename_string_numbers_of_characters,
+			 value_32bit );
+		}
+		else if( ( io_handle->format_version == 23 )
+		      || ( io_handle->format_version == 26 )
+		      || ( io_handle->format_version == 30 ) )
+		{
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_metrics_array_entry_v23_t *) data )->filename_string_numbers_of_characters,
+			 value_32bit );
+		}
+		libcnotify_printf(
+		 "%s: filename string number of characters\t: %" PRIu32 "\n",
+		 function,
+		 value_32bit );
+
+		libcnotify_printf(
+		 "%s: flags\t\t\t\t: 0x%08" PRIx32 "\n",
+		 function,
+		 internal_file_metrics->flags );
+
+		if( internal_file_metrics->file_reference_is_set != 0 )
+		{
+			if( internal_file_metrics->file_reference == 0 )
+			{
+				libcnotify_printf(
+				 "%s: file reference\t\t\t: %" PRIu64 "\n",
+				 function,
+				 internal_file_metrics->file_reference );
+			}
+			else
+			{
+				libcnotify_printf(
+				 "%s: file reference\t\t\t: MFT entry: %" PRIu64 ", sequence: %" PRIu64 "\n",
+				 function,
+				 internal_file_metrics->file_reference & 0xffffffffffffUL,
+				 internal_file_metrics->file_reference >> 48 );
+			}
+		}
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
 	return( 1 );
 }
 

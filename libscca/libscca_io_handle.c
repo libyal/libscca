@@ -783,18 +783,18 @@ int libscca_io_handle_read_file_metrics_array(
      libcdata_array_t *file_metrics_array,
      libcerror_error_t **error )
 {
-	libscca_internal_file_metrics_t *file_metrics = NULL;
-	uint8_t *entry_data                           = NULL;
-	uint8_t *file_metrics_array_data              = NULL;
-	static char *function                         = "libscca_io_handle_read_file_metrics_array";
-	size_t entry_data_size                        = 0;
-	size_t read_size                              = 0;
-	ssize_t read_count                            = 0;
-	uint32_t file_metrics_entry_index             = 0;
-	int entry_index                               = 0;
+	libscca_file_metrics_t *file_metrics = NULL;
+	uint8_t *entry_data                  = NULL;
+	uint8_t *file_metrics_array_data     = NULL;
+	static char *function                = "libscca_io_handle_read_file_metrics_array";
+	size_t entry_data_size               = 0;
+	size_t read_size                     = 0;
+	ssize_t read_count                   = 0;
+	uint32_t file_metrics_entry_index    = 0;
+	int entry_index                      = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
-	uint32_t value_32bit                          = 0;
+	uint32_t value_32bit                 = 0;
 #endif
 
 	if( io_handle == NULL )
@@ -950,131 +950,23 @@ int libscca_io_handle_read_file_metrics_array(
 
 			goto on_error;
 		}
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libcnotify_verbose != 0 )
+		if( libscca_file_metrics_read_data(
+		     file_metrics,
+		     io_handle,
+		     entry_data,
+		     entry_data_size,
+		     error ) != 1 )
 		{
-			libcnotify_printf(
-			 "%s: file metrics array entry: %" PRIu32 " data:\n",
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_IO,
+			 LIBCERROR_IO_ERROR_READ_FAILED,
+			 "%s: unable to read file metrics: %" PRIu32 ".",
 			 function,
 			 file_metrics_entry_index );
-			libcnotify_print_data(
-			 entry_data,
-			 entry_data_size,
-			 0 );
+
+			goto on_error;
 		}
-#endif
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (scca_file_metrics_array_entry_v17_t *) entry_data )->start_time,
-		 file_metrics->start_time );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 ( (scca_file_metrics_array_entry_v17_t *) entry_data )->duration,
-		 file_metrics->duration );
-
-		if( io_handle->format_version == 17 )
-		{
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (scca_file_metrics_array_entry_v17_t *) entry_data )->filename_string_offset,
-			 file_metrics->filename_string_offset );
-
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (scca_file_metrics_array_entry_v17_t *) entry_data )->flags,
-			 file_metrics->flags );
-		}
-		else if( ( io_handle->format_version == 23 )
-		      || ( io_handle->format_version == 26 )
-		      || ( io_handle->format_version == 30 ) )
-		{
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (scca_file_metrics_array_entry_v23_t *) entry_data )->filename_string_offset,
-			 file_metrics->filename_string_offset );
-
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (scca_file_metrics_array_entry_v23_t *) entry_data )->flags,
-			 file_metrics->flags );
-
-			byte_stream_copy_to_uint64_little_endian(
-			 ( (scca_file_metrics_array_entry_v23_t *) entry_data )->file_reference,
-			 file_metrics->file_reference );
-
-			file_metrics->file_reference_is_set = 1;
-		}
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libcnotify_verbose != 0 )
-		{
-			libcnotify_printf(
-			 "%s: start time\t\t\t\t: %" PRIu32 " ms\n",
-			 function,
-			 file_metrics->start_time );
-
-			libcnotify_printf(
-			 "%s: duration\t\t\t\t: %" PRIu32 " ms\n",
-			 function,
-			 file_metrics->duration );
-
-			if( ( io_handle->format_version == 23 )
-			 || ( io_handle->format_version == 26 )
-			 || ( io_handle->format_version == 30 ) )
-			{
-				byte_stream_copy_to_uint32_little_endian(
-				 ( (scca_file_metrics_array_entry_v23_t *) entry_data )->average_duration,
-				 value_32bit );
-				libcnotify_printf(
-				 "%s: average duration\t\t\t: %" PRIu32 " ms\n",
-				 function,
-				 value_32bit );
-			}
-			libcnotify_printf(
-			 "%s: filename string offset\t\t: 0x%08" PRIx32 "\n",
-			 function,
-			 file_metrics->filename_string_offset );
-
-			if( io_handle->format_version == 17 )
-			{
-				byte_stream_copy_to_uint32_little_endian(
-				 ( (scca_file_metrics_array_entry_v17_t *) entry_data )->filename_string_numbers_of_characters,
-				 value_32bit );
-			}
-			else if( ( io_handle->format_version == 23 )
-			      || ( io_handle->format_version == 26 )
-			      || ( io_handle->format_version == 30 ) )
-			{
-				byte_stream_copy_to_uint32_little_endian(
-				 ( (scca_file_metrics_array_entry_v23_t *) entry_data )->filename_string_numbers_of_characters,
-				 value_32bit );
-			}
-			libcnotify_printf(
-			 "%s: filename string number of characters\t: %" PRIu32 "\n",
-			 function,
-			 value_32bit );
-
-			libcnotify_printf(
-			 "%s: flags\t\t\t\t: 0x%08" PRIx32 "\n",
-			 function,
-			 file_metrics->flags );
-
-			if( file_metrics->file_reference_is_set != 0 )
-			{
-				if( file_metrics->file_reference == 0 )
-				{
-					libcnotify_printf(
-					 "%s: file reference\t\t\t: %" PRIu64 "\n",
-					 function,
-					 file_metrics->file_reference );
-				}
-				else
-				{
-					libcnotify_printf(
-					 "%s: file reference\t\t\t: MFT entry: %" PRIu64 ", sequence: %" PRIu64 "\n",
-					 function,
-					 file_metrics->file_reference & 0xffffffffffffUL,
-					 file_metrics->file_reference >> 48 );
-				}
-			}
-			libcnotify_printf(
-			 "\n" );
-		}
-#endif
 		entry_data += entry_data_size;
 
 		if( libcdata_array_append_entry(
@@ -1104,7 +996,7 @@ on_error:
 	if( file_metrics != NULL )
 	{
 		libscca_internal_file_metrics_free(
-		 &file_metrics,
+		 (libscca_internal_file_metrics_t **) &file_metrics,
 		 NULL );
 	}
 	if( file_metrics_array_data != NULL )
