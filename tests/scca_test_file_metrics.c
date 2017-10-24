@@ -34,6 +34,11 @@
 #include "scca_test_unused.h"
 
 #include "../libscca/libscca_file_metrics.h"
+#include "../libscca/libscca_io_handle.h"
+
+uint8_t scca_test_file_metrics_data1[ 20 ] = {
+	0x00, 0x00, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x32, 0x00, 0x00, 0x00,
+	0x02, 0x00, 0x00, 0x00 };
 
 #if defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT )
 
@@ -339,6 +344,250 @@ on_error:
 	return( 0 );
 }
 
+/* Tests the libscca_file_metrics_read_data function
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_file_metrics_read_data(
+     void )
+{
+	libcerror_error_t *error                     = NULL;
+	libscca_file_metrics_t *file_metrics         = NULL;
+	libscca_filename_strings_t *filename_strings = NULL;
+	libscca_io_handle_t *io_handle               = NULL;
+	int result                                   = 0;
+
+	/* Initialize test
+	 */
+	result = libscca_io_handle_initialize(
+	          &io_handle,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "io_handle",
+	 io_handle );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libscca_filename_strings_initialize(
+	          &filename_strings,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "filename_strings",
+	 filename_strings );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libscca_file_metrics_initialize(
+	          &file_metrics,
+	          filename_strings,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "file_metrics",
+	 file_metrics );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test regular cases
+	 */
+	result = libscca_file_metrics_read_data(
+	          file_metrics,
+	          io_handle,
+	          scca_test_file_metrics_data1,
+	          20,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	/* Test error cases
+	 */
+	result = libscca_file_metrics_read_data(
+	          file_metrics,
+	          NULL,
+	          scca_test_file_metrics_data1,
+	          20,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libscca_file_metrics_read_data(
+	          NULL,
+	          io_handle,
+	          scca_test_file_metrics_data1,
+	          20,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libscca_file_metrics_read_data(
+	          file_metrics,
+	          io_handle,
+	          NULL,
+	          20,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	result = libscca_file_metrics_read_data(
+	          file_metrics,
+	          io_handle,
+	          scca_test_file_metrics_data1,
+	          (size_t) SSIZE_MAX + 1,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
+
+	/* Clean up
+	 */
+	result = libscca_internal_file_metrics_free(
+	          (libscca_internal_file_metrics_t **) &file_metrics,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "file_metrics",
+	 file_metrics );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libscca_filename_strings_free(
+	          &filename_strings,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "filename_strings",
+	 filename_strings );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	result = libscca_io_handle_free(
+	          &io_handle,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 1 );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "io_handle",
+	 io_handle );
+
+	SCCA_TEST_ASSERT_IS_NULL(
+	 "error",
+	 error );
+
+	return( 1 );
+
+on_error:
+	if( error != NULL )
+	{
+		libcerror_error_free(
+		 &error );
+	}
+	if( file_metrics != NULL )
+	{
+		libscca_internal_file_metrics_free(
+		 (libscca_internal_file_metrics_t **) &file_metrics,
+		 NULL );
+	}
+	if( filename_strings != NULL )
+	{
+		libscca_filename_strings_free(
+		 &filename_strings,
+		 NULL );
+	}
+	if( io_handle != NULL )
+	{
+		libscca_io_handle_free(
+		 &io_handle,
+		 NULL );
+	}
+	return( 0 );
+}
+
 /* Tests the libscca_file_metrics_get_utf8_filename_size function
  * Returns 1 if successful or 0 if not
  */
@@ -447,8 +696,8 @@ int scca_test_file_metrics_get_utf8_filename_size(
 	}
 	/* Clean up
 	 */
-	result = libscca_file_metrics_free(
-	          &file_metrics,
+	result = libscca_internal_file_metrics_free(
+	          (libscca_internal_file_metrics_t **) &file_metrics,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -490,8 +739,8 @@ on_error:
 	}
 	if( file_metrics != NULL )
 	{
-		libscca_file_metrics_free(
-		 &file_metrics,
+		libscca_internal_file_metrics_free(
+		 (libscca_internal_file_metrics_t **) &file_metrics,
 		 NULL );
 	}
 	if( filename_strings != NULL )
@@ -651,8 +900,8 @@ int scca_test_file_metrics_get_utf8_filename(
 	}
 	/* Clean up
 	 */
-	result = libscca_file_metrics_free(
-	          &file_metrics,
+	result = libscca_internal_file_metrics_free(
+	          (libscca_internal_file_metrics_t **) &file_metrics,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -694,8 +943,8 @@ on_error:
 	}
 	if( file_metrics != NULL )
 	{
-		libscca_file_metrics_free(
-		 &file_metrics,
+		libscca_internal_file_metrics_free(
+		 (libscca_internal_file_metrics_t **) &file_metrics,
 		 NULL );
 	}
 	if( filename_strings != NULL )
@@ -815,8 +1064,8 @@ int scca_test_file_metrics_get_utf16_filename_size(
 	}
 	/* Clean up
 	 */
-	result = libscca_file_metrics_free(
-	          &file_metrics,
+	result = libscca_internal_file_metrics_free(
+	          (libscca_internal_file_metrics_t **) &file_metrics,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -858,8 +1107,8 @@ on_error:
 	}
 	if( file_metrics != NULL )
 	{
-		libscca_file_metrics_free(
-		 &file_metrics,
+		libscca_internal_file_metrics_free(
+		 (libscca_internal_file_metrics_t **) &file_metrics,
 		 NULL );
 	}
 	if( filename_strings != NULL )
@@ -1019,8 +1268,8 @@ int scca_test_file_metrics_get_utf16_filename(
 	}
 	/* Clean up
 	 */
-	result = libscca_file_metrics_free(
-	          &file_metrics,
+	result = libscca_internal_file_metrics_free(
+	          (libscca_internal_file_metrics_t **) &file_metrics,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -1062,8 +1311,8 @@ on_error:
 	}
 	if( file_metrics != NULL )
 	{
-		libscca_file_metrics_free(
-		 &file_metrics,
+		libscca_internal_file_metrics_free(
+		 (libscca_internal_file_metrics_t **) &file_metrics,
 		 NULL );
 	}
 	if( filename_strings != NULL )
@@ -1183,8 +1432,8 @@ int scca_test_file_metrics_get_file_reference(
 	}
 	/* Clean up
 	 */
-	result = libscca_file_metrics_free(
-	          &file_metrics,
+	result = libscca_internal_file_metrics_free(
+	          (libscca_internal_file_metrics_t **) &file_metrics,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -1226,8 +1475,8 @@ on_error:
 	}
 	if( file_metrics != NULL )
 	{
-		libscca_file_metrics_free(
-		 &file_metrics,
+		libscca_internal_file_metrics_free(
+		 (libscca_internal_file_metrics_t **) &file_metrics,
 		 NULL );
 	}
 	if( filename_strings != NULL )
@@ -1265,6 +1514,14 @@ int main(
 	SCCA_TEST_RUN(
 	 "libscca_file_metrics_free",
 	 scca_test_file_metrics_free );
+
+#if defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT )
+
+	SCCA_TEST_RUN(
+	 "libscca_file_metrics_read_data",
+	 scca_test_file_metrics_read_data );
+
+#endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
 
 #if defined( TODO )
 
