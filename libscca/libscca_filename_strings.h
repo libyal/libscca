@@ -64,7 +64,13 @@ int libscca_filename_strings_clear(
      libscca_filename_strings_t *filename_strings,
      libcerror_error_t **error );
 
-int libscca_filename_strings_read(
+int libscca_filename_strings_read_data(
+     libscca_filename_strings_t *filename_strings,
+     const uint8_t *data,
+     size_t data_size,
+     libcerror_error_t **error );
+
+int libscca_filename_strings_read_stream(
      libscca_filename_strings_t *filename_strings,
      libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,

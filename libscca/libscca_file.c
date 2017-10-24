@@ -1282,7 +1282,7 @@ int libscca_file_open_read(
 	if( internal_file->file_information->filename_strings_offset != 0 )
 	{
 /* TODO check bounds filename_strings_offset < file_header, filename_strings_offset > file_size */
-		if( libscca_filename_strings_read(
+		if( libscca_filename_strings_read_stream(
 		     internal_file->filename_strings,
 		     internal_file->uncompressed_data_stream,
 		     file_io_handle,
@@ -1294,7 +1294,7 @@ int libscca_file_open_read(
 			 error,
 			 LIBCERROR_ERROR_DOMAIN_IO,
 			 LIBCERROR_IO_ERROR_READ_FAILED,
-			 "%s: unable to read filename strings.",
+			 "%s: unable to read filename strings from stream.",
 			 function );
 
 			goto on_error;

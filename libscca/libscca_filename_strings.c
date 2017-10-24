@@ -287,7 +287,180 @@ int libscca_filename_strings_clear(
 /* Reads the filename strings
  * Returns 1 if successful or -1 on error
  */
-int libscca_filename_strings_read(
+int libscca_filename_strings_read_data(
+     libscca_filename_strings_t *filename_strings,
+     const uint8_t *data,
+     size_t data_size,
+     libcerror_error_t **error )
+{
+	uint32_t *filename_string_offset = NULL;
+	static char *function            = "libscca_filename_strings_read_data";
+	ssize_t data_offset              = 0;
+	ssize_t last_data_offset         = 0;
+	int entry_index                  = 0;
+	int filename_strings_index       = 0;
+
+	if( filename_strings == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid filename strings.",
+		 function );
+
+		return( -1 );
+	}
+	if( data == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid data.",
+		 function );
+
+		return( -1 );
+	}
+	if( data_size > (size_t) SSIZE_MAX )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
+		 "%s: invalid data size value exceeds maximum.",
+		 function );
+
+		return( -1 );
+	}
+	if( libcdata_array_empty(
+	     filename_strings->offsets_array,
+	     (int (*)(intptr_t **, libcerror_error_t **)) &libscca_filename_string_offset_free,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+		 "%s: unable to empty offsets array.",
+		 function );
+
+		goto on_error;
+	}
+	while( last_data_offset < data_size )
+	{
+		data_offset = libfvalue_value_type_get_string_size(
+			       filename_strings->strings,
+		               &( data[ last_data_offset ] ),
+		               data_size - last_data_offset,
+			       error );
+
+		if( data_offset == -1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+			 "%s: unable to determine data string size.",
+			 function );
+
+			goto on_error;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: filename strings entry: %d data offset: 0x%08" PRIzx "\n",
+			 function,
+			 filename_strings_index, 
+			 last_data_offset );
+
+			libcnotify_printf(
+			 "%s: filename strings entry: %d data:\n",
+			 function,
+			 filename_strings_index );
+			libcnotify_print_data(
+			 &( data[ last_data_offset ] ),
+			 (size_t) data_offset,
+			 0 );
+		}
+#endif
+		filename_string_offset = (uint32_t *) memory_allocate(
+		                                       sizeof( uint32_t ) );
+
+		if( filename_string_offset == NULL )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_MEMORY,
+			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
+			 "%s: unable to create filename string offset.",
+			 function );
+
+			goto on_error;
+		}
+		*filename_string_offset = last_data_offset;
+
+		if( libcdata_array_append_entry(
+		     filename_strings->offsets_array,
+		     &entry_index,
+		     (intptr_t *) filename_string_offset,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+			 "%s: unable to append filename strings: %d offset to array.",
+			 function,
+			 filename_strings_index );
+
+			goto on_error;
+		}
+		filename_string_offset = NULL;
+
+		if( libfvalue_value_append_entry_data(
+		     filename_strings->strings,
+		     &entry_index,
+		     &( data[ last_data_offset ] ),
+		     (size_t) data_offset,
+		     LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+			 "%s: unable to append filename strings: %d value entry data.",
+			 function,
+			 filename_strings_index );
+
+			goto on_error;
+		}
+		last_data_offset += data_offset;
+
+		filename_strings_index++;
+	}
+	return( 1 );
+
+on_error:
+	if( filename_string_offset != NULL )
+	{
+		memory_free(
+		 filename_string_offset );
+	}
+	libcdata_array_empty(
+	 filename_strings->offsets_array,
+	 (int (*)(intptr_t **, libcerror_error_t **)) &libscca_filename_string_offset_free,
+	 NULL );
+
+	return( -1 );
+}
+
+/* Reads the filename strings
+ * Returns 1 if successful or -1 on error
+ */
+int libscca_filename_strings_read_stream(
      libscca_filename_strings_t *filename_strings,
      libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,
@@ -295,14 +468,9 @@ int libscca_filename_strings_read(
      uint32_t filename_strings_size,
      libcerror_error_t **error )
 {
-	uint32_t *filename_string_offset = NULL;
-	uint8_t *filename_strings_data   = NULL;
-	static char *function            = "libscca_filename_strings_read";
-	ssize_t data_offset              = 0;
-	ssize_t last_data_offset         = 0;
-	ssize_t read_count               = 0;
-	int entry_index                  = 0;
-	int filename_strings_index       = 0;
+	uint8_t *filename_strings_data = NULL;
+	static char *function          = "libscca_filename_strings_read_stream";
+	ssize_t read_count             = 0;
 
 	if( filename_strings == NULL )
 	{
@@ -387,99 +555,20 @@ int libscca_filename_strings_read(
 
 		goto on_error;
 	}
-	while( last_data_offset < read_count )
+	if( libscca_filename_strings_read_data(
+	     filename_strings,
+	     filename_strings_data,
+	     (size_t) filename_strings_size,
+	     error ) != 1 )
 	{
-		data_offset = libfvalue_value_type_get_string_size(
-			       filename_strings->strings,
-		               &( filename_strings_data[ last_data_offset ] ),
-		               read_count - last_data_offset,
-			       error );
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_IO,
+		 LIBCERROR_IO_ERROR_READ_FAILED,
+		 "%s: unable to read filename strings.",
+		 function );
 
-		if( data_offset == -1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-			 "%s: unable to determine data string size.",
-			 function );
-
-			goto on_error;
-		}
-#if defined( HAVE_DEBUG_OUTPUT )
-		if( libcnotify_verbose != 0 )
-		{
-			libcnotify_printf(
-			 "%s: filename strings entry: %d data offset: 0x%08" PRIzx "\n",
-			 function,
-			 filename_strings_index, 
-			 last_data_offset );
-
-			libcnotify_printf(
-			 "%s: filename strings entry: %d data:\n",
-			 function,
-			 filename_strings_index );
-			libcnotify_print_data(
-			 &( filename_strings_data[ last_data_offset ] ),
-			 (size_t) data_offset,
-			 0 );
-		}
-#endif
-		filename_string_offset = (uint32_t *) memory_allocate(
-		                                       sizeof( uint32_t ) );
-
-		if( filename_string_offset == NULL )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_MEMORY,
-			 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-			 "%s: unable to create filename string offset.",
-			 function );
-
-			goto on_error;
-		}
-		*filename_string_offset = last_data_offset;
-
-		if( libcdata_array_append_entry(
-		     filename_strings->offsets_array,
-		     &entry_index,
-		     (intptr_t *) filename_string_offset,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-			 "%s: unable to append filename strings: %d offset to array.",
-			 function,
-			 filename_strings_index );
-
-			goto on_error;
-		}
-		filename_string_offset = NULL;
-
-		if( libfvalue_value_append_entry_data(
-		     filename_strings->strings,
-		     &entry_index,
-		     &( filename_strings_data[ last_data_offset ] ),
-		     (size_t) data_offset,
-		     LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
-			 "%s: unable to append filename strings: %d value entry data.",
-			 function,
-			 filename_strings_index );
-
-			return( -1 );
-		}
-		last_data_offset += data_offset;
-
-		filename_strings_index++;
+		goto on_error;
 	}
 	memory_free(
 	 filename_strings_data );
@@ -487,16 +576,16 @@ int libscca_filename_strings_read(
 	return( 1 );
 
 on_error:
-	if( filename_string_offset != NULL )
-	{
-		memory_free(
-		 filename_string_offset );
-	}
 	if( filename_strings_data != NULL )
 	{
 		memory_free(
 		 filename_strings_data );
 	}
+	libcdata_array_empty(
+	 filename_strings->offsets_array,
+	 (int (*)(intptr_t **, libcerror_error_t **)) &libscca_filename_string_offset_free,
+	 NULL );
+
 	return( -1 );
 }
 
