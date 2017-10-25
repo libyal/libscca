@@ -91,7 +91,14 @@ int libscca_file_information_free(
      libscca_file_information_t **file_information,
      libcerror_error_t **error );
 
-int libscca_file_information_read(
+int libscca_file_information_read_data(
+     libscca_file_information_t *file_information,
+     libscca_io_handle_t *io_handle,
+     const uint8_t *data,
+     size_t data_size,
+     libcerror_error_t **error );
+
+int libscca_file_information_read_stream(
      libscca_file_information_t *file_information,
      libfdata_stream_t *uncompressed_data_stream,
      libbfio_handle_t *file_io_handle,

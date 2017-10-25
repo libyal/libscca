@@ -80,6 +80,12 @@ int info_handle_close_input(
      info_handle_t *info_handle,
      libcerror_error_t **error );
 
+int info_handle_filetime_value_fprint(
+     info_handle_t *info_handle,
+     const char *value_name,
+     uint64_t value_64bit,
+     libcerror_error_t **error );
+
 int info_handle_file_fprint(
      info_handle_t *info_handle,
      libcerror_error_t **error );

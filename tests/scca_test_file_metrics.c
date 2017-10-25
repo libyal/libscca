@@ -344,6 +344,8 @@ on_error:
 	return( 0 );
 }
 
+#if defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT )
+
 /* Tests the libscca_file_metrics_read_data function
  * Returns 1 if successful or 0 if not
  */
@@ -1488,6 +1490,8 @@ on_error:
 	return( 0 );
 }
 
+#endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
+
 /* The main program
  */
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
@@ -1521,8 +1525,6 @@ int main(
 	 "libscca_file_metrics_read_data",
 	 scca_test_file_metrics_read_data );
 
-#endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
-
 #if defined( TODO )
 
 	SCCA_TEST_RUN(
@@ -1546,6 +1548,8 @@ int main(
 	 scca_test_file_metrics_get_file_reference );
 
 #endif /* defined( TODO ) */
+
+#endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
 
 	return( EXIT_SUCCESS );
 

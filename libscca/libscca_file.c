@@ -1214,7 +1214,7 @@ int libscca_file_open_read(
 
 		goto on_error;
 	}
-	if( libscca_file_information_read(
+	if( libscca_file_information_read_stream(
 	     internal_file->file_information,
 	     internal_file->uncompressed_data_stream,
 	     file_io_handle,
@@ -1225,7 +1225,7 @@ int libscca_file_open_read(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read file information.",
+		 "%s: unable to read file information from stream.",
 		 function );
 
 		goto on_error;
