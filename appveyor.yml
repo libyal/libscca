@@ -42,7 +42,7 @@ build_script:
     C:\Python36\python.exe setup.py bdist_msi )
 - cmd: if [%TARGET%]==[cygwin] (
     xcopy /i /q /s C:\projects\libscca C:\cygwin\home\appveyor\libscca &&
-    C:\cygwin\bin\bash -e -l -c "cd libscca && strace python ./setup.py  build" )
+    C:\cygwin\bin\bash -e -l -c "cd libscca && ./synclibs.sh --use-head && ./autogen.sh" )
 - cmd: if [%TARGET%]==[cygwin64] (
     xcopy /i /q /s C:\projects\libscca C:\cygwin64\home\appveyor\libscca &&
     C:\cygwin64\bin\bash -e -l -c "cd libscca && ./synclibs.sh --use-head && ./autogen.sh" )
@@ -68,7 +68,7 @@ test_script:
 - ps: if ($env:TARGET -eq "vs2017") {
     .\runtests.ps1 }
 - cmd: if [%TARGET%]==[cygwin] (
-    C:\cygwin\bin\bash -e -l -c "cd libscca && ./runtests.sh" )
+    C:\cygwin\bin\bash -e -l -c "cd libscca && strace python ./setup.py build" )
 - cmd: if [%TARGET%]==[cygwin64] (
     C:\cygwin64\bin\bash -e -l -c "cd libscca && ./runtests.sh" )
 - cmd: if [%TARGET%]==[mingw] (
