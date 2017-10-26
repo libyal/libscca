@@ -1,40 +1,6 @@
 environment:
   matrix:
-  - TARGET: vs2008
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-    VisualStudioVersion: 9.0
-    platform: Win32
-    configuration: Release
-  - TARGET: vs2010
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-    VisualStudioVersion: 10.0
-    platform: Win32
-    configuration: VSDebug
-  - TARGET: vs2012
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-    VisualStudioVersion: 11.0
-    platform: x64
-    configuration: Release
-  - TARGET: vs2013
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
-    VisualStudioVersion: 12.0
-    platform: Win32
-    configuration: Release
-  - TARGET: vs2015
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    VisualStudioVersion: 14.0
-    platform: Win32
-    configuration: Release
-  - TARGET: vs2017
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    VisualStudioVersion: 15.0
-    configuration: Release
-  - TARGET: python27
-  - TARGET: python36
   - TARGET: cygwin
-  - TARGET: cygwin64
-  - TARGET: mingw
-  - TARGET: mingw-w64
 
 install:
 - cmd: git clone https://github.com/codecov/codecov-bash.git ..\codecov-bash
@@ -102,7 +68,7 @@ test_script:
 - ps: if ($env:TARGET -eq "vs2017") {
     .\runtests.ps1 }
 - cmd: if [%TARGET%]==[cygwin] (
-    C:\cygwin\bin\bash -e -l -c "cd libscca && ./runtests.sh" )
+    C:\cygwin\bin\bash -e -l -c "cd libscca && strace python ./setup.py build" )
 - cmd: if [%TARGET%]==[cygwin64] (
     C:\cygwin64\bin\bash -e -l -c "cd libscca && ./runtests.sh" )
 - cmd: if [%TARGET%]==[mingw] (
