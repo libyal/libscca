@@ -433,7 +433,7 @@ int libscca_file_information_read_data(
 				 "%s: unable to print filetime value.",
 				 function );
 
-				goto on_error;
+				return( -1 );
 			}
 		}
 		libcnotify_printf(

@@ -150,13 +150,15 @@ scca_test_io_handle_LDADD = \
 	@LIBCERROR_LIBADD@
 
 scca_test_notify_SOURCES = \
+	scca_test_libcerror.h \
 	scca_test_libscca.h \
 	scca_test_macros.h \
 	scca_test_notify.c \
 	scca_test_unused.h
 
 scca_test_notify_LDADD = \
-	../libscca/libscca.la
+	../libscca/libscca.la \
+	@LIBCERROR_LIBADD@
 
 scca_test_support_SOURCES = \
 	scca_test_functions.c scca_test_functions.h \
@@ -168,6 +170,7 @@ scca_test_support_SOURCES = \
 	scca_test_libscca.h \
 	scca_test_libuna.h \
 	scca_test_macros.h \
+	scca_test_memory.c scca_test_memory.h \
 	scca_test_support.c \
 	scca_test_unused.h
 

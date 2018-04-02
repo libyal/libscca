@@ -25,6 +25,7 @@
 #include <common.h>
 #include <types.h>
 
+#include "scca_test_libbfio.h"
 #include "scca_test_libcerror.h"
 
 #if defined( __cplusplus )
@@ -46,6 +47,16 @@ int scca_test_get_wide_source(
      libcerror_error_t **error );
 
 #endif /* defined( HAVE_WIDE_CHARACTER_TYPE ) */
+
+int scca_test_open_file_io_handle(
+     libbfio_handle_t **file_io_handle,
+     uint8_t *data,
+     size_t data_size,
+     libcerror_error_t **error );
+
+int scca_test_close_file_io_handle(
+     libbfio_handle_t **file_io_handle,
+     libcerror_error_t **error );
 
 #if defined( __cplusplus )
 }

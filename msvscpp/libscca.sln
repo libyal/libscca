@@ -72,6 +72,7 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scca_test_notify", "scca_test_notify\scca_test_notify.vcproj", "{42ECBB04-A2ED-4E50-B2DF-ED488EC60EDA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0480F2C1-4643-4798-8F3E-00F843A89490} = {0480F2C1-4643-4798-8F3E-00F843A89490}
+		{91864B8A-C810-4BF9-BD7D-902484E218C6} = {91864B8A-C810-4BF9-BD7D-902484E218C6}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scca_test_support", "scca_test_support\scca_test_support.vcproj", "{9C5E1120-FA59-4401-822E-A3EFE7D8A983}"
