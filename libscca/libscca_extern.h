@@ -28,17 +28,13 @@
  */
 #if !defined( HAVE_LOCAL_LIBSCCA )
 
-/* If libtool DLL support is enabled set LIBSCCA_DLL_EXPORT
- * before including libscca/extern.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBSCCA_DLL_EXPORT
-#endif
-
 #include <libscca/extern.h>
 
+#define LIBSCCA_EXTERN_VARIABLE	LIBSCCA_EXTERN
+
 #else
-#define LIBSCCA_EXTERN	/* extern */
+#define LIBSCCA_EXTERN		/* extern */
+#define LIBSCCA_EXTERN_VARIABLE	extern
 
 #endif /* !defined( HAVE_LOCAL_LIBSCCA ) */
 

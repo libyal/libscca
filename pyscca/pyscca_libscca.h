@@ -24,14 +24,7 @@
 
 #include <common.h>
 
-/* If Cygwin libtool DLL support is enabled set LIBSCCA_DLL_IMPORT
- * before including libscca.h
- */
-#if defined( _WIN32 ) && defined( DLL_EXPORT )
-#define LIBSCCA_DLL_IMPORT
-#endif
-
 #include <libscca.h>
 
-#endif
+#endif /* !defined( _PYSCCA_LIBSCCA_H ) */
 
