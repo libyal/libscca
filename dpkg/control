@@ -9,6 +9,8 @@ Homepage: https://github.com/libyal/libscca
 Package: libscca
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libscca1
+Replaces: libscca1
 Suggests: libscca-dbg
 Description: Library to access the Windows Prefetch File (PF) format
  libscca is a library to access the Windows Prefetch File (PF) format.
@@ -31,6 +33,8 @@ Package: libscca-tools
 Section: utils
 Architecture: any
 Depends: libscca (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: libscca-utils
+Replaces: libscca-utils
 Description: Several tools for reading Windows Prefetch Files (PF)
  Several tools for reading Windows Prefetch Files (PF).
 
@@ -45,6 +49,8 @@ Package: libscca-python
 Section: python
 Architecture: any
 Depends: libscca (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python-libscca
+Replaces: python-libscca
 Suggests: libscca-python-dbg
 Description: Python 2 bindings for libscca
  Python 2 bindings for libscca.
@@ -60,6 +66,8 @@ Package: libscca-python3
 Section: python
 Architecture: any
 Depends: libscca (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Conflicts: python3-libscca
+Replaces: python3-libscca
 Suggests: libscca-python3-dbg
 Description: Python 3 bindings for libscca
  Python 3 bindings for libscca.
