@@ -498,7 +498,7 @@ int libscca_io_handle_read_compressed_blocks(
 		if( libfdata_list_element_set_element_value(
 		     compressed_blocks_list_element,
 		     (intptr_t *) file_io_handle,
-		     compressed_blocks_cache,
+		     (libfdata_cache_t *) compressed_blocks_cache,
 		     (intptr_t *) compressed_block,
 		     (int (*)(intptr_t **, libcerror_error_t **)) &libscca_compressed_block_free,
 		     LIBFDATA_LIST_ELEMENT_VALUE_FLAG_MANAGED,

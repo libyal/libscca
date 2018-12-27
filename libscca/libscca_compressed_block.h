@@ -27,7 +27,6 @@
 
 #include "libscca_io_handle.h"
 #include "libscca_libcerror.h"
-#include "libscca_libfcache.h"
 #include "libscca_libfdata.h"
 
 #if defined( __cplusplus )
@@ -67,7 +66,7 @@ int libscca_compressed_block_read_element_data(
      libscca_io_handle_t *io_handle,
      libbfio_handle_t *file_io_handle,
      libfdata_list_element_t *element,
-     libfcache_cache_t *cache,
+     libfdata_cache_t *cache,
      int element_file_index,
      off64_t compressed_block_offset,
      size64_t compressed_block_size,

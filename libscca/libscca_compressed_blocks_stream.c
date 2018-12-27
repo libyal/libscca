@@ -201,7 +201,7 @@ ssize_t libscca_compressed_blocks_stream_data_handle_read_segment_data(
 	if( libfdata_list_get_element_value_at_offset(
 	     data_handle->compressed_blocks_list,
 	     (intptr_t *) file_io_handle,
-	     data_handle->compressed_blocks_cache,
+	     (libfdata_cache_t *) data_handle->compressed_blocks_cache,
 	     data_handle->current_offset,
 	     &segment_index,
 	     &segment_data_offset,

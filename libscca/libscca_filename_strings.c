@@ -347,7 +347,7 @@ int libscca_filename_strings_read_data(
 
 		goto on_error;
 	}
-	while( last_data_offset < data_size )
+	while( (size_t) last_data_offset < data_size )
 	{
 		data_offset = libfvalue_value_type_get_string_size(
 			       filename_strings->strings,
@@ -399,7 +399,7 @@ int libscca_filename_strings_read_data(
 
 			goto on_error;
 		}
-		*filename_string_offset = last_data_offset;
+		*filename_string_offset = (uint32_t) last_data_offset;
 
 		if( libcdata_array_append_entry(
 		     filename_strings->offsets_array,
