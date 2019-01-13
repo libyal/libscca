@@ -13,6 +13,14 @@ BuildRequires: gcc @ax_libbfio_spec_build_requires@ @ax_libcdata_spec_build_requ
 %description -n libscca
 Library to access the Windows Prefetch File (PF) format
 
+%package -n libscca-static
+Summary: Library to access the Windows Prefetch File (PF) format
+Group: Development/Libraries
+Requires: libscca = %{version}-%{release}
+
+%description -n libscca-static
+Static library version of libscca.
+
 %package -n libscca-devel
 Summary: Header files and libraries for developing applications for libscca
 Group: Development/Libraries
@@ -73,11 +81,16 @@ rm -rf %{buildroot}
 %doc AUTHORS README
 %attr(755,root,root) %{_libdir}/*.so.*
 
+%files -n libscca-static
+%defattr(644,root,root,755)
+%license COPYING
+%doc AUTHORS README
+%attr(755,root,root) %{_libdir}/*.a
+
 %files -n libscca-devel
 %defattr(644,root,root,755)
 %license COPYING
-%doc AUTHORS README ChangeLog
-%{_libdir}/*.a
+%doc AUTHORS README
 %{_libdir}/*.la
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/libscca.pc
