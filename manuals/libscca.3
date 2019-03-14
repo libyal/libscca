@@ -1,11 +1,9 @@
-.Dd January  4, 2017
+.Dd March 14, 2019
 .Dt libscca 3
 .Os libscca
 .Sh NAME
 .Nm libscca.h
 .Nd Library to access the Windows Prefetch File (PF) format
-.Sh LIBRARY
-.Lb libscca
 .Sh SYNOPSIS
 .In libscca.h
 .Pp
@@ -15,27 +13,27 @@ Support functions
 .Ft int
 .Fn libscca_get_access_flags_read "void"
 .Ft int
-.Fn libscca_get_codepage "int *codepage, libscca_error_t **error"
+.Fn libscca_get_codepage "int *codepage" "libscca_error_t **error"
 .Ft int
-.Fn libscca_set_codepage "int codepage, libscca_error_t **error"
+.Fn libscca_set_codepage "int codepage" "libscca_error_t **error"
 .Ft int
-.Fn libscca_check_file_signature "const char *filename, libscca_error_t **error"
+.Fn libscca_check_file_signature "const char *filename" "libscca_error_t **error"
 .Pp
 Available when compiled with wide character string support:
 .Ft int
-.Fn libscca_check_file_signature_wide "const wchar_t *filename, libscca_error_t **error"
+.Fn libscca_check_file_signature_wide "const wchar_t *filename" "libscca_error_t **error"
 .Pp
 Available when compiled with libbfio support:
 .Ft int
-.Fn libscca_check_file_signature_file_io_handle "libbfio_handle_t *file_io_handle, libscca_error_t **error"
+.Fn libscca_check_file_signature_file_io_handle "libbfio_handle_t *file_io_handle" "libscca_error_t **error"
 .Pp
 Notify functions
 .Ft void
 .Fn libscca_notify_set_verbose "int verbose"
 .Ft int
-.Fn libscca_notify_set_stream "FILE *stream, libscca_error_t **error"
+.Fn libscca_notify_set_stream "FILE *stream" "libscca_error_t **error"
 .Ft int
-.Fn libscca_notify_stream_open "const char *filename, libscca_error_t **error"
+.Fn libscca_notify_stream_open "const char *filename" "libscca_error_t **error"
 .Ft int
 .Fn libscca_notify_stream_close "libscca_error_t **error"
 .Pp
@@ -43,97 +41,97 @@ Error functions
 .Ft void
 .Fn libscca_error_free "libscca_error_t **error"
 .Ft int
-.Fn libscca_error_fprint "libscca_error_t *error, FILE *stream"
+.Fn libscca_error_fprint "libscca_error_t *error" "FILE *stream"
 .Ft int
-.Fn libscca_error_sprint "libscca_error_t *error, char *string, size_t size"
+.Fn libscca_error_sprint "libscca_error_t *error" "char *string" "size_t size"
 .Ft int
-.Fn libscca_error_backtrace_fprint "libscca_error_t *error, FILE *stream"
+.Fn libscca_error_backtrace_fprint "libscca_error_t *error" "FILE *stream"
 .Ft int
-.Fn libscca_error_backtrace_sprint "libscca_error_t *error, char *string, size_t size"
+.Fn libscca_error_backtrace_sprint "libscca_error_t *error" "char *string" "size_t size"
 .Pp
 File functions
 .Ft int
-.Fn libscca_file_initialize "libscca_file_t **file, libscca_error_t **error"
+.Fn libscca_file_initialize "libscca_file_t **file" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_free "libscca_file_t **file, libscca_error_t **error"
+.Fn libscca_file_free "libscca_file_t **file" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_signal_abort "libscca_file_t *file, libscca_error_t **error"
+.Fn libscca_file_signal_abort "libscca_file_t *file" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_open "libscca_file_t *file, const char *filename, int access_flags, libscca_error_t **error"
+.Fn libscca_file_open "libscca_file_t *file" "const char *filename" "int access_flags" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_close "libscca_file_t *file, libscca_error_t **error"
+.Fn libscca_file_close "libscca_file_t *file" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_format_version "libscca_file_t *file, uint32_t *format_version, libscca_error_t **error"
+.Fn libscca_file_get_format_version "libscca_file_t *file" "uint32_t *format_version" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_utf8_executable_filename_size "libscca_file_t *file, size_t *utf8_string_size, libscca_error_t **error"
+.Fn libscca_file_get_utf8_executable_filename_size "libscca_file_t *file" "size_t *utf8_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_utf8_executable_filename "libscca_file_t *file, uint8_t *utf8_string, size_t utf8_string_size, libscca_error_t **error"
+.Fn libscca_file_get_utf8_executable_filename "libscca_file_t *file" "uint8_t *utf8_string" "size_t utf8_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_utf16_executable_filename_size "libscca_file_t *file, size_t *utf16_string_size, libscca_error_t **error"
+.Fn libscca_file_get_utf16_executable_filename_size "libscca_file_t *file" "size_t *utf16_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_utf16_executable_filename "libscca_file_t *file, uint16_t *utf16_string, size_t utf16_string_size, libscca_error_t **error"
+.Fn libscca_file_get_utf16_executable_filename "libscca_file_t *file" "uint16_t *utf16_string" "size_t utf16_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_prefetch_hash "libscca_file_t *file, uint32_t *prefetch_hash, libscca_error_t **error"
+.Fn libscca_file_get_prefetch_hash "libscca_file_t *file" "uint32_t *prefetch_hash" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_last_run_time "libscca_file_t *file, int last_run_time_index, uint64_t *filetime, libscca_error_t **error"
+.Fn libscca_file_get_last_run_time "libscca_file_t *file" "int last_run_time_index" "uint64_t *filetime" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_run_count "libscca_file_t *file, uint32_t *run_count, libscca_error_t **error"
+.Fn libscca_file_get_run_count "libscca_file_t *file" "uint32_t *run_count" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_number_of_file_metrics_entries "libscca_file_t *file, int *number_of_entries, libscca_error_t **error"
+.Fn libscca_file_get_number_of_file_metrics_entries "libscca_file_t *file" "int *number_of_entries" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_file_metrics_entry "libscca_file_t *file, int entry_index, libscca_file_metrics_t **file_metrics, libscca_error_t **error"
+.Fn libscca_file_get_file_metrics_entry "libscca_file_t *file" "int entry_index" "libscca_file_metrics_t **file_metrics" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_number_of_filenames "libscca_file_t *file, int *number_of_filenames, libscca_error_t **error"
+.Fn libscca_file_get_number_of_filenames "libscca_file_t *file" "int *number_of_filenames" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_utf8_filename_size "libscca_file_t *file, int filename_index, size_t *utf8_string_size, libscca_error_t **error"
+.Fn libscca_file_get_utf8_filename_size "libscca_file_t *file" "int filename_index" "size_t *utf8_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_utf8_filename "libscca_file_t *file, int filename_index, uint8_t *utf8_string, size_t utf8_string_size, libscca_error_t **error"
+.Fn libscca_file_get_utf8_filename "libscca_file_t *file" "int filename_index" "uint8_t *utf8_string" "size_t utf8_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_utf16_filename_size "libscca_file_t *file, int filename_index, size_t *utf16_string_size, libscca_error_t **error"
+.Fn libscca_file_get_utf16_filename_size "libscca_file_t *file" "int filename_index" "size_t *utf16_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_utf16_filename "libscca_file_t *file, int filename_index, uint16_t *utf16_string, size_t utf16_string_size, libscca_error_t **error"
+.Fn libscca_file_get_utf16_filename "libscca_file_t *file" "int filename_index" "uint16_t *utf16_string" "size_t utf16_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_number_of_volumes "libscca_file_t *file, int *number_of_volumes, libscca_error_t **error"
+.Fn libscca_file_get_number_of_volumes "libscca_file_t *file" "int *number_of_volumes" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_get_volume_information "libscca_file_t *file, int volume_index, libscca_volume_information_t **volume_information, libscca_error_t **error"
+.Fn libscca_file_get_volume_information "libscca_file_t *file" "int volume_index" "libscca_volume_information_t **volume_information" "libscca_error_t **error"
 .Pp
 Available when compiled with wide character string support:
 .Ft int
-.Fn libscca_file_open_wide "libscca_file_t *file, const wchar_t *filename, int access_flags, libscca_error_t **error"
+.Fn libscca_file_open_wide "libscca_file_t *file" "const wchar_t *filename" "int access_flags" "libscca_error_t **error"
 .Pp
 Available when compiled with libbfio support:
 .Ft int
-.Fn libscca_file_open_file_io_handle "libscca_file_t *file, libbfio_handle_t *file_io_handle, int access_flags, libscca_error_t **error"
+.Fn libscca_file_open_file_io_handle "libscca_file_t *file" "libbfio_handle_t *file_io_handle" "int access_flags" "libscca_error_t **error"
 .Pp
 File metrics functions
 .Ft int
-.Fn libscca_file_metrics_free "libscca_file_metrics_t **file_metrics, libscca_error_t **error"
+.Fn libscca_file_metrics_free "libscca_file_metrics_t **file_metrics" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_metrics_get_utf8_filename_size "libscca_file_metrics_t *file_metrics, size_t *utf8_string_size, libscca_error_t **error"
+.Fn libscca_file_metrics_get_utf8_filename_size "libscca_file_metrics_t *file_metrics" "size_t *utf8_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_metrics_get_utf8_filename "libscca_file_metrics_t *file_metrics, uint8_t *utf8_string, size_t utf8_string_size, libscca_error_t **error"
+.Fn libscca_file_metrics_get_utf8_filename "libscca_file_metrics_t *file_metrics" "uint8_t *utf8_string" "size_t utf8_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_metrics_get_utf16_filename_size "libscca_file_metrics_t *file_metrics, size_t *utf16_string_size, libscca_error_t **error"
+.Fn libscca_file_metrics_get_utf16_filename_size "libscca_file_metrics_t *file_metrics" "size_t *utf16_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_metrics_get_utf16_filename "libscca_file_metrics_t *file_metrics, uint16_t *utf16_string, size_t utf16_string_size, libscca_error_t **error"
+.Fn libscca_file_metrics_get_utf16_filename "libscca_file_metrics_t *file_metrics" "uint16_t *utf16_string" "size_t utf16_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_file_metrics_get_file_reference "libscca_file_metrics_t *file_metrics, uint64_t *file_reference, libscca_error_t **error"
+.Fn libscca_file_metrics_get_file_reference "libscca_file_metrics_t *file_metrics" "uint64_t *file_reference" "libscca_error_t **error"
 .Pp
 Volume information functions
 .Ft int
-.Fn libscca_volume_information_free "libscca_volume_information_t **volume_information, libscca_error_t **error"
+.Fn libscca_volume_information_free "libscca_volume_information_t **volume_information" "libscca_error_t **error"
 .Ft int
-.Fn libscca_volume_information_get_creation_time "libscca_volume_information_t *volume_information, uint64_t *filetime, libscca_error_t **error"
+.Fn libscca_volume_information_get_creation_time "libscca_volume_information_t *volume_information" "uint64_t *filetime" "libscca_error_t **error"
 .Ft int
-.Fn libscca_volume_information_get_serial_number "libscca_volume_information_t *volume_information, uint32_t *serial_number, libscca_error_t **error"
+.Fn libscca_volume_information_get_serial_number "libscca_volume_information_t *volume_information" "uint32_t *serial_number" "libscca_error_t **error"
 .Ft int
-.Fn libscca_volume_information_get_utf8_device_path_size "libscca_volume_information_t *volume_information, size_t *utf8_string_size, libscca_error_t **error"
+.Fn libscca_volume_information_get_utf8_device_path_size "libscca_volume_information_t *volume_information" "size_t *utf8_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_volume_information_get_utf8_device_path "libscca_volume_information_t *volume_information, uint8_t *utf8_string, size_t utf8_string_size, libscca_error_t **error"
+.Fn libscca_volume_information_get_utf8_device_path "libscca_volume_information_t *volume_information" "uint8_t *utf8_string" "size_t utf8_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_volume_information_get_utf16_device_path_size "libscca_volume_information_t *volume_information, size_t *utf16_string_size, libscca_error_t **error"
+.Fn libscca_volume_information_get_utf16_device_path_size "libscca_volume_information_t *volume_information" "size_t *utf16_string_size" "libscca_error_t **error"
 .Ft int
-.Fn libscca_volume_information_get_utf16_device_path "libscca_volume_information_t *volume_information, uint16_t *utf16_string, size_t utf16_string_size, libscca_error_t **error"
+.Fn libscca_volume_information_get_utf16_device_path "libscca_volume_information_t *volume_information" "uint16_t *utf16_string" "size_t utf16_string_size" "libscca_error_t **error"
 .Sh DESCRIPTION
 The
 .Fn libscca_get_version
@@ -146,8 +144,8 @@ None
 .Sh FILES
 None
 .Sh NOTES
-libscca allows to be compiled with wide character support (wchar_t).
-
+libscca can be compiled with wide character support (wchar_t).
+.sp
 To compile libscca with wide character support use:
 .Ar ./configure --enable-wide-character-type=yes
  or define:
@@ -155,7 +153,7 @@ To compile libscca with wide character support use:
  or
 .Ar UNICODE
  during compilation.
-
+.sp
 .Ar LIBSCCA_WIDE_CHARACTER_TYPE
  in libscca/features.h can be used to determine if libscca was compiled with wide character support.
 .Sh BUGS
@@ -164,7 +162,7 @@ Please report bugs of any kind on the project issue tracker: https://github.com/
 These man pages are generated from "libscca.h".
 .Sh COPYRIGHT
 Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>.
-
+.sp
 This is free software; see the source for copying conditions.
 There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 .Sh SEE ALSO

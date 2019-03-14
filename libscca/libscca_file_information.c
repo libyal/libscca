@@ -347,7 +347,7 @@ int libscca_file_information_read_data(
 		 file_information->trace_chain_array_offset );
 
 		libcnotify_printf(
-		 "%s: number of trace chain array entries\t: %" PRIu32 "\n",
+		 "%s: number of trace chain array entries\t\t: %" PRIu32 "\n",
 		 function,
 		 file_information->number_of_trace_chain_array_entries );
 
@@ -362,12 +362,12 @@ int libscca_file_information_read_data(
 		 file_information->filename_strings_size );
 
 		libcnotify_printf(
-		 "%s: volumes information offset\t\t: 0x%08" PRIx32 "\n",
+		 "%s: volumes information offset\t\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 file_information->volumes_information_offset );
 
 		libcnotify_printf(
-		 "%s: number of volumes\t\t\t: %" PRIu32 "\n",
+		 "%s: number of volumes\t\t\t\t: %" PRIu32 "\n",
 		 function,
 		 file_information->number_of_volumes );
 

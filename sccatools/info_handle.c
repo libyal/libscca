@@ -467,7 +467,6 @@ int info_handle_file_fprint(
 	libscca_volume_information_t *volume_information = NULL;
 	system_character_t *value_string                 = NULL;
 	static char *function                            = "info_handle_file_fprint";
-	size_t print_count                               = 0;
 	size_t value_string_size                         = 0;
 	uint64_t value_64bit                             = 0;
 	uint32_t format_version                          = 0;
@@ -477,6 +476,7 @@ int info_handle_file_fprint(
 	int number_of_filenames                          = 0;
 	int number_of_last_run_times                     = 0;
 	int number_of_volumes                            = 0;
+	int print_count                                  = 0;
 	int result                                       = 0;
 	int volume_index                                 = 0;
 
