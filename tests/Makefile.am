@@ -26,6 +26,7 @@ endif
 
 TESTS = \
 	test_library.sh \
+	test_manpage.sh \
 	test_sccainfo.sh \
 	$(TESTS_PYSCCA)
 
@@ -33,6 +34,7 @@ check_SCRIPTS = \
 	pyscca_test_file.py \
 	pyscca_test_support.py \
 	test_library.sh \
+	test_manpage.sh \
 	test_python_module.sh \
 	test_runner.sh \
 	test_sccainfo.sh
