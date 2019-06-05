@@ -207,7 +207,7 @@ int libscca_file_information_read_data(
 
 		return( -1 );
 	}
-	if( data_size < file_information_data_size )
+	if( data_size < 4 )
 	{
 		libcerror_error_set(
 		 error,
@@ -229,6 +229,53 @@ int libscca_file_information_read_data(
 
 		return( -1 );
 	}
+	byte_stream_copy_to_uint32_little_endian(
+	 ( (scca_file_information_v17_t *) data )->metrics_array_offset,
+	 file_information->metrics_array_offset );
+
+	if( ( io_handle->format_version == 30 )
+	 && ( file_information->metrics_array_offset != 0x00000128 )
+	 && ( file_information->metrics_array_offset != 0x00000130 ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: invalid IO handle - unsupported format version: 30 variant.",
+		 function );
+
+		return( -1 );
+	}
+	if( io_handle->format_version == 17 )
+	{
+		file_information_data_size = sizeof( scca_file_information_v17_t );
+	}
+	else if( io_handle->format_version == 23 )
+	{
+		file_information_data_size = sizeof( scca_file_information_v23_t );
+	}
+	else if( ( io_handle->format_version == 26 )
+	      || ( ( io_handle->format_version == 30 )
+	       &&  ( file_information->metrics_array_offset == 0x00000130 ) ) )
+	{
+		file_information_data_size = sizeof( scca_file_information_v26_t );
+	}
+	else if( ( io_handle->format_version == 30 )
+	      && ( file_information->metrics_array_offset == 0x00000128 ) )
+	{
+		file_information_data_size = sizeof( scca_file_information_v30_2_t );
+	}
+	if( data_size < file_information_data_size )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_TOO_SMALL,
+		 "%s: invalid data size value too small.",
+		 function );
+
+		return( -1 );
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -241,10 +288,6 @@ int libscca_file_information_read_data(
 		 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 	}
 #endif
-	byte_stream_copy_to_uint32_little_endian(
-	 ( (scca_file_information_v17_t *) data )->metrics_array_offset,
-	 file_information->metrics_array_offset );
-
 	byte_stream_copy_to_uint32_little_endian(
 	 ( (scca_file_information_v17_t *) data )->number_of_file_metrics_entries,
 	 file_information->number_of_file_metrics_entries );
@@ -322,10 +365,18 @@ int libscca_file_information_read_data(
 		 file_information->run_count );
 	}
 	else if( ( io_handle->format_version == 26 )
-	      || ( io_handle->format_version == 30 ) )
+	      || ( ( io_handle->format_version == 30 )
+	       &&  ( file_information->metrics_array_offset == 0x00000130 ) ) )
 	{
 		byte_stream_copy_to_uint32_little_endian(
 		 ( (scca_file_information_v26_t *) data )->run_count,
+		 file_information->run_count );
+	}
+	else if( ( io_handle->format_version == 30 )
+	      && ( file_information->metrics_array_offset == 0x00000128 ) )
+	{
+		byte_stream_copy_to_uint32_little_endian(
+		 ( (scca_file_information_v30_2_t *) data )->run_count,
 		 file_information->run_count );
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -455,11 +506,20 @@ int libscca_file_information_read_data(
 			 0 );
 		}
 		else if( ( io_handle->format_version == 26 )
-		      || ( io_handle->format_version == 30 ) )
+		      || ( ( io_handle->format_version == 30 )
+		       &&  ( file_information->metrics_array_offset == 0x00000130 ) ) )
 		{
 			libcnotify_print_data(
 			 ( (scca_file_information_v26_t *) data )->unknown4,
 			 16,
+			 0 );
+		}
+		else if( ( io_handle->format_version == 30 )
+		      && ( file_information->metrics_array_offset == 0x00000128 ) )
+		{
+			libcnotify_print_data(
+			 ( (scca_file_information_v30_2_t *) data )->unknown4,
+			 8,
 			 0 );
 		}
 		libcnotify_printf(
@@ -499,7 +559,8 @@ int libscca_file_information_read_data(
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
 		else if( ( io_handle->format_version == 26 )
-		      || ( io_handle->format_version == 30 ) )
+		      || ( ( io_handle->format_version == 30 )
+		       &&  ( file_information->metrics_array_offset == 0x00000130 ) ) )
 		{
 			byte_stream_copy_to_uint32_little_endian(
 			 ( (scca_file_information_v26_t *) data )->unknown5a,
@@ -525,8 +586,36 @@ int libscca_file_information_read_data(
 			 88,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
+		else if( ( io_handle->format_version == 30 )
+		      && ( file_information->metrics_array_offset == 0x00000128 ) )
+		{
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_information_v30_2_t *) data )->unknown5a,
+			 value_32bit );
+			libcnotify_printf(
+			 "%s: unknown5a\t\t\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_information_v30_2_t *) data )->unknown5b,
+			 value_32bit );
+			libcnotify_printf(
+			 "%s: unknown5b\t\t\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			libcnotify_printf(
+			 "%s: unknown6:\n",
+			 function );
+			libcnotify_print_data(
+			 ( (scca_file_information_v30_2_t *) data )->unknown6,
+			 88,
+			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
+		}
 	}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 	return( 1 );
 }
 
