@@ -11,61 +11,8 @@ TODO:
   - describe relation ship metrics and trace chains
 * update manuals
 
-20161103
-* worked on Windows 10 compressed file support
-
-20160109
-* fixes for rpmbuild
-
-20160108
-* worked on Python 3 support
-
-20160107
-* 2016 update
-
-20151226
-* worked on Python bindings
-* worked on API functions
-
-20151225
-* worked on Python bindings
-* changes for deployment
-* worked on API functions
-
-20150621
-* worked on Windows 10 compressed file support
-
-20150618
-* worked on Windows 10 compressed file support
-
-20150613
-* worked on Windows 10 compressed file support
-* worked on Python bindings
-
-20150612
-* worked on Windows 10 compressed file support
-
-20150610
-* fix in check signature
-* worked on Windows 10 compressed file support
-
-20150106
-* 2015 update
-
-20141129
-* code clean up
-
-20141026
-* changes for deployment
-
-20141025
-* changes for deployment
-* changes for project site move
-
-20141019
-* changes for deployment
-
 20141003
+* see `git log' for more recent change log
 * removed README.macosx
 * added dpkg files
 * changes for project site move
