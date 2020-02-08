@@ -32,7 +32,7 @@ tooling to be able to process this file type.
 == License
 
 ....
-Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2011-2020, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
@@ -63,6 +63,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.15 | J.B. Metz | November 2016 | Changes regarding compression.
 | 0.0.16 | J.B. Metz | March 2019 | Format changes.
 | 0.0.17 | J.B. Metz | June 2019 | Additional information regarding Windows 10 1903 v30 variant 2.
+| 0.0.18 | J.B. Metz | February 2020 | Cleaned up notes.
 |===
 
 :numbered:
@@ -832,35 +833,6 @@ cp + +;
 
 return (abs (RNDM_CONSTANT * ConvKey)% RNDM_PRIME);
 }
-
-
-Scenarios that affect the hash
-the application ran is a so-called hosting application e.g. rundll32.exe,
-mmc.exe, and newer versions of Windows systems also include dllhost.exe and
-svchost.exe there is a command line /Prefetch used (I skip this bit in this post)
-http://www.hexacorn.com/blog/2013/07/06/the-argument-about-prefetchx-or-the-other-way-around/
-UNC paths: http://www.hexacorn.com/blog/2012/10/29/prefetch-file-names-and-unc-paths/
-
-Windows XP 32-bit
-sum of hash_xp (on devicename and c: = volume1)+ hash_xp(quoted path+command line)
-
-Windows Vista 32-bit
-sum of hash_vista (on devicename and c: = volume1)+ hash_vista(quoted path+command line)
-
-Windows 7 32-bit
-sum of hash_w7 (on devicename and c: = volume2 )+ hash_w7(quoted path+command line)
-
-Windows 7 64-bit
-sum of hash_w7 (on devicename and c: = volume2 )+ hash_w7(unquoted path+command line prefixed with extra blank character
-
-Windows 8 32-bit
-sum of hash_w7 (on devicename and c: = volume2 )+ hash_w7(unquoted path+command line prefixed with extra blank character
-
-Windows Server 2003 32-bit
-sum of hash_xp (on devicename and c: = volume1 )+ hash_xp(unquoted path+command line)
-
-Windows Server 2008 32-bit
-sum of hash_w7 (on devicename and c: = volume1 )+ hash_w7(unquoted path+command line prefixed with extra blank character)
 ....
 
 == Notes
@@ -926,7 +898,7 @@ hash.  Why?  WMP is a multipurpose application and may do many different
 things.  The DLLs and code that it touches will be very different when playing
 a WMV than when playing a DVD, or when ripping a CD, or when listening to a
 Shoutcast stream, or any of the other things that WMP can do.  If we only had
-one hash for WMP, then the prefetch would only be correct for one such use. 
+one hash for WMP, then the prefetch would only be correct for one such use.
 Having incorrect prefetch data would not be a fatal error -- it'd just load
 pages into memory that'd never get used, and then get swapped back out to disk
 as soon as possible.  Still, it's counterproductive.  By specifying a

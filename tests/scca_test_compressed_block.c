@@ -1,7 +1,7 @@
 /*
  * Library compressed_block type test program
  *
- * Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2020, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -110,6 +110,8 @@ int scca_test_compressed_block_initialize(
 	          4096,
 	          &error );
 
+	compressed_block = NULL;
+
 	SCCA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -121,8 +123,6 @@ int scca_test_compressed_block_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	compressed_block = NULL;
 
 	result = libscca_compressed_block_initialize(
 	          &compressed_block,

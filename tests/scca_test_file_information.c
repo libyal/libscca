@@ -1,7 +1,7 @@
 /*
  * Library file_information type testing program
  *
- * Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2020, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -107,6 +107,8 @@ int scca_test_file_information_initialize(
 	          &file_information,
 	          &error );
 
+	file_information = NULL;
+
 	SCCA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -118,8 +120,6 @@ int scca_test_file_information_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	file_information = NULL;
 
 #if defined( HAVE_SCCA_TEST_MEMORY )
 

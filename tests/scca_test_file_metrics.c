@@ -1,7 +1,7 @@
 /*
  * Library file_metrics type test program
  *
- * Copyright (C) 2011-2019, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2020, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -141,6 +141,8 @@ int scca_test_file_metrics_initialize(
 	          filename_strings,
 	          &error );
 
+	file_metrics = NULL;
+
 	SCCA_TEST_ASSERT_EQUAL_INT(
 	 "result",
 	 result,
@@ -152,8 +154,6 @@ int scca_test_file_metrics_initialize(
 
 	libcerror_error_free(
 	 &error );
-
-	file_metrics = NULL;
 
 	result = libscca_file_metrics_initialize(
 	          &file_metrics,
