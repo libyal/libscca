@@ -699,7 +699,7 @@ There are multiple known hashing functions to be used for prefetch filename
 hashing, namely:
 
 * SCCA XP hash function; used on Windows XP and Windows 2003
-* SCCA Vista hash function; used on Windows Vista
+* SCCA Vista hash function; used on Windows Vista, Windows 10
 * SCCA 2008 hash function; used on Windows 2008, Windows 7, [yellow-background]*Windows 2012* and Windows 8 (including 8.1)
 
 === SCCA XP hash function
@@ -792,16 +792,15 @@ On Windows Vista and Window 7 the volume indicated by C: is often the second
 volume (where the boot partition is the first) hence the Windows device path
 for C: will be "\DEVICE\HARDDISKVOLUME2".
 
+[NOTE]
+On Windows 10 "\DEVICE\HARDDISKVOLUME#" is replaced by "\VOLUME{%IDENTIFIER%}"
+but the prefetch hash appears to be calculated using "\DEVICE\HARDDISKVOLUME#".
+
 [yellow-background]*TODO: describe command line arguments*
 
 [yellow-background]*TODO: describe /prefetch flag*
 
 [yellow-background]*TODO: describe UNC path*
-
-[NOTE]
-On Windows 10 "\DEVICE\HARDDISKVOLUME#" is replaced by "\VOLUME{%IDENTIFIER%}"
-
-[yellow-background]*TODO: describe Windows 10*
 
 === Notes
 
