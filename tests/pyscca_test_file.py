@@ -39,7 +39,7 @@ class FileTypeTests(unittest.TestCase):
   def test_open(self):
     """Tests the open function."""
     if not unittest.source:
-      return
+      raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
@@ -59,30 +59,33 @@ class FileTypeTests(unittest.TestCase):
   def test_open_file_object(self):
     """Tests the open_file_object function."""
     if not unittest.source:
-      return
+      raise unittest.SkipTest("missing source")
 
-    file_object = open(unittest.source, "rb")
+    if not os.path.isfile(unittest.source):
+      raise unittest.SkipTest("source not a regular file")
 
     scca_file = pyscca.file()
 
-    scca_file.open_file_object(file_object)
+    with open(unittest.source, "rb") as file_object:
 
-    with self.assertRaises(IOError):
       scca_file.open_file_object(file_object)
 
-    scca_file.close()
+      with self.assertRaises(IOError):
+        scca_file.open_file_object(file_object)
 
-    # TODO: change IOError into TypeError
-    with self.assertRaises(IOError):
-      scca_file.open_file_object(None)
+      scca_file.close()
 
-    with self.assertRaises(ValueError):
-      scca_file.open_file_object(file_object, mode="w")
+      # TODO: change IOError into TypeError
+      with self.assertRaises(IOError):
+        scca_file.open_file_object(None)
+
+      with self.assertRaises(ValueError):
+        scca_file.open_file_object(file_object, mode="w")
 
   def test_close(self):
     """Tests the close function."""
     if not unittest.source:
-      return
+      raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
@@ -104,19 +107,132 @@ class FileTypeTests(unittest.TestCase):
     scca_file.open(unittest.source)
     scca_file.close()
 
-    file_object = open(unittest.source, "rb")
+    if os.path.isfile(unittest.source):
+      with open(unittest.source, "rb") as file_object:
 
-    # Test open_file_object and close.
-    scca_file.open_file_object(file_object)
+        # Test open_file_object and close.
+        scca_file.open_file_object(file_object)
+        scca_file.close()
+
+        # Test open_file_object and close a second time to validate clean up on close.
+        scca_file.open_file_object(file_object)
+        scca_file.close()
+
+        # Test open_file_object and close and dereferencing file_object.
+        scca_file.open_file_object(file_object)
+        del file_object
+        scca_file.close()
+
+  def test_get_format_version(self):
+    """Tests the get_format_version function and format_version property."""
+    if not unittest.source:
+      raise unittest.SkipTest("missing source")
+
+    scca_file = pyscca.file()
+
+    scca_file.open(unittest.source)
+
+    format_version = scca_file.get_format_version()
+    self.assertIsNotNone(format_version)
+
+    self.assertIsNotNone(scca_file.format_version)
+
     scca_file.close()
 
-    # Test open_file_object and close a second time to validate clean up on close.
-    scca_file.open_file_object(file_object)
+  def test_get_executable_filename(self):
+    """Tests the get_executable_filename function and executable_filename property."""
+    if not unittest.source:
+      raise unittest.SkipTest("missing source")
+
+    scca_file = pyscca.file()
+
+    scca_file.open(unittest.source)
+
+    executable_filename = scca_file.get_executable_filename()
+    self.assertIsNotNone(executable_filename)
+
+    self.assertIsNotNone(scca_file.executable_filename)
+
     scca_file.close()
 
-    # Test open_file_object and close and dereferencing file_object.
-    scca_file.open_file_object(file_object)
-    del file_object
+  def test_get_prefetch_hash(self):
+    """Tests the get_prefetch_hash function and prefetch_hash property."""
+    if not unittest.source:
+      raise unittest.SkipTest("missing source")
+
+    scca_file = pyscca.file()
+
+    scca_file.open(unittest.source)
+
+    prefetch_hash = scca_file.get_prefetch_hash()
+    self.assertIsNotNone(prefetch_hash)
+
+    self.assertIsNotNone(scca_file.prefetch_hash)
+
+    scca_file.close()
+
+  def test_get_run_count(self):
+    """Tests the get_run_count function and run_count property."""
+    if not unittest.source:
+      raise unittest.SkipTest("missing source")
+
+    scca_file = pyscca.file()
+
+    scca_file.open(unittest.source)
+
+    run_count = scca_file.get_run_count()
+    self.assertIsNotNone(run_count)
+
+    self.assertIsNotNone(scca_file.run_count)
+
+    scca_file.close()
+
+  def test_get_number_of_file_metrics_entries(self):
+    """Tests the get_number_of_file_metrics_entries function and number_of_file_metrics_entries property."""
+    if not unittest.source:
+      raise unittest.SkipTest("missing source")
+
+    scca_file = pyscca.file()
+
+    scca_file.open(unittest.source)
+
+    number_of_file_metrics_entries = scca_file.get_number_of_file_metrics_entries()
+    self.assertIsNotNone(number_of_file_metrics_entries)
+
+    self.assertIsNotNone(scca_file.number_of_file_metrics_entries)
+
+    scca_file.close()
+
+  def test_get_number_of_filenames(self):
+    """Tests the get_number_of_filenames function and number_of_filenames property."""
+    if not unittest.source:
+      raise unittest.SkipTest("missing source")
+
+    scca_file = pyscca.file()
+
+    scca_file.open(unittest.source)
+
+    number_of_filenames = scca_file.get_number_of_filenames()
+    self.assertIsNotNone(number_of_filenames)
+
+    self.assertIsNotNone(scca_file.number_of_filenames)
+
+    scca_file.close()
+
+  def test_get_number_of_volumes(self):
+    """Tests the get_number_of_volumes function and number_of_volumes property."""
+    if not unittest.source:
+      raise unittest.SkipTest("missing source")
+
+    scca_file = pyscca.file()
+
+    scca_file.open(unittest.source)
+
+    number_of_volumes = scca_file.get_number_of_volumes()
+    self.assertIsNotNone(number_of_volumes)
+
+    self.assertIsNotNone(scca_file.number_of_volumes)
+
     scca_file.close()
 
 
@@ -125,7 +241,7 @@ if __name__ == "__main__":
 
   argument_parser.add_argument(
       "source", nargs="?", action="store", metavar="PATH",
-      default=None, help="The path of the source file.")
+      default=None, help="path of the source file.")
 
   options, unknown_options = argument_parser.parse_known_args()
   unknown_options.insert(0, sys.argv[0])

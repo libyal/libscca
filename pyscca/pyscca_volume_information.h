@@ -53,7 +53,6 @@ extern PyMethodDef pyscca_volume_information_object_methods[];
 extern PyTypeObject pyscca_volume_information_type_object;
 
 PyObject *pyscca_volume_information_new(
-           PyTypeObject *type_object,
            libscca_volume_information_t *volume_information,
            PyObject *parent_object );
 

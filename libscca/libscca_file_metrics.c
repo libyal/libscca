@@ -371,14 +371,14 @@ int libscca_file_metrics_read_data(
 			if( internal_file_metrics->file_reference == 0 )
 			{
 				libcnotify_printf(
-				 "%s: file reference\t\t\t: %" PRIu64 "\n",
+				 "%s: file reference\t\t: %" PRIu64 "\n",
 				 function,
 				 internal_file_metrics->file_reference );
 			}
 			else
 			{
 				libcnotify_printf(
-				 "%s: file reference\t\t\t: MFT entry: %" PRIu64 ", sequence: %" PRIu64 "\n",
+				 "%s: file reference\t\t: MFT entry: %" PRIu64 ", sequence: %" PRIu64 "\n",
 				 function,
 				 internal_file_metrics->file_reference & 0xffffffffffffUL,
 				 internal_file_metrics->file_reference >> 48 );
@@ -387,7 +387,8 @@ int libscca_file_metrics_read_data(
 		libcnotify_printf(
 		 "\n" );
 	}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 	return( 1 );
 }
 

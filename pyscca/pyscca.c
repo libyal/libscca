@@ -34,6 +34,7 @@
 #include "pyscca_file_metrics_entries.h"
 #include "pyscca_file_object_io_handle.h"
 #include "pyscca_filenames.h"
+#include "pyscca_libbfio.h"
 #include "pyscca_libcerror.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
@@ -42,11 +43,13 @@
 #include "pyscca_volumes.h"
 
 #if !defined( LIBSCCA_HAVE_BFIO )
+
 LIBSCCA_EXTERN \
 int libscca_check_file_signature_file_io_handle(
      libbfio_handle_t *file_io_handle,
      libscca_error_t **error );
-#endif
+
+#endif /* !defined( LIBSCCA_HAVE_BFIO ) */
 
 /* The pyscca module methods
  */
@@ -63,24 +66,24 @@ PyMethodDef pyscca_module_methods[] = {
 	  METH_VARARGS | METH_KEYWORDS,
 	  "check_file_signature(filename) -> Boolean\n"
 	  "\n"
-	  "Checks if a file has a Windows Shortcut File (SCCA) signature." },
+	  "Checks if a file has a Windows Prefetch File (SCCA) signature." },
 
 	{ "check_file_signature_file_object",
 	  (PyCFunction) pyscca_check_file_signature_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "check_file_signature_file_object(file_object) -> Boolean\n"
 	  "\n"
-	  "Checks if a file has a Windows Shortcut File (SCCA) signature using a file-like object." },
+	  "Checks if a file has a Windows Prefetch File (SCCA) signature using a file-like object." },
 
 	{ "open",
-	  (PyCFunction) pyscca_file_new_open,
+	  (PyCFunction) pyscca_open_new_file,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open(filename, mode='r') -> Object\n"
 	  "\n"
 	  "Opens a file." },
 
 	{ "open_file_object",
-	  (PyCFunction) pyscca_file_new_open_file_object,
+	  (PyCFunction) pyscca_open_new_file_with_file_object,
 	  METH_VARARGS | METH_KEYWORDS,
 	  "open_file_object(file_object, mode='r') -> Object\n"
 	  "\n"
@@ -123,7 +126,7 @@ PyObject *pyscca_get_version(
 	         errors ) );
 }
 
-/* Checks if the file has a Windows Shortcut File (SCCA) signature
+/* Checks if a file has a Windows Prefetch File (SCCA) signature
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_check_file_signature(
@@ -154,7 +157,7 @@ PyObject *pyscca_check_file_signature(
 	if( PyArg_ParseTupleAndKeywords(
 	     arguments,
 	     keywords,
-	     "|O",
+	     "O|",
 	     keyword_list,
 	     &string_object ) == 0 )
 	{
@@ -170,7 +173,7 @@ PyObject *pyscca_check_file_signature(
 	{
 		pyscca_error_fetch_and_raise(
 	         PyExc_RuntimeError,
-		 "%s: unable to determine if string object is of type unicode.",
+		 "%s: unable to determine if string object is of type Unicode.",
 		 function );
 
 		return( NULL );
@@ -197,7 +200,7 @@ PyObject *pyscca_check_file_signature(
 		{
 			pyscca_error_fetch_and_raise(
 			 PyExc_RuntimeError,
-			 "%s: unable to convert unicode string to UTF-8.",
+			 "%s: unable to convert Unicode string to UTF-8.",
 			 function );
 
 			return( NULL );
@@ -219,7 +222,9 @@ PyObject *pyscca_check_file_signature(
 
 		Py_DecRef(
 		 utf8_string_object );
-#endif
+
+#endif /* defined( HAVE_WIDE_SYSTEM_CHARACTER ) */
+
 		if( result == -1 )
 		{
 			pyscca_error_raise(
@@ -317,7 +322,7 @@ PyObject *pyscca_check_file_signature(
 	return( NULL );
 }
 
-/* Checks if the file has a Windows Shortcut File (SCCA) signature using a file-like object
+/* Checks if a file has a Windows Prefetch File (SCCA) signature using a file-like object
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_check_file_signature_file_object(
@@ -417,6 +422,52 @@ on_error:
 	return( NULL );
 }
 
+/* Creates a new file object and opens it
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_open_new_file(
+           PyObject *self PYSCCA_ATTRIBUTE_UNUSED,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *pyscca_file = NULL;
+
+	PYSCCA_UNREFERENCED_PARAMETER( self )
+
+	pyscca_file_init(
+	 (pyscca_file_t *) pyscca_file );
+
+	pyscca_file_open(
+	 (pyscca_file_t *) pyscca_file,
+	 arguments,
+	 keywords );
+
+	return( pyscca_file );
+}
+
+/* Creates a new file object and opens it using a file-like object
+ * Returns a Python object if successful or NULL on error
+ */
+PyObject *pyscca_open_new_file_with_file_object(
+           PyObject *self PYSCCA_ATTRIBUTE_UNUSED,
+           PyObject *arguments,
+           PyObject *keywords )
+{
+	PyObject *pyscca_file = NULL;
+
+	PYSCCA_UNREFERENCED_PARAMETER( self )
+
+	pyscca_file_init(
+	 (pyscca_file_t *) pyscca_file );
+
+	pyscca_file_open_file_object(
+	 (pyscca_file_t *) pyscca_file,
+	 arguments,
+	 keywords );
+
+	return( pyscca_file );
+}
+
 #if PY_MAJOR_VERSION >= 3
 
 /* The pyscca module definition
@@ -454,14 +505,8 @@ PyMODINIT_FUNC initpyscca(
                 void )
 #endif
 {
-	PyObject *module                               = NULL;
-	PyTypeObject *file_type_object                 = NULL;
-	PyTypeObject *file_metrics_entries_type_object = NULL;
-	PyTypeObject *file_metrics_type_object         = NULL;
-	PyTypeObject *filenames_type_object            = NULL;
-	PyTypeObject *volume_information_type_object   = NULL;
-	PyTypeObject *volumes_type_object              = NULL;
-	PyGILState_STATE gil_state                     = 0;
+	PyObject *module           = NULL;
+	PyGILState_STATE gil_state = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	libscca_notify_set_stream(
@@ -508,14 +553,12 @@ PyMODINIT_FUNC initpyscca(
 	Py_IncRef(
 	 (PyObject *) &pyscca_file_type_object );
 
-	file_type_object = &pyscca_file_type_object;
-
 	PyModule_AddObject(
 	 module,
 	 "file",
-	 (PyObject *) file_type_object );
+	 (PyObject *) &pyscca_file_type_object );
 
-	/* Setup the file metrics type object
+	/* Setup the file_metrics type object
 	 */
 	pyscca_file_metrics_type_object.tp_new = PyType_GenericNew;
 
@@ -527,31 +570,27 @@ PyMODINIT_FUNC initpyscca(
 	Py_IncRef(
 	 (PyObject *) &pyscca_file_metrics_type_object );
 
-	file_metrics_type_object = &pyscca_file_metrics_type_object;
-
 	PyModule_AddObject(
 	 module,
 	 "file_metrics",
-	 (PyObject *) file_metrics_type_object );
+	 (PyObject *) &pyscca_file_metrics_type_object );
 
-	/* Setup the volume information type object
+	/* Setup the file_metrics_entries type object
 	 */
-	pyscca_volume_information_type_object.tp_new = PyType_GenericNew;
+	pyscca_file_metrics_entries_type_object.tp_new = PyType_GenericNew;
 
 	if( PyType_Ready(
-	     &pyscca_volume_information_type_object ) < 0 )
+	     &pyscca_file_metrics_entries_type_object ) < 0 )
 	{
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject *) &pyscca_volume_information_type_object );
-
-	volume_information_type_object = &pyscca_volume_information_type_object;
+	 (PyObject *) &pyscca_file_metrics_entries_type_object );
 
 	PyModule_AddObject(
 	 module,
-	 "volume_information",
-	 (PyObject *) volume_information_type_object );
+	 "file_metrics_entries",
+	 (PyObject *) &pyscca_file_metrics_entries_type_object );
 
 	/* Setup the filenames type object
 	 */
@@ -565,31 +604,27 @@ PyMODINIT_FUNC initpyscca(
 	Py_IncRef(
 	 (PyObject *) &pyscca_filenames_type_object );
 
-	filenames_type_object = &pyscca_filenames_type_object;
-
 	PyModule_AddObject(
 	 module,
-	 "_filenames",
-	 (PyObject *) filenames_type_object );
+	 "filenames",
+	 (PyObject *) &pyscca_filenames_type_object );
 
-	/* Setup the file metrics entries type object
+	/* Setup the volume_information type object
 	 */
-	pyscca_file_metrics_entries_type_object.tp_new = PyType_GenericNew;
+	pyscca_volume_information_type_object.tp_new = PyType_GenericNew;
 
 	if( PyType_Ready(
-	     &pyscca_file_metrics_entries_type_object ) < 0 )
+	     &pyscca_volume_information_type_object ) < 0 )
 	{
 		goto on_error;
 	}
 	Py_IncRef(
-	 (PyObject *) &pyscca_file_metrics_entries_type_object );
-
-	file_metrics_entries_type_object = &pyscca_file_metrics_entries_type_object;
+	 (PyObject *) &pyscca_volume_information_type_object );
 
 	PyModule_AddObject(
 	 module,
-	 "_file_metrics_entries",
-	 (PyObject *) file_metrics_entries_type_object );
+	 "volume_information",
+	 (PyObject *) &pyscca_volume_information_type_object );
 
 	/* Setup the volumes type object
 	 */
@@ -603,12 +638,13 @@ PyMODINIT_FUNC initpyscca(
 	Py_IncRef(
 	 (PyObject *) &pyscca_volumes_type_object );
 
-	volumes_type_object = &pyscca_volumes_type_object;
-
 	PyModule_AddObject(
 	 module,
-	 "_volumes",
-	 (PyObject *) volumes_type_object );
+	 "volumes",
+	 (PyObject *) &pyscca_volumes_type_object );
+
+	PyGILState_Release(
+	 gil_state );
 
 #if PY_MAJOR_VERSION >= 3
 	return( module );

@@ -1,5 +1,5 @@
 /*
- * Python bindings for libscca (pyscca)
+ * Python bindings module for libscca (pyscca)
  *
  * Copyright (C) 2011-2020, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -41,6 +41,16 @@ PyObject *pyscca_check_file_signature(
            PyObject *keywords );
 
 PyObject *pyscca_check_file_signature_file_object(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyscca_open_new_file(
+           PyObject *self,
+           PyObject *arguments,
+           PyObject *keywords );
+
+PyObject *pyscca_open_new_file_with_file_object(
            PyObject *self,
            PyObject *arguments,
            PyObject *keywords );

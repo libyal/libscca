@@ -69,23 +69,23 @@ PyObject *pyscca_filenames_new(
            int number_of_items );
 
 int pyscca_filenames_init(
-     pyscca_filenames_t *filenames_object );
+     pyscca_filenames_t *sequence_object );
 
 void pyscca_filenames_free(
-      pyscca_filenames_t *filenames_object );
+      pyscca_filenames_t *sequence_object );
 
 Py_ssize_t pyscca_filenames_len(
-            pyscca_filenames_t *filenames_object );
+            pyscca_filenames_t *sequence_object );
 
 PyObject *pyscca_filenames_getitem(
-           pyscca_filenames_t *filenames_object,
+           pyscca_filenames_t *sequence_object,
            Py_ssize_t item_index );
 
 PyObject *pyscca_filenames_iter(
-           pyscca_filenames_t *filenames_object );
+           pyscca_filenames_t *sequence_object );
 
 PyObject *pyscca_filenames_iternext(
-           pyscca_filenames_t *filenames_object );
+           pyscca_filenames_t *sequence_object );
 
 #if defined( __cplusplus )
 }

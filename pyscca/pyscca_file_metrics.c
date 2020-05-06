@@ -39,7 +39,7 @@ PyMethodDef pyscca_file_metrics_object_methods[] = {
 	{ "get_filename",
 	  (PyCFunction) pyscca_file_metrics_get_filename,
 	  METH_NOARGS,
-	  "get_filename() -> Unicode string or None\n"
+	  "get_filename() -> Unicode string\n"
 	  "\n"
 	  "Retrieves the filename." },
 
@@ -171,7 +171,6 @@ PyTypeObject pyscca_file_metrics_type_object = {
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_file_metrics_new(
-           PyTypeObject *type_object,
            libscca_file_metrics_t *file_metrics,
            PyObject *parent_object )
 {
@@ -187,21 +186,13 @@ PyObject *pyscca_file_metrics_new(
 
 		return( NULL );
 	}
+	/* PyObject_New does not invoke tp_init
+	 */
 	pyscca_file_metrics = PyObject_New(
 	                       struct pyscca_file_metrics,
-	                       type_object );
+	                       &pyscca_file_metrics_type_object );
 
 	if( pyscca_file_metrics == NULL )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize file metrics.",
-		 function );
-
-		goto on_error;
-	}
-	if( pyscca_file_metrics_init(
-	     pyscca_file_metrics ) != 0 )
 	{
 		PyErr_Format(
 		 PyExc_MemoryError,
@@ -213,9 +204,11 @@ PyObject *pyscca_file_metrics_new(
 	pyscca_file_metrics->file_metrics  = file_metrics;
 	pyscca_file_metrics->parent_object = parent_object;
 
-	Py_IncRef(
-	 (PyObject *) pyscca_file_metrics->parent_object );
-
+	if( pyscca_file_metrics->parent_object != NULL )
+	{
+		Py_IncRef(
+		 pyscca_file_metrics->parent_object );
+	}
 	return( (PyObject *) pyscca_file_metrics );
 
 on_error:
@@ -248,7 +241,12 @@ int pyscca_file_metrics_init(
 	 */
 	pyscca_file_metrics->file_metrics = NULL;
 
-	return( 0 );
+	PyErr_Format(
+	 PyExc_NotImplementedError,
+	 "%s: initialize of file metrics not supported.",
+	 function );
+
+	return( -1 );
 }
 
 /* Frees a file metrics object
@@ -266,15 +264,6 @@ void pyscca_file_metrics_free(
 		PyErr_Format(
 		 PyExc_ValueError,
 		 "%s: invalid file metrics.",
-		 function );
-
-		return;
-	}
-	if( pyscca_file_metrics->file_metrics == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid file metrics - missing libscca file metrics.",
 		 function );
 
 		return;
@@ -300,29 +289,32 @@ void pyscca_file_metrics_free(
 
 		return;
 	}
-	Py_BEGIN_ALLOW_THREADS
-
-	result = libscca_file_metrics_free(
-	          &( pyscca_file_metrics->file_metrics ),
-	          &error );
-
-	Py_END_ALLOW_THREADS
-
-	if( result != 1 )
+	if( pyscca_file_metrics->file_metrics != NULL )
 	{
-		pyscca_error_raise(
-		 error,
-		 PyExc_IOError,
-		 "%s: unable to free libscca file metrics.",
-		 function );
+		Py_BEGIN_ALLOW_THREADS
 
-		libcerror_error_free(
-		 &error );
+		result = libscca_file_metrics_free(
+		          &( pyscca_file_metrics->file_metrics ),
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pyscca_error_raise(
+			 error,
+			 PyExc_MemoryError,
+			 "%s: unable to free libscca file metrics.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+		}
 	}
 	if( pyscca_file_metrics->parent_object != NULL )
 	{
 		Py_DecRef(
-		 (PyObject *) pyscca_file_metrics->parent_object );
+		 pyscca_file_metrics->parent_object );
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyscca_file_metrics );
@@ -420,7 +412,7 @@ PyObject *pyscca_file_metrics_get_filename(
 		goto on_error;
 	}
 	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
-	 * the end of string character is part of the string
+	 * the end of string character is part of the string.
 	 */
 	string_object = PyUnicode_DecodeUTF8(
 	                 utf8_string,

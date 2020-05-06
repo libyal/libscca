@@ -332,93 +332,6 @@ PyTypeObject pyscca_file_type_object = {
 	0
 };
 
-/* Creates a new file object
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyscca_file_new(
-           void )
-{
-	pyscca_file_t *pyscca_file = NULL;
-	static char *function      = "pyscca_file_new";
-
-	pyscca_file = PyObject_New(
-	               struct pyscca_file,
-	               &pyscca_file_type_object );
-
-	if( pyscca_file == NULL )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize file.",
-		 function );
-
-		goto on_error;
-	}
-	if( pyscca_file_init(
-	     pyscca_file ) != 0 )
-	{
-		PyErr_Format(
-		 PyExc_MemoryError,
-		 "%s: unable to initialize file.",
-		 function );
-
-		goto on_error;
-	}
-	return( (PyObject *) pyscca_file );
-
-on_error:
-	if( pyscca_file != NULL )
-	{
-		Py_DecRef(
-		 (PyObject *) pyscca_file );
-	}
-	return( NULL );
-}
-
-/* Creates a new file object and opens it
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyscca_file_new_open(
-           PyObject *self PYSCCA_ATTRIBUTE_UNUSED,
-           PyObject *arguments,
-           PyObject *keywords )
-{
-	PyObject *pyscca_file = NULL;
-
-	PYSCCA_UNREFERENCED_PARAMETER( self )
-
-	pyscca_file = pyscca_file_new();
-
-	pyscca_file_open(
-	 (pyscca_file_t *) pyscca_file,
-	 arguments,
-	 keywords );
-
-	return( pyscca_file );
-}
-
-/* Creates a new file object and opens it using a file-like object
- * Returns a Python object if successful or NULL on error
- */
-PyObject *pyscca_file_new_open_file_object(
-           PyObject *self PYSCCA_ATTRIBUTE_UNUSED,
-           PyObject *arguments,
-           PyObject *keywords )
-{
-	PyObject *pyscca_file = NULL;
-
-	PYSCCA_UNREFERENCED_PARAMETER( self )
-
-	pyscca_file = pyscca_file_new();
-
-	pyscca_file_open_file_object(
-	 (pyscca_file_t *) pyscca_file,
-	 arguments,
-	 keywords );
-
-	return( pyscca_file );
-}
-
 /* Intializes a file object
  * Returns 0 if successful or -1 on error
  */
@@ -437,6 +350,8 @@ int pyscca_file_init(
 
 		return( -1 );
 	}
+	/* Make sure libscca file is set to NULL
+	 */
 	pyscca_file->file           = NULL;
 	pyscca_file->file_io_handle = NULL;
 
@@ -477,15 +392,6 @@ void pyscca_file_free(
 
 		return;
 	}
-	if( pyscca_file->file == NULL )
-	{
-		PyErr_Format(
-		 PyExc_ValueError,
-		 "%s: invalid file - missing libscca file.",
-		 function );
-
-		return;
-	}
 	ob_type = Py_TYPE(
 	           pyscca_file );
 
@@ -507,24 +413,27 @@ void pyscca_file_free(
 
 		return;
 	}
-	Py_BEGIN_ALLOW_THREADS
-
-	result = libscca_file_free(
-	          &( pyscca_file->file ),
-	          &error );
-
-	Py_END_ALLOW_THREADS
-
-	if( result != 1 )
+	if( pyscca_file->file != NULL )
 	{
-		pyscca_error_raise(
-		 error,
-		 PyExc_MemoryError,
-		 "%s: unable to free libscca file.",
-		 function );
+		Py_BEGIN_ALLOW_THREADS
 
-		libcerror_error_free(
-		 &error );
+		result = libscca_file_free(
+		          &( pyscca_file->file ),
+		          &error );
+
+		Py_END_ALLOW_THREADS
+
+		if( result != 1 )
+		{
+			pyscca_error_raise(
+			 error,
+			 PyExc_MemoryError,
+			 "%s: unable to free libscca file.",
+			 function );
+
+			libcerror_error_free(
+			 &error );
+		}
 	}
 	ob_type->tp_free(
 	 (PyObject*) pyscca_file );
@@ -1494,7 +1403,6 @@ PyObject *pyscca_file_get_file_metrics_entry_by_index(
 		goto on_error;
 	}
 	file_metrics_entry_object = pyscca_file_metrics_new(
-	                             &pyscca_file_metrics_type_object,
 	                             file_metrics_entry,
 	                             (PyObject *) pyscca_file );
 
@@ -1985,7 +1893,6 @@ PyObject *pyscca_file_get_volume_information_by_index(
 		goto on_error;
 	}
 	volume_information_object = pyscca_volume_information_new(
-	                             &pyscca_volume_information_type_object,
 	                             volume_information,
 	                             (PyObject *) pyscca_file );
 

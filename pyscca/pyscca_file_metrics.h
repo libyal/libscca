@@ -53,7 +53,6 @@ extern PyMethodDef pyscca_file_metrics_object_methods[];
 extern PyTypeObject pyscca_file_metrics_type_object;
 
 PyObject *pyscca_file_metrics_new(
-           PyTypeObject *type_object,
            libscca_file_metrics_t *file_metrics,
            PyObject *parent_object );
 
