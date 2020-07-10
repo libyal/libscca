@@ -430,19 +430,47 @@ PyObject *pyscca_open_new_file(
            PyObject *arguments,
            PyObject *keywords )
 {
-	PyObject *pyscca_file = NULL;
+	pyscca_file_t *pyscca_file = NULL;
+	static char *function      = "pyscca_open_new_file";
 
 	PYSCCA_UNREFERENCED_PARAMETER( self )
 
-	pyscca_file_init(
-	 (pyscca_file_t *) pyscca_file );
+	/* PyObject_New does not invoke tp_init
+	 */
+	pyscca_file = PyObject_New(
+	               struct pyscca_file,
+	               &pyscca_file_type_object );
 
-	pyscca_file_open(
-	 (pyscca_file_t *) pyscca_file,
-	 arguments,
-	 keywords );
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create file.",
+		 function );
 
-	return( pyscca_file );
+		goto on_error;
+	}
+	if( pyscca_file_init(
+	     pyscca_file ) != 0 )
+	{
+		goto on_error;
+	}
+	if( pyscca_file_open(
+	     pyscca_file,
+	     arguments,
+	     keywords ) == NULL )
+	{
+		goto on_error;
+	}
+	return( (PyObject *) pyscca_file );
+
+on_error:
+	if( pyscca_file != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pyscca_file );
+	}
+	return( NULL );
 }
 
 /* Creates a new file object and opens it using a file-like object
@@ -453,19 +481,47 @@ PyObject *pyscca_open_new_file_with_file_object(
            PyObject *arguments,
            PyObject *keywords )
 {
-	PyObject *pyscca_file = NULL;
+	pyscca_file_t *pyscca_file = NULL;
+	static char *function      = "pyscca_open_new_file_with_file_object";
 
 	PYSCCA_UNREFERENCED_PARAMETER( self )
 
-	pyscca_file_init(
-	 (pyscca_file_t *) pyscca_file );
+	/* PyObject_New does not invoke tp_init
+	 */
+	pyscca_file = PyObject_New(
+	               struct pyscca_file,
+	               &pyscca_file_type_object );
 
-	pyscca_file_open_file_object(
-	 (pyscca_file_t *) pyscca_file,
-	 arguments,
-	 keywords );
+	if( pyscca_file == NULL )
+	{
+		PyErr_Format(
+		 PyExc_MemoryError,
+		 "%s: unable to create file.",
+		 function );
 
-	return( pyscca_file );
+		goto on_error;
+	}
+	if( pyscca_file_init(
+	     pyscca_file ) != 0 )
+	{
+		goto on_error;
+	}
+	if( pyscca_file_open_file_object(
+	     pyscca_file,
+	     arguments,
+	     keywords ) == NULL )
+	{
+		goto on_error;
+	}
+	return( (PyObject *) pyscca_file );
+
+on_error:
+	if( pyscca_file != NULL )
+	{
+		Py_DecRef(
+		 (PyObject *) pyscca_file );
+	}
+	return( NULL );
 }
 
 #if PY_MAJOR_VERSION >= 3
