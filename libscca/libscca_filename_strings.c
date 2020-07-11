@@ -483,19 +483,18 @@ int libscca_filename_strings_read_stream(
 
 		return( -1 );
 	}
-#if SIZEOF_SIZE_T <= 4
-	if( (size_t) filename_strings_size > (size_t) SSIZE_MAX )
+	if( ( filename_strings_size == 0 )
+	 || ( filename_strings_size > (uint32_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid filenames string size value exceeds maximum.",
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid filenames string size value out of bounds.",
 		 function );
 
 		return( -1 );
 	}
-#endif
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{

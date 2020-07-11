@@ -880,6 +880,18 @@ int libscca_io_handle_read_file_metrics_array(
 	}
 	read_size = number_of_entries * entry_data_size;
 
+	if( ( read_size == 0 )
+	 || ( read_size > (uint32_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid file metrics array data size value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
 	file_metrics_array_data = (uint8_t *) memory_allocate(
 	                                       sizeof( uint8_t ) * read_size );
 
@@ -1115,6 +1127,18 @@ int libscca_io_handle_read_trace_chain_array(
 	}
 	read_size = number_of_entries * entry_data_size;
 
+	if( ( read_size == 0 )
+	 || ( read_size > (uint32_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid trace chain array data size value out of bounds.",
+		 function );
+
+		goto on_error;
+	}
 	trace_chain_array_data = (uint8_t *) memory_allocate(
 	                                      sizeof( uint8_t ) * read_size );
 
@@ -1352,18 +1376,19 @@ int libscca_io_handle_read_volumes_information(
 
 		return( -1 );
 	}
-#if SIZEOF_SIZE_T <= 4
-	if( (size_t) volumes_information_size > (size_t) SSIZE_MAX )
+	if( ( volumes_information_size == 0 )
+	 || ( volumes_information_size > (uint32_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid volume information size value exceeds maximum.",
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid volumes information size value out of bounds.",
 		 function );
 
-		return( -1 );
+		goto on_error;
 	}
+#if SIZEOF_SIZE_T <= 4
 	if( (size_t) number_of_volumes > (size_t) SSIZE_MAX )
 	{
 		libcerror_error_set(
@@ -1672,11 +1697,12 @@ int libscca_io_handle_read_volumes_information(
 			libcnotify_printf(
 			 "\n" );
 		}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 		volume_information_offset += volume_information_size;
 
 		if( ( device_path_offset != 0 )
-		 && ( device_path_size != 0 ) )
+		 && ( device_path_size > 0 ) )
 		{
 			if( device_path_offset > volumes_information_size )
 			{
@@ -1689,13 +1715,13 @@ int libscca_io_handle_read_volumes_information(
 
 				goto on_error;
 			}
-			if( device_path_size >= ( UINT32_MAX / 2 ) )
+			if( device_path_size >= ( MEMORY_MAXIMUM_ALLOCATION_SIZE / 2 ) )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 				 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
-				 "%s: invalid volume device path string size value exceeds maximum.",
+				 "%s: invalid volume device path string size value exceeds maximum allocation size.",
 				 function );
 
 				goto on_error;
