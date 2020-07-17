@@ -978,6 +978,9 @@ int libscca_file_open_read(
      libcerror_error_t **error )
 {
 	static char *function = "libscca_file_open_read";
+	size64_t file_size    = 0;
+	off64_t file_offset   = 0;
+	off64_t next_offset   = 0;
 	int segment_index     = 0;
 
 	if( internal_file == NULL )
@@ -1194,6 +1197,20 @@ int libscca_file_open_read(
 
 		goto on_error;
 	}
+	if( libfdata_stream_get_size(
+	     internal_file->uncompressed_data_stream,
+	     &file_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve uncompressed data stream size.",
+		 function );
+
+		goto on_error;
+	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
@@ -1230,9 +1247,50 @@ int libscca_file_open_read(
 
 		goto on_error;
 	}
+	if( libfdata_stream_get_offset(
+	     internal_file->uncompressed_data_stream,
+	     &file_offset,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve uncompressed data stream current offset.",
+		 function );
+
+		goto on_error;
+	}
 	if( internal_file->file_information->metrics_array_offset != 0 )
 	{
-/* TODO check bounds metrics_array_offset < file_header, metrics_array_offset > trace_chain_array_offset */
+		next_offset = internal_file->file_information->trace_chain_array_offset;
+
+		if( next_offset == 0 )
+		{
+			next_offset = internal_file->file_information->filename_strings_offset;
+		}
+		if( next_offset == 0 )
+		{
+			next_offset = internal_file->file_information->volumes_information_offset;
+		}
+		if( next_offset == 0 )
+		{
+			next_offset = file_size;
+		}
+		/* Allow for a margin of 4 bytes for version 30 variant 2
+		 */
+		if( ( internal_file->file_information->metrics_array_offset < ( file_offset - 4 ) )
+		 || ( internal_file->file_information->metrics_array_offset >= next_offset ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid metrics array offset value out of bounds: %jd > %jd > %jd.",
+			 function, file_offset, internal_file->file_information->metrics_array_offset, next_offset );
+
+			goto on_error;
+		}
 		if( libscca_io_handle_read_file_metrics_array(
 		     internal_file->io_handle,
 		     internal_file->uncompressed_data_stream,
@@ -1252,13 +1310,48 @@ int libscca_file_open_read(
 
 			goto on_error;
 		}
+		if( libfdata_stream_get_offset(
+		     internal_file->uncompressed_data_stream,
+		     &file_offset,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve uncompressed data stream current offset.",
+			 function );
+
+			goto on_error;
+		}
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
 		if( internal_file->file_information->trace_chain_array_offset != 0 )
 		{
-/* TODO check bounds trace_chain_array_offset < file_header, trace_chain_array_offset > file_size */
+			next_offset = internal_file->file_information->filename_strings_offset;
+
+			if( next_offset == 0 )
+			{
+				next_offset = internal_file->file_information->volumes_information_offset;
+			}
+			if( next_offset == 0 )
+			{
+				next_offset = file_size;
+			}
+			if( ( internal_file->file_information->trace_chain_array_offset < file_offset )
+			 || ( internal_file->file_information->trace_chain_array_offset >= next_offset ) )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid trace chain array offset value out of bounds.",
+				 function );
+
+				goto on_error;
+			}
 			if( libscca_io_handle_read_trace_chain_array(
 			     internal_file->io_handle,
 			     internal_file->uncompressed_data_stream,
@@ -1276,12 +1369,44 @@ int libscca_file_open_read(
 
 				goto on_error;
 			}
+			if( libfdata_stream_get_offset(
+			     internal_file->uncompressed_data_stream,
+			     &file_offset,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+				 "%s: unable to retrieve uncompressed data stream current offset.",
+				 function );
+
+				goto on_error;
+			}
 		}
 	}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 	if( internal_file->file_information->filename_strings_offset != 0 )
 	{
-/* TODO check bounds filename_strings_offset < file_header, filename_strings_offset > file_size */
+		next_offset = internal_file->file_information->volumes_information_offset;
+
+		if( next_offset == 0 )
+		{
+			next_offset = file_size;
+		}
+		if( ( internal_file->file_information->filename_strings_offset < file_offset )
+		 || ( internal_file->file_information->filename_strings_offset >= next_offset ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid filename strings offset value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
 		if( libscca_filename_strings_read_stream(
 		     internal_file->filename_strings,
 		     internal_file->uncompressed_data_stream,
@@ -1299,9 +1424,35 @@ int libscca_file_open_read(
 
 			goto on_error;
 		}
+		if( libfdata_stream_get_offset(
+		     internal_file->uncompressed_data_stream,
+		     &file_offset,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+			 "%s: unable to retrieve uncompressed data stream current offset.",
+			 function );
+
+			goto on_error;
+		}
 	}
 	if( internal_file->file_information->volumes_information_offset != 0 )
 	{
+		if( ( internal_file->file_information->volumes_information_offset < file_offset )
+		 || ( internal_file->file_information->volumes_information_offset > file_size ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid volumes information offset value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
 		if( libscca_io_handle_read_volumes_information(
 		     internal_file->io_handle,
 		     internal_file->uncompressed_data_stream,

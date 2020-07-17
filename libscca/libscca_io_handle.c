@@ -1051,33 +1051,6 @@ int libscca_io_handle_read_trace_chain_array(
 
 		return( -1 );
 	}
-	if( ( io_handle->format_version != 17 )
-	 && ( io_handle->format_version != 23 )
-	 && ( io_handle->format_version != 26 )
-	 && ( io_handle->format_version != 30 ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: invalid IO handle - unsupported format version.",
-		 function );
-
-		return( -1 );
-	}
-#if SIZEOF_SIZE_T <= 4
-	if( (size_t) number_of_entries > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid number of values value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-#endif
 	if( ( io_handle->format_version == 17 )
 	 || ( io_handle->format_version == 23 )
 	 || ( io_handle->format_version == 26 ) )
@@ -1088,7 +1061,19 @@ int libscca_io_handle_read_trace_chain_array(
 	{
 		entry_data_size = sizeof( scca_trace_chain_array_entry_v30_t );
 	}
-	if( (size_t) number_of_entries > ( (size_t) SSIZE_MAX / entry_data_size ) )
+	else
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: invalid IO handle - unsupported format version.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( number_of_entries == 0 )
+	 || ( (size_t) number_of_entries > ( (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE / entry_data_size ) ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -1127,18 +1112,6 @@ int libscca_io_handle_read_trace_chain_array(
 	}
 	read_size = number_of_entries * entry_data_size;
 
-	if( ( read_size == 0 )
-	 || ( read_size > (uint32_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid trace chain array data size value out of bounds.",
-		 function );
-
-		goto on_error;
-	}
 	trace_chain_array_data = (uint8_t *) memory_allocate(
 	                                      sizeof( uint8_t ) * read_size );
 
@@ -1235,7 +1208,7 @@ int libscca_io_handle_read_trace_chain_array(
 				 function,
 				 value_16bit );
 			}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 		}
 		else if( entry_data_size == 12 )
 		{
@@ -1287,7 +1260,7 @@ int libscca_io_handle_read_trace_chain_array(
 				 function,
 				 value_16bit );
 			}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 		}
 #if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
@@ -1388,19 +1361,18 @@ int libscca_io_handle_read_volumes_information(
 
 		goto on_error;
 	}
-#if SIZEOF_SIZE_T <= 4
-	if( (size_t) number_of_volumes > (size_t) SSIZE_MAX )
+	if( ( number_of_volumes == 0 )
+	 || ( number_of_volumes > (uint32_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid number of volumes value exceeds maximum.",
+		 LIBCERROR_ARGUMENT_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid number of volumes value out of bounds.",
 		 function );
 
 		return( -1 );
 	}
-#endif
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )
 	{
