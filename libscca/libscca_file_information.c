@@ -383,47 +383,47 @@ int libscca_file_information_read_data(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: metrics array offset\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: metrics array offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 file_information->metrics_array_offset );
 
 		libcnotify_printf(
-		 "%s: number of file metrics entries\t\t: %" PRIu32 "\n",
+		 "%s: number of file metrics entries\t: %" PRIu32 "\n",
 		 function,
 		 file_information->number_of_file_metrics_entries );
 
 		libcnotify_printf(
-		 "%s: trace chain array offset\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: trace chain array offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 file_information->trace_chain_array_offset );
 
 		libcnotify_printf(
-		 "%s: number of trace chain array entries\t\t: %" PRIu32 "\n",
+		 "%s: number of trace chain array entries\t: %" PRIu32 "\n",
 		 function,
 		 file_information->number_of_trace_chain_array_entries );
 
 		libcnotify_printf(
-		 "%s: filename strings offset\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: filename strings offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 file_information->filename_strings_offset );
 
 		libcnotify_printf(
-		 "%s: filename strings size\t\t\t: %" PRIu32 "\n",
+		 "%s: filename strings size\t\t: %" PRIu32 "\n",
 		 function,
 		 file_information->filename_strings_size );
 
 		libcnotify_printf(
-		 "%s: volumes information offset\t\t\t: 0x%08" PRIx32 "\n",
+		 "%s: volumes information offset\t\t: 0x%08" PRIx32 "\n",
 		 function,
 		 file_information->volumes_information_offset );
 
 		libcnotify_printf(
-		 "%s: number of volumes\t\t\t\t: %" PRIu32 "\n",
+		 "%s: number of volumes\t\t\t: %" PRIu32 "\n",
 		 function,
 		 file_information->number_of_volumes );
 
 		libcnotify_printf(
-		 "%s: volumes information size\t\t\t: %" PRIu32 "\n",
+		 "%s: volumes information size\t\t: %" PRIu32 "\n",
 		 function,
 		 file_information->volumes_information_size );
 
@@ -433,7 +433,7 @@ int libscca_file_information_read_data(
 			 ( (scca_file_information_v23_t *) data )->unknown3c,
 			 value_32bit );
 			libcnotify_printf(
-			 "%s: unknown3c\t\t\t\t: 0x%08" PRIx64 "\n",
+			 "%s: unknown3c\t\t\t: 0x%08" PRIx64 "\n",
 			 function,
 			 value_64bit );
 		}
@@ -445,7 +445,7 @@ int libscca_file_information_read_data(
 			{
 				result = libscca_debug_print_filetime_value(
 					  function,
-					  "last run time:\t\t\t\t",
+					  "last run time\t\t\t",
 				          &( ( (scca_file_information_v17_t *) data )->last_run_time[ last_run_time_index * 8 ] ),
 					  8,
 					  LIBFDATETIME_ENDIAN_LITTLE,
@@ -456,7 +456,7 @@ int libscca_file_information_read_data(
 			{
 				result = libscca_debug_print_filetime_value(
 					  function,
-					  "last run time:\t\t\t\t",
+					  "last run time\t\t\t",
 				          &( ( (scca_file_information_v23_t *) data )->last_run_time[ last_run_time_index * 8 ] ),
 					  8,
 					  LIBFDATETIME_ENDIAN_LITTLE,
@@ -468,7 +468,7 @@ int libscca_file_information_read_data(
 			{
 				result = libscca_debug_print_filetime_value(
 					  function,
-					  "last run time:\t\t\t\t",
+					  "last run time\t\t\t",
 				          &( ( (scca_file_information_v26_t *) data )->last_run_time[ last_run_time_index * 8 ] ),
 					  8,
 					  LIBFDATETIME_ENDIAN_LITTLE,

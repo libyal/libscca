@@ -1277,9 +1277,9 @@ int libscca_file_open_read(
 		{
 			next_offset = file_size;
 		}
-		/* Allow for a margin of 4 bytes for version 30 variant 2
+		/* Allow for a margin of 8 + 4 bytes for version 30 variant 2
 		 */
-		if( ( internal_file->file_information->metrics_array_offset < ( file_offset - 4 ) )
+		if( ( internal_file->file_information->metrics_array_offset < ( file_offset - 12 ) )
 		 || ( internal_file->file_information->metrics_array_offset >= next_offset ) )
 		{
 			libcerror_error_set(
