@@ -19,6 +19,7 @@ MSVSCPP_FILES = \
 	scca_test_compressed_block/scca_test_compressed_block.vcproj \
 	scca_test_error/scca_test_error.vcproj \
 	scca_test_file/scca_test_file.vcproj \
+	scca_test_file_header/scca_test_file_header.vcproj \
 	scca_test_file_information/scca_test_file_information.vcproj \
 	scca_test_file_metrics/scca_test_file_metrics.vcproj \
 	scca_test_filename_strings/scca_test_filename_strings.vcproj \

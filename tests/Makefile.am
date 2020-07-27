@@ -45,6 +45,7 @@ check_PROGRAMS = \
 	scca_test_compressed_block \
 	scca_test_error \
 	scca_test_file \
+	scca_test_file_header \
 	scca_test_file_information \
 	scca_test_file_metrics \
 	scca_test_filename_strings \
@@ -101,6 +102,18 @@ scca_test_file_LDADD = \
 	@LIBCTHREADS_LIBADD@ \
 	@LIBCERROR_LIBADD@ \
 	@PTHREAD_LIBADD@
+
+scca_test_file_header_SOURCES = \
+	scca_test_file_header.c \
+	scca_test_libcerror.h \
+	scca_test_libscca.h \
+	scca_test_macros.h \
+	scca_test_memory.c scca_test_memory.h \
+	scca_test_unused.h
+
+scca_test_file_header_LDADD = \
+	../libscca/libscca.la \
+	@LIBCERROR_LIBADD@
 
 scca_test_file_information_SOURCES = \
 	scca_test_file_information.c \

@@ -34,6 +34,7 @@
 #include "scca_test_unused.h"
 
 #include "../libscca/libscca_file_metrics.h"
+#include "../libscca/libscca_filename_strings.h"
 #include "../libscca/libscca_io_handle.h"
 
 uint8_t scca_test_file_metrics_data1[ 20 ] = {

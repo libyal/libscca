@@ -130,6 +130,7 @@ stamp-h[1-9]
 /tests/scca_test_compressed_block
 /tests/scca_test_error
 /tests/scca_test_file
+/tests/scca_test_file_header
 /tests/scca_test_file_information
 /tests/scca_test_file_metrics
 /tests/scca_test_filename_strings

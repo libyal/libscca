@@ -31,6 +31,7 @@ libscca_la_SOURCES = \
 	libscca_error.c libscca_error.h \
 	libscca_extern.h \
 	libscca_file.c libscca_file.h \
+	libscca_file_header.c libscca_file_header.h \
 	libscca_file_information.c libscca_file_information.h \
 	libscca_file_metrics.c libscca_file_metrics.h \
 	libscca_filename_strings.c libscca_filename_strings.h \

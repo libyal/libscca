@@ -26,6 +26,7 @@
 #include <types.h>
 
 #include "libscca_extern.h"
+#include "libscca_file_header.h"
 #include "libscca_file_information.h"
 #include "libscca_filename_strings.h"
 #include "libscca_io_handle.h"
@@ -73,17 +74,9 @@ struct libscca_internal_file
 	 */
 	libfdata_stream_t *uncompressed_data_stream;
 
-	/* The executable filename
+	/* The (uncompressed) file header
 	 */
-	uint8_t executable_filename[ 60 ];
-
-	/* The executable filename size
-	 */
-	size_t executable_filename_size;
-
-	/* The prefetch hash
-	 */
-	uint32_t prefetch_hash;
+	libscca_file_header_t *file_header;
 
 	/* The file information
 	 */

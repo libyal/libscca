@@ -47,6 +47,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scca_test_file", "scca_test
 		{91864B8A-C810-4BF9-BD7D-902484E218C6} = {91864B8A-C810-4BF9-BD7D-902484E218C6}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scca_test_file_header", "scca_test_file_header\scca_test_file_header.vcproj", "{6FA29964-4E45-4EF5-A83A-46D591FD43B1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0480F2C1-4643-4798-8F3E-00F843A89490} = {0480F2C1-4643-4798-8F3E-00F843A89490}
+		{91864B8A-C810-4BF9-BD7D-902484E218C6} = {91864B8A-C810-4BF9-BD7D-902484E218C6}
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scca_test_file_information", "scca_test_file_information\scca_test_file_information.vcproj", "{957D5898-63AC-44C4-951F-E3899B8ED449}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0480F2C1-4643-4798-8F3E-00F843A89490} = {0480F2C1-4643-4798-8F3E-00F843A89490}
@@ -246,6 +252,10 @@ Global
 		{276E5820-3F86-491B-A7AC-E55034171459}.Release|Win32.Build.0 = Release|Win32
 		{276E5820-3F86-491B-A7AC-E55034171459}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
 		{276E5820-3F86-491B-A7AC-E55034171459}.VSDebug|Win32.Build.0 = VSDebug|Win32
+		{6FA29964-4E45-4EF5-A83A-46D591FD43B1}.Release|Win32.ActiveCfg = Release|Win32
+		{6FA29964-4E45-4EF5-A83A-46D591FD43B1}.Release|Win32.Build.0 = Release|Win32
+		{6FA29964-4E45-4EF5-A83A-46D591FD43B1}.VSDebug|Win32.ActiveCfg = VSDebug|Win32
+		{6FA29964-4E45-4EF5-A83A-46D591FD43B1}.VSDebug|Win32.Build.0 = VSDebug|Win32
 		{957D5898-63AC-44C4-951F-E3899B8ED449}.Release|Win32.ActiveCfg = Release|Win32
 		{957D5898-63AC-44C4-951F-E3899B8ED449}.Release|Win32.Build.0 = Release|Win32
 		{957D5898-63AC-44C4-951F-E3899B8ED449}.VSDebug|Win32.ActiveCfg = VSDebug|Win32

@@ -39,7 +39,6 @@
 #include "libscca_unused.h"
 #include "libscca_volume_information.h"
 
-#include "scca_file_header.h"
 #include "scca_file_metrics_array.h"
 #include "scca_trace_chain_array.h"
 #include "scca_volume_information.h"
@@ -530,246 +529,6 @@ on_error:
 	return( -1 );
 }
 
-/* Reads the uncompressed file header
- * Returns 1 if successful or -1 on error
- */
-int libscca_io_handle_read_uncompressed_file_header(
-     libscca_io_handle_t *io_handle,
-     libfdata_stream_t *uncompressed_data_stream,
-     libbfio_handle_t *file_io_handle,
-     uint8_t *executable_filename,
-     size_t *executable_filename_size,
-     uint32_t *prefetch_hash,
-     libcerror_error_t **error )
-{
-	scca_file_header_t file_header;
-
-	static char *function = "libscca_io_handle_read_uncompressed_file_header";
-	ssize_t read_count    = 0;
-	uint32_t file_size    = 0;
-
-#if defined( HAVE_DEBUG_OUTPUT )
-	uint32_t value_32bit  = 0;
-#endif
-
-	if( io_handle == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid IO handle.",
-		 function );
-
-		return( -1 );
-	}
-	if( executable_filename == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid executable filename.",
-		 function );
-
-		return( -1 );
-	}
-	if( executable_filename_size == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid executable filename size.",
-		 function );
-
-		return( -1 );
-	}
-	if( prefetch_hash == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
-		 "%s: invalid prefetch hash.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: reading uncompressed file header at offset: 0 (0x00000000)\n",
-		 function );
-	}
-#endif
-	if( libfdata_stream_seek_offset(
-	     uncompressed_data_stream,
-	     0,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek file header offset: 0.",
-		 function );
-
-		return( -1 );
-	}
-	read_count = libfdata_stream_read_buffer(
-	              uncompressed_data_stream,
-	              (intptr_t *) file_io_handle,
-	              (uint8_t *) &file_header,
-	              sizeof( scca_file_header_t ),
-	              0,
-	              error );
-
-	if( read_count != (ssize_t) sizeof( scca_file_header_t ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read file header data.",
-		 function );
-
-		return( -1 );
-	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: file header data:\n",
-		 function );
-		libcnotify_print_data(
-		 (uint8_t *) &file_header,
-		 sizeof( scca_file_header_t ),
-		 0 );
-	}
-#endif
-	if( memory_compare(
-	     file_header.signature,
-	     scca_file_signature,
-	     4 ) != 0 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_UNSUPPORTED_VALUE,
-		 "%s: invalid signature.",
-		 function );
-
-		return( -1 );
-	}
-	byte_stream_copy_to_uint32_little_endian(
-	 file_header.format_version,
-	 io_handle->format_version );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 file_header.file_size,
-	 file_size );
-
-	byte_stream_copy_to_uint32_little_endian(
-	 file_header.prefetch_hash,
-	 *prefetch_hash );
-
-	if( memory_copy(
-	     executable_filename,
-	     file_header.executable_filename,
-	     60 ) == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_MEMORY,
-		 LIBCERROR_MEMORY_ERROR_COPY_FAILED,
-		 "%s: unable to copy executable filename.",
-		 function );
-
-		return( -1 );
-	}
-	for( *executable_filename_size = 0;
-	     ( *executable_filename_size + 1 ) < 60;
-	     *executable_filename_size += 2 )
-	{
-		if( ( executable_filename[ *executable_filename_size ] == 0 )
-		 && ( executable_filename[ *executable_filename_size + 1 ] == 0 ) )
-		{
-			break;
-		}
-	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: format version\t\t: %" PRIu32 "\n",
-		 function,
-		 io_handle->format_version );
-
-		libcnotify_printf(
-		 "%s: signature\t\t: %c%c%c%c\n",
-		 function,
-		 file_header.signature[ 0 ],
-		 file_header.signature[ 1 ],
-		 file_header.signature[ 2 ],
-		 file_header.signature[ 3 ] );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 file_header.unknown1,
-		 value_32bit );
-		libcnotify_printf(
-		 "%s: unknown1\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 value_32bit );
-
-		libcnotify_printf(
-		 "%s: file size\t\t: %" PRIu32 "\n",
-		 function,
-		 file_size );
-
-		if( libscca_debug_print_utf16_string_value(
-		     function,
-		     "executable filename\t",
-		     executable_filename,
-		     *executable_filename_size,
-		     LIBUNA_ENDIAN_LITTLE,
-		     error ) != 1 )
-		{
-			libcerror_error_set(
-			 error,
-			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
-			 "%s: unable to print UTF-16 string value.",
-			 function );
-
-			return( -1 );
-		}
-		libcnotify_printf(
-		 "%s: prefetch hash\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 *prefetch_hash );
-
-		byte_stream_copy_to_uint32_little_endian(
-		 file_header.unknown2,
-		 value_32bit );
-		libcnotify_printf(
-		 "%s: unknown2\t\t: 0x%08" PRIx32 "\n",
-		 function,
-		 value_32bit );
-
-		libcnotify_printf(
-		 "\n" );
-	}
-#endif
-	if( io_handle->uncompressed_data_size != file_size )
-	{
-/* TODO flag mismatch and file as corrupted? */
-	}
-	return( 1 );
-}
-
 /* Reads the file metrics array
  * Returns 1 if successful or -1 on error
  */
@@ -804,33 +563,6 @@ int libscca_io_handle_read_file_metrics_array(
 
 		return( -1 );
 	}
-	if( ( io_handle->format_version != 17 )
-	 && ( io_handle->format_version != 23 )
-	 && ( io_handle->format_version != 26 )
-	 && ( io_handle->format_version != 30 ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
-		 "%s: invalid IO handle - unsupported format version.",
-		 function );
-
-		return( -1 );
-	}
-#if SIZEOF_SIZE_T <= 4
-	if( (size_t) number_of_entries > (size_t) SSIZE_MAX )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
-		 LIBCERROR_ARGUMENT_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid number of values value exceeds maximum.",
-		 function );
-
-		return( -1 );
-	}
-#endif
 	if( io_handle->format_version == 17 )
 	{
 		entry_data_size = sizeof( scca_file_metrics_array_entry_v17_t );
@@ -841,7 +573,19 @@ int libscca_io_handle_read_file_metrics_array(
 	{
 		entry_data_size = sizeof( scca_file_metrics_array_entry_v23_t );
 	}
-	if( (size_t) number_of_entries > ( (size_t) SSIZE_MAX / entry_data_size ) )
+	else
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_UNSUPPORTED_VALUE,
+		 "%s: invalid IO handle - unsupported format version.",
+		 function );
+
+		return( -1 );
+	}
+	if( ( number_of_entries == 0 )
+	 || ( (size_t) number_of_entries > ( (size_t) MEMORY_MAXIMUM_ALLOCATION_SIZE / entry_data_size ) ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -880,18 +624,6 @@ int libscca_io_handle_read_file_metrics_array(
 	}
 	read_size = number_of_entries * entry_data_size;
 
-	if( ( read_size == 0 )
-	 || ( read_size > (uint32_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-		 "%s: invalid file metrics array data size value out of bounds.",
-		 function );
-
-		goto on_error;
-	}
 	file_metrics_array_data = (uint8_t *) memory_allocate(
 	                                       sizeof( uint8_t ) * read_size );
 
@@ -1302,13 +1034,13 @@ int libscca_io_handle_read_volumes_information(
 	uint8_t *volume_information_data                          = NULL;
 	uint8_t *volumes_information_data                         = NULL;
 	static char *function                                     = "libscca_io_handle_read_volumes_information";
+	ssize_t read_count                                        = 0;
 	ssize_t value_data_size                                   = 0;
 	ssize_t volume_information_size                           = 0;
-	ssize_t read_count                                        = 0;
-	uint32_t directory_strings_array_offset                   = 0;
-	uint32_t directory_strings_array_size                     = 0;
 	uint32_t device_path_offset                               = 0;
 	uint32_t device_path_size                                 = 0;
+	uint32_t directory_strings_array_offset                   = 0;
+	uint32_t directory_strings_array_size                     = 0;
 	uint32_t file_references_index                            = 0;
 	uint32_t file_references_offset                           = 0;
 	uint32_t file_references_size                             = 0;
@@ -1676,7 +1408,8 @@ int libscca_io_handle_read_volumes_information(
 		if( ( device_path_offset != 0 )
 		 && ( device_path_size > 0 ) )
 		{
-			if( device_path_offset > volumes_information_size )
+			if( ( device_path_offset < volume_information_offset )
+			 || ( device_path_offset >= volumes_information_size ) )
 			{
 				libcerror_error_set(
 				 error,
@@ -1687,21 +1420,20 @@ int libscca_io_handle_read_volumes_information(
 
 				goto on_error;
 			}
-			if( device_path_size >= ( MEMORY_MAXIMUM_ALLOCATION_SIZE / 2 ) )
+			if( device_path_size > ( volumes_information_size / 2 ) )
 			{
 				libcerror_error_set(
 				 error,
 				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
-				 "%s: invalid volume device path string size value exceeds maximum allocation size.",
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid volume device path size value out of bounds.",
 				 function );
 
 				goto on_error;
 			}
 			device_path_size *= 2;
 
-			if( ( device_path_size > volumes_information_size )
-			 || ( device_path_offset > ( volumes_information_size - device_path_size ) ) )
+			if( device_path_offset >= ( volumes_information_size - device_path_size ) )
 			{
 				libcerror_error_set(
 				 error,
@@ -1767,7 +1499,8 @@ int libscca_io_handle_read_volumes_information(
 		}
 		if( file_references_offset != 0 )
 		{
-			if( file_references_offset > volumes_information_size )
+			if( ( file_references_offset < volume_information_offset )
+			 || ( file_references_offset >= volumes_information_size ) )
 			{
 				libcerror_error_set(
 				 error,
@@ -1779,7 +1512,7 @@ int libscca_io_handle_read_volumes_information(
 				goto on_error;
 			}
 			if( ( file_references_size > volumes_information_size )
-			 || ( file_references_offset > ( volumes_information_size - file_references_size ) ) )
+			 || ( file_references_offset >= ( volumes_information_size - file_references_size ) ) )
 			{
 				libcerror_error_set(
 				 error,
@@ -1806,9 +1539,13 @@ int libscca_io_handle_read_volumes_information(
 			 &( volumes_information_data[ file_references_offset ] ),
 			 version );
 
+			file_references_offset += 4; 
+
 			byte_stream_copy_to_uint32_little_endian(
-			 &( volumes_information_data[ file_references_offset + 4 ] ),
+			 &( volumes_information_data[ file_references_offset ] ),
 			 number_of_file_references );
+
+			file_references_offset += 4; 
 
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
@@ -1824,7 +1561,7 @@ int libscca_io_handle_read_volumes_information(
 				 number_of_file_references );
 
 				byte_stream_copy_to_uint64_little_endian(
-				 &( volumes_information_data[ file_references_offset + 8 ] ),
+				 &( volumes_information_data[ file_references_offset ] ),
 				 value_64bit );
 				libcnotify_printf(
 				 "%s: unknown1\t\t\t\t: 0x%08" PRIx64 "\n",
@@ -1832,15 +1569,28 @@ int libscca_io_handle_read_volumes_information(
 				 value_64bit );
 			}
 #endif
-			for( file_references_index = 1;
-			     file_references_index < number_of_file_references;
-			     file_references_index++ )
+			if( ( number_of_file_references > ( file_references_size / 8 ) )
+			 || ( number_of_file_references > ( volumes_information_size / 8 ) )
+			 || ( file_references_offset >= ( volumes_information_size - ( (size_t) number_of_file_references * 8 ) ) ) )
 			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid number of file references value out of bounds.",
+				 function );
+
+				goto on_error;
+			}
 #if defined( HAVE_DEBUG_OUTPUT )
-				if( libcnotify_verbose != 0 )
+			if( libcnotify_verbose != 0 )
+			{
+				for( file_references_index = 1;
+				     file_references_index < number_of_file_references;
+				     file_references_index++ )
 				{
 					byte_stream_copy_to_uint64_little_endian(
-					 &( volumes_information_data[ file_references_offset + 8 + ( file_references_index * 8 ) ] ),
+					 &( volumes_information_data[ file_references_offset ] ),
 					 value_64bit );
 
 					if( value_64bit == 0 )
@@ -1860,20 +1610,17 @@ int libscca_io_handle_read_volumes_information(
 						 value_64bit & 0xffffffffffffUL,
 						 value_64bit >> 48 );
 					}
+					file_references_offset += 4; 
 				}
-#endif
-			}
-#if defined( HAVE_DEBUG_OUTPUT )
-			if( libcnotify_verbose != 0 )
-			{
 				libcnotify_printf(
 				 "\n" );
 			}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 		}
 		if( directory_strings_array_offset != 0 )
 		{
-			if( directory_strings_array_offset > volumes_information_size )
+			if( ( directory_strings_array_offset < volume_information_offset )
+			 || ( directory_strings_array_offset >= volumes_information_size ) )
 			{
 				libcerror_error_set(
 				 error,
@@ -1884,40 +1631,42 @@ int libscca_io_handle_read_volumes_information(
 
 				goto on_error;
 			}
-/* TODO fix size calculation */
-			directory_strings_array_size = volumes_information_size - directory_strings_array_offset;
-
-			if( libfvalue_value_type_initialize(
-			     &( volume_information->directory_strings ),
-			     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
-			     error ) != 1 )
+			if( number_of_directory_strings > 0 )
 			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-				 "%s: unable to create directory strings value.",
-				 function );
+				directory_strings_array_size = volumes_information_size - directory_strings_array_offset;
 
-				goto on_error;
-			}
-			value_data_size = libfvalue_value_type_set_data_strings_array(
-					   volume_information->directory_strings,
-					   &( volumes_information_data[ directory_strings_array_offset ] ),
-					   directory_strings_array_size,
-					   LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
-					   error );
+				if( libfvalue_value_type_initialize(
+				     &( volume_information->directory_strings ),
+				     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
+				     error ) != 1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+					 "%s: unable to create directory strings value.",
+					 function );
 
-			if( value_data_size == -1 )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-				 "%s: unable to set data of directory strings value.",
-				 function );
+					goto on_error;
+				}
+				value_data_size = libfvalue_value_type_set_data_strings_array(
+						   volume_information->directory_strings,
+						   &( volumes_information_data[ directory_strings_array_offset ] ),
+						   directory_strings_array_size,
+						   LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
+						   error );
 
-				goto on_error;
+				if( value_data_size == -1 )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
+					 "%s: unable to set data of directory strings value.",
+					 function );
+
+					goto on_error;
+				}
 			}
 		}
 		if( libcdata_array_append_entry(

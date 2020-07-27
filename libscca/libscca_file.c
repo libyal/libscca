@@ -32,6 +32,7 @@
 #include "libscca_definitions.h"
 #include "libscca_io_handle.h"
 #include "libscca_file.h"
+#include "libscca_file_header.h"
 #include "libscca_file_information.h"
 #include "libscca_file_metrics.h"
 #include "libscca_filename_strings.h"
@@ -859,8 +860,6 @@ int libscca_file_close(
 
 		result = -1;
 	}
-	internal_file->prefetch_hash = 0; 
-
 	if( internal_file->compressed_blocks_list != NULL )
 	{
 		if( libfdata_list_free(
@@ -904,6 +903,22 @@ int libscca_file_close(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
 			 "%s: unable to free uncompressed data strea,.",
+			 function );
+
+			result = -1;
+		}
+	}
+	if( internal_file->file_header != NULL )
+	{
+		if( libscca_file_header_free(
+		     &( internal_file->file_header ),
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_FINALIZE_FAILED,
+			 "%s: unable to free file header.",
 			 function );
 
 			result = -1;
@@ -1023,6 +1038,17 @@ int libscca_file_open_read(
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
 		 "%s: invalid file - compressed blocks cache value already set.",
+		 function );
+
+		return( -1 );
+	}
+	if( internal_file->file_header != NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_ALREADY_SET,
+		 "%s: invalid file - file header value already set.",
 		 function );
 
 		return( -1 );
@@ -1179,23 +1205,39 @@ int libscca_file_open_read(
 			goto on_error;
 		}
 	}
-	if( libscca_io_handle_read_uncompressed_file_header(
-	     internal_file->io_handle,
+	if( libscca_file_header_initialize(
+	     &( internal_file->file_header ),
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+		 "%s: unable to create file header.",
+		 function );
+
+		goto on_error;
+	}
+	if( libscca_file_header_read_data_stream(
+	     internal_file->file_header,
 	     internal_file->uncompressed_data_stream,
 	     file_io_handle,
-	     internal_file->executable_filename,
-	     &( internal_file->executable_filename_size ),
-	     &( internal_file->prefetch_hash ),
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read uncompressed file header.",
+		 "%s: unable to read file header.",
 		 function );
 
 		goto on_error;
+	}
+	internal_file->io_handle->format_version = internal_file->file_header->format_version;
+
+	if( internal_file->io_handle->uncompressed_data_size != internal_file->file_header->file_size )
+	{
+/* TODO flag mismatch and file as corrupted? */
 	}
 	if( libfdata_stream_get_size(
 	     internal_file->uncompressed_data_stream,
@@ -1482,6 +1524,12 @@ on_error:
 		 &( internal_file->file_information ),
 		 NULL );
 	}
+	if( internal_file->file_header != NULL )
+	{
+		libscca_file_header_free(
+		 &( internal_file->file_header ),
+		 NULL );
+	}
 	libcdata_array_empty(
 	 internal_file->file_metrics_array,
 	 (int (*)(intptr_t **, libcerror_error_t **)) &libscca_internal_file_metrics_free,
@@ -1575,9 +1623,21 @@ int libscca_file_get_utf8_executable_filename_size(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
+	if( internal_file->file_header == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal file - missing file header.",
+		 function );
+
+		return( -1 );
+	}
+/* TODO add function to file header */
 	if( libuna_utf8_string_size_from_utf16_stream(
-	     internal_file->executable_filename,
-	     internal_file->executable_filename_size,
+	     internal_file->file_header->executable_filename,
+	     internal_file->file_header->executable_filename_size,
 	     LIBUNA_ENDIAN_LITTLE,
 	     utf8_string_size,
 	     error ) != 1 )
@@ -1620,11 +1680,23 @@ int libscca_file_get_utf8_executable_filename(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
+	if( internal_file->file_header == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal file - missing file header.",
+		 function );
+
+		return( -1 );
+	}
+/* TODO add function to file header */
 	if( libuna_utf8_string_copy_from_utf16_stream(
 	     (libuna_utf8_character_t *) utf8_string,
 	     utf8_string_size,
-	     internal_file->executable_filename,
-	     internal_file->executable_filename_size,
+	     internal_file->file_header->executable_filename,
+	     internal_file->file_header->executable_filename_size,
 	     LIBUNA_ENDIAN_LITTLE,
 	     error ) != 1 )
 	{
@@ -1665,9 +1737,21 @@ int libscca_file_get_utf16_executable_filename_size(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
+	if( internal_file->file_header == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal file - missing file header.",
+		 function );
+
+		return( -1 );
+	}
+/* TODO add function to file header */
 	if( libuna_utf16_string_size_from_utf16_stream(
-	     internal_file->executable_filename,
-	     internal_file->executable_filename_size,
+	     internal_file->file_header->executable_filename,
+	     internal_file->file_header->executable_filename_size,
 	     LIBUNA_ENDIAN_LITTLE,
 	     utf16_string_size,
 	     error ) != 1 )
@@ -1710,11 +1794,23 @@ int libscca_file_get_utf16_executable_filename(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
+	if( internal_file->file_header == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal file - missing file header.",
+		 function );
+
+		return( -1 );
+	}
+/* TODO add function to file header */
 	if( libuna_utf16_string_copy_from_utf16_stream(
 	     (libuna_utf16_character_t *) utf16_string,
 	     utf16_string_size,
-	     internal_file->executable_filename,
-	     internal_file->executable_filename_size,
+	     internal_file->file_header->executable_filename,
+	     internal_file->file_header->executable_filename_size,
 	     LIBUNA_ENDIAN_LITTLE,
 	     error ) != 1 )
 	{
@@ -1754,6 +1850,17 @@ int libscca_file_get_prefetch_hash(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
+	if( internal_file->file_header == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: invalid internal file - missing file header.",
+		 function );
+
+		return( -1 );
+	}
 	if( prefetch_hash == NULL )
 	{
 		libcerror_error_set(
@@ -1765,7 +1872,7 @@ int libscca_file_get_prefetch_hash(
 
 		return( -1 );
 	}
-	*prefetch_hash = internal_file->prefetch_hash;
+	*prefetch_hash = internal_file->file_header->prefetch_hash;
 
 	return( 1 );
 }

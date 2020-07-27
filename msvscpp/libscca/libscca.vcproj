@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libscca\libscca_file_header.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libscca\libscca_file_information.c"
 				>
 			</File>
@@ -257,6 +261,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libscca\libscca_file.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libscca\libscca_file_header.h"
 				>
 			</File>
 			<File
