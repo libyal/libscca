@@ -1511,7 +1511,8 @@ int libscca_io_handle_read_volumes_information(
 
 				goto on_error;
 			}
-			if( ( file_references_size > volumes_information_size )
+			if( ( file_references_size < 8 )
+			 || ( file_references_size > volumes_information_size )
 			 || ( file_references_offset >= ( volumes_information_size - file_references_size ) ) )
 			{
 				libcerror_error_set(
@@ -1559,14 +1560,6 @@ int libscca_io_handle_read_volumes_information(
 				 "%s: number of file references\t\t: %" PRIu32 "\n",
 				 function,
 				 number_of_file_references );
-
-				byte_stream_copy_to_uint64_little_endian(
-				 &( volumes_information_data[ file_references_offset ] ),
-				 value_64bit );
-				libcnotify_printf(
-				 "%s: unknown1\t\t\t\t: 0x%08" PRIx64 "\n",
-				 function,
-				 value_64bit );
 			}
 #endif
 			if( ( number_of_file_references > ( file_references_size / 8 ) )
