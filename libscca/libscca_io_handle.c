@@ -1034,13 +1034,14 @@ int libscca_io_handle_read_volumes_information(
 	uint8_t *volume_information_data                          = NULL;
 	uint8_t *volumes_information_data                         = NULL;
 	static char *function                                     = "libscca_io_handle_read_volumes_information";
+	size_t directory_string_size                              = 0;
 	ssize_t read_count                                        = 0;
-	ssize_t value_data_size                                   = 0;
 	ssize_t volume_information_size                           = 0;
 	uint32_t device_path_offset                               = 0;
 	uint32_t device_path_size                                 = 0;
+	uint32_t directory_string_index                           = 0;
+	uint32_t directory_string_offset                          = 0;
 	uint32_t directory_strings_array_offset                   = 0;
-	uint32_t directory_strings_array_size                     = 0;
 	uint32_t file_references_index                            = 0;
 	uint32_t file_references_offset                           = 0;
 	uint32_t file_references_size                             = 0;
@@ -1049,6 +1050,7 @@ int libscca_io_handle_read_volumes_information(
 	uint32_t version                                          = 0;
 	uint32_t volume_index                                     = 0;
 	uint32_t volume_information_offset                        = 0;
+	uint16_t number_of_characters                             = 0;
 	int entry_index                                           = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -1081,7 +1083,7 @@ int libscca_io_handle_read_volumes_information(
 
 		return( -1 );
 	}
-	if( ( volumes_information_size == 0 )
+	if( ( volumes_information_size < 2 )
 	 || ( volumes_information_size > (uint32_t) MEMORY_MAXIMUM_ALLOCATION_SIZE ) )
 	{
 		libcerror_error_set(
@@ -1165,6 +1167,19 @@ int libscca_io_handle_read_volumes_information(
 
 		goto on_error;
 	}
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: volumes information data:\n",
+		 function,
+		 volume_index );
+		libcnotify_print_data(
+		 volumes_information_data,
+		 volumes_information_size,
+		 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
+	}
+#endif
 	if( io_handle->format_version == 17 )
 	{
 		volume_information_size = sizeof( scca_volume_information_v17_t );
@@ -1218,6 +1233,16 @@ int libscca_io_handle_read_volumes_information(
 
 			goto on_error;
 		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
+			libcnotify_printf(
+			 "%s: reading volume information at offset: %" PRIi32 " (0x%08" PRIx32 ")\n",
+			 function,
+			 volume_information_offset,
+			 volume_information_offset );
+		}
+#endif
 		volume_information_data = &( volumes_information_data[ volume_information_offset ] );
 
 #if defined( HAVE_DEBUG_OUTPUT )
@@ -1540,13 +1565,13 @@ int libscca_io_handle_read_volumes_information(
 			 &( volumes_information_data[ file_references_offset ] ),
 			 version );
 
-			file_references_offset += 4; 
+			file_references_offset += 4;
 
 			byte_stream_copy_to_uint32_little_endian(
 			 &( volumes_information_data[ file_references_offset ] ),
 			 number_of_file_references );
 
-			file_references_offset += 4; 
+			file_references_offset += 4;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
@@ -1603,7 +1628,7 @@ int libscca_io_handle_read_volumes_information(
 						 value_64bit & 0xffffffffffffUL,
 						 value_64bit >> 48 );
 					}
-					file_references_offset += 4; 
+					file_references_offset += 4;
 				}
 				libcnotify_printf(
 				 "\n" );
@@ -1624,42 +1649,113 @@ int libscca_io_handle_read_volumes_information(
 
 				goto on_error;
 			}
-			if( number_of_directory_strings > 0 )
+			if( number_of_directory_strings > ( ( volumes_information_size - directory_strings_array_offset ) / 4 ) )
 			{
-				directory_strings_array_size = volumes_information_size - directory_strings_array_offset;
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+				 "%s: invalid number of directory strings value out of bounds.",
+				 function );
 
-				if( libfvalue_value_type_initialize(
-				     &( volume_information->directory_strings ),
-				     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
+				goto on_error;
+			}
+			if( libfvalue_value_type_initialize(
+			     &( volume_information->directory_strings ),
+			     LIBFVALUE_VALUE_TYPE_STRING_UTF16,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
+				 "%s: unable to create directory strings value.",
+				 function );
+
+				goto on_error;
+			}
+			directory_string_index  = 0;
+			directory_string_offset = directory_strings_array_offset;
+
+			while( directory_string_offset < ( volumes_information_size - 4 ) )
+			{
+				if( ( number_of_directory_strings == 0 )
+				 || ( directory_string_index >= ( number_of_directory_strings - 1 ) ) )
+				{
+					break;
+				}
+				byte_stream_copy_to_uint16_little_endian(
+				 &( volumes_information_data[ directory_string_offset ] ),
+				 number_of_characters );
+
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					libcnotify_printf(
+					 "%s: directory string: %" PRIu32 " data offset: 0x%08" PRIzx "\n",
+					 function,
+					 directory_string_index,
+					 directory_string_offset );
+
+					libcnotify_printf(
+					 "%s: directory string: %" PRIu32 " number of characters: %" PRIu16 " (%" PRIu32 ")\n",
+					 function,
+					 directory_string_index,
+					 number_of_characters,
+					 ( (uint32_t) number_of_characters * 2 ) + 2 );
+				}
+#endif
+				directory_string_offset += 2;
+
+				if( number_of_characters > ( ( volumes_information_size - 2 - directory_string_offset ) / 2 ) )
+				{
+					libcerror_error_set(
+					 error,
+					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+					 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+					 "%s: invalid directory string: %" PRIu32 " number of characters value out of bounds.",
+					 function,
+					 directory_string_index );
+
+					goto on_error;
+				}
+				/* The number of characters does not include the end-of-string character
+				 */
+				directory_string_size = ( number_of_characters * 2 ) + 2;
+
+#if defined( HAVE_DEBUG_OUTPUT )
+				if( libcnotify_verbose != 0 )
+				{
+					libcnotify_printf(
+					 "%s: directory string: %" PRIu32 " data:\n",
+					 function,
+					 directory_string_index );
+					libcnotify_print_data(
+					 &( volumes_information_data[ directory_string_offset ] ),
+					 (size_t) directory_string_size,
+					 0 );
+				}
+#endif
+				if( libfvalue_value_append_entry_data(
+				     volume_information->directory_strings,
+				     &entry_index,
+				     &( volumes_information_data[ directory_string_offset ] ),
+				     (size_t) directory_string_size,
+				     LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
 				     error ) != 1 )
 				{
 					libcerror_error_set(
 					 error,
 					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_INITIALIZE_FAILED,
-					 "%s: unable to create directory strings value.",
+					 LIBCERROR_RUNTIME_ERROR_APPEND_FAILED,
+					 "%s: unable to append directory string.",
 					 function );
 
 					goto on_error;
 				}
-				value_data_size = libfvalue_value_type_set_data_strings_array(
-						   volume_information->directory_strings,
-						   &( volumes_information_data[ directory_strings_array_offset ] ),
-						   directory_strings_array_size,
-						   LIBFVALUE_CODEPAGE_UTF16_LITTLE_ENDIAN,
-						   error );
+				directory_string_offset += directory_string_size;
 
-				if( value_data_size == -1 )
-				{
-					libcerror_error_set(
-					 error,
-					 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-					 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-					 "%s: unable to set data of directory strings value.",
-					 function );
-
-					goto on_error;
-				}
+				directory_string_index++;
 			}
 		}
 		if( libcdata_array_append_entry(
@@ -1680,7 +1776,6 @@ int libscca_io_handle_read_volumes_information(
 		}
 		volume_information = NULL;
 	}
-/* TODO print trailing data */
 	memory_free(
 	 volumes_information_data );
 

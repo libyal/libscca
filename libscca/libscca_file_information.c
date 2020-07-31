@@ -423,7 +423,7 @@ int libscca_file_information_read_data(
 			 ( (scca_file_information_v23_t *) data )->unknown3c,
 			 value_32bit );
 			libcnotify_printf(
-			 "%s: unknown3c\t\t\t: 0x%08" PRIx64 "\n",
+			 "%s: unknown3c\t\t\t\t: 0x%08" PRIx64 "\n",
 			 function,
 			 value_64bit );
 		}
@@ -513,7 +513,7 @@ int libscca_file_information_read_data(
 			 0 );
 		}
 		libcnotify_printf(
-		 "%s: run count\t\t\t\t\t: %" PRIu32 "\n",
+		 "%s: run count\t\t\t\t: %" PRIu32 "\n",
 		 function,
 		 file_information->run_count );
 
@@ -523,7 +523,7 @@ int libscca_file_information_read_data(
 			 ( (scca_file_information_v17_t *) data )->unknown5,
 			 value_32bit );
 			libcnotify_printf(
-			 "%s: unknown5\t\t\t\t\t: 0x%08" PRIx32 "\n",
+			 "%s: unknown5\t\t\t\t: 0x%08" PRIx32 "\n",
 			 function,
 			 value_32bit );
 
@@ -536,7 +536,7 @@ int libscca_file_information_read_data(
 			 ( (scca_file_information_v23_t *) data )->unknown5,
 			 value_32bit );
 			libcnotify_printf(
-			 "%s: unknown5\t\t\t\t\t: 0x%08" PRIx32 "\n",
+			 "%s: unknown5\t\t\t\t: 0x%08" PRIx32 "\n",
 			 function,
 			 value_32bit );
 
