@@ -1367,33 +1367,33 @@ int libscca_file_open_read(
 			goto on_error;
 		}
 	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
+	if( internal_file->file_information->trace_chain_array_offset != 0 )
 	{
-		if( internal_file->file_information->trace_chain_array_offset != 0 )
+		next_offset = internal_file->file_information->filename_strings_offset;
+
+		if( next_offset == 0 )
 		{
-			next_offset = internal_file->file_information->filename_strings_offset;
+			next_offset = internal_file->file_information->volumes_information_offset;
+		}
+		if( next_offset == 0 )
+		{
+			next_offset = file_size;
+		}
+		if( ( internal_file->file_information->trace_chain_array_offset < file_offset )
+		 || ( internal_file->file_information->trace_chain_array_offset >= next_offset ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid trace chain array offset value out of bounds.",
+			 function );
 
-			if( next_offset == 0 )
-			{
-				next_offset = internal_file->file_information->volumes_information_offset;
-			}
-			if( next_offset == 0 )
-			{
-				next_offset = file_size;
-			}
-			if( ( internal_file->file_information->trace_chain_array_offset < file_offset )
-			 || ( internal_file->file_information->trace_chain_array_offset >= next_offset ) )
-			{
-				libcerror_error_set(
-				 error,
-				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-				 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
-				 "%s: invalid trace chain array offset value out of bounds.",
-				 function );
-
-				goto on_error;
-			}
+			goto on_error;
+		}
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( libcnotify_verbose != 0 )
+		{
 			if( libscca_io_handle_read_trace_chain_array(
 			     internal_file->io_handle,
 			     internal_file->uncompressed_data_stream,
@@ -1426,9 +1426,8 @@ int libscca_file_open_read(
 				goto on_error;
 			}
 		}
-	}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
-
+	}
 	if( internal_file->file_information->filename_strings_offset != 0 )
 	{
 		next_offset = internal_file->file_information->volumes_information_offset;
@@ -1445,6 +1444,17 @@ int libscca_file_open_read(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 			 "%s: invalid filename strings offset value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
+		if( internal_file->file_information->filename_strings_size > ( next_offset - internal_file->file_information->filename_strings_offset ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid filename strings size value out of bounds.",
 			 function );
 
 			goto on_error;
@@ -1491,6 +1501,17 @@ int libscca_file_open_read(
 			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
 			 "%s: invalid volumes information offset value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
+		if( internal_file->file_information->volumes_information_size > ( file_size - internal_file->file_information->volumes_information_offset ) )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid volumes information size value out of bounds.",
 			 function );
 
 			goto on_error;
