@@ -71,9 +71,13 @@ enum LIBSCCA_FILE_TYPES
 	LIBSCCA_FILE_TYPE_COMPRESSED_WINDOWS10			= 2
 };
 
-#endif
+#endif /* !defined( HAVE_LOCAL_LIBSCCA ) */
+
+/* Assumed number based on (assumed) maximum number of file handles
+ */
+#define LIBSCCA_MAXIMUM_NUMBER_OF_FILENAME_STRINGS		8192
 
 #define LIBSCCA_MAXIMUM_CACHE_ENTRIES_COMPRESSED_BLOCKS		32
 
-#endif
+#endif /* !defined( _LIBSCCA_INTERNAL_DEFINITIONS_H ) */
 

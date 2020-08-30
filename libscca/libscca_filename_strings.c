@@ -349,6 +349,17 @@ int libscca_filename_strings_read_data(
 	}
 	while( (size_t) last_data_offset < data_size )
 	{
+		if( filename_strings_index > LIBSCCA_MAXIMUM_NUMBER_OF_FILENAME_STRINGS )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+			 "%s: invalid filename strings index value out of bounds.",
+			 function );
+
+			goto on_error;
+		}
 		data_offset = libfvalue_value_type_get_string_size(
 			       filename_strings->strings,
 		               &( data[ last_data_offset ] ),
