@@ -26,6 +26,9 @@ MSVSCPP_FILES = \
 	scca_test_io_handle/scca_test_io_handle.vcproj \
 	scca_test_notify/scca_test_notify.vcproj \
 	scca_test_support/scca_test_support.vcproj \
+	scca_test_tools_info_handle/scca_test_tools_info_handle.vcproj \
+	scca_test_tools_output/scca_test_tools_output.vcproj \
+	scca_test_tools_signal/scca_test_tools_signal.vcproj \
 	scca_test_volume_information/scca_test_volume_information.vcproj \
 	sccainfo/sccainfo.vcproj \
 	libscca.sln

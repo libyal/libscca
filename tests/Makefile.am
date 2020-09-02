@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = subdir-objects
+
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/include \
 	-I$(top_srcdir)/common \
@@ -26,6 +28,7 @@ endif
 
 TESTS = \
 	test_library.sh \
+	test_tools.sh \
 	test_sccainfo.sh \
 	$(TESTS_PYSCCA)
 
@@ -36,7 +39,8 @@ check_SCRIPTS = \
 	test_manpage.sh \
 	test_python_module.sh \
 	test_runner.sh \
-	test_sccainfo.sh
+	test_sccainfo.sh \
+	test_tools.sh
 
 EXTRA_DIST = \
 	$(check_SCRIPTS)
@@ -52,6 +56,9 @@ check_PROGRAMS = \
 	scca_test_io_handle \
 	scca_test_notify \
 	scca_test_support \
+	scca_test_tools_info_handle \
+	scca_test_tools_output \
+	scca_test_tools_signal \
 	scca_test_volume_information
 
 scca_test_compressed_block_SOURCES = \
@@ -197,6 +204,43 @@ scca_test_support_LDADD = \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	@LIBCDATA_LIBADD@ \
+	../libscca/libscca.la \
+	@LIBCERROR_LIBADD@
+
+scca_test_tools_info_handle_SOURCES = \
+	../sccatools/info_handle.c ../sccatools/info_handle.h \
+	../sccatools/sccainput.c ../sccatools/sccainput.h \
+	scca_test_libcerror.h \
+	scca_test_macros.h \
+	scca_test_memory.c scca_test_memory.h \
+	scca_test_tools_info_handle.c \
+	scca_test_unused.h
+
+scca_test_tools_info_handle_LDADD = \
+	@LIBUNA_LIBADD@ \
+	@LIBCLOCALE_LIBADD@ \
+	../libscca/libscca.la \
+	@LIBCERROR_LIBADD@
+
+scca_test_tools_output_SOURCES = \
+	../sccatools/sccatools_output.c ../sccatools/sccatools_output.h \
+	scca_test_libcerror.h \
+	scca_test_macros.h \
+	scca_test_tools_output.c \
+	scca_test_unused.h
+
+scca_test_tools_output_LDADD = \
+	../libscca/libscca.la \
+	@LIBCERROR_LIBADD@
+
+scca_test_tools_signal_SOURCES = \
+	../sccatools/sccatools_signal.c ../sccatools/sccatools_signal.h \
+	scca_test_libcerror.h \
+	scca_test_macros.h \
+	scca_test_tools_signal.c \
+	scca_test_unused.h
+
+scca_test_tools_signal_LDADD = \
 	../libscca/libscca.la \
 	@LIBCERROR_LIBADD@
 
