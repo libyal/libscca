@@ -217,6 +217,7 @@ scca_test_tools_info_handle_SOURCES = \
 	scca_test_unused.h
 
 scca_test_tools_info_handle_LDADD = \
+	@LIBFDATETIME_LIBADD@ \
 	@LIBUNA_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \
 	../libscca/libscca.la \
