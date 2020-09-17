@@ -918,6 +918,7 @@ guess.  :-P  All it does is change your hash number -- the OS is doing exactly
 the same thing it did before, and just saving the prefetch pages to a different
 file.
 ....
+The /prefetch:X flag is processed only, when X stays within range 0..8.
 
 :numbered!:
 [appendix]
