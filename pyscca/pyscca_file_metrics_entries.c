@@ -224,7 +224,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a file metrics entries object
+/* Initializes a file metrics entries object
  * Returns 0 if successful or -1 on error
  */
 int pyscca_file_metrics_entries_init(

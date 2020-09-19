@@ -490,7 +490,7 @@ int libscca_file_metrics_get_utf16_filename(
      size_t utf16_string_size,
      libscca_error_t **error );
 
-/* Retrieves the NTFS file reference
+/* Retrieves the file reference
  * Returns 1 if successful, 0 if not available or -1 on error
  */
 LIBSCCA_EXTERN \

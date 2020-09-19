@@ -214,7 +214,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a filenames sequence and iterator object
+/* Initializes a filenames sequence and iterator object
  * Returns 0 if successful or -1 on error
  */
 int pyscca_filenames_init(

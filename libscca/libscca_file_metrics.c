@@ -640,7 +640,7 @@ int libscca_file_metrics_get_utf16_filename(
 	return( 1 );
 }
 
-/* Retrieves the NTFS file reference
+/* Retrieves the file reference
  * Returns 1 if successful, 0 if not available or -1 on error
  */
 int libscca_file_metrics_get_file_reference(

@@ -42,14 +42,14 @@ PyMethodDef pyscca_volume_information_object_methods[] = {
 	  METH_NOARGS,
 	  "get_creation_time() -> Datetime\n"
 	  "\n"
-	  "Retrieves the creation date and time." },
+	  "Retrieves the volume creation date and time." },
 
 	{ "get_creation_time_as_integer",
 	  (PyCFunction) pyscca_volume_information_get_creation_time_as_integer,
 	  METH_NOARGS,
 	  "get_creation_time_as_integer() -> Integer or None\n"
 	  "\n"
-	  "Retrieves the creation date and time as a 64-bit integer containing a FILETIME value." },
+	  "Retrieves the volume creation date and time as a 64-bit integer containing a FILETIME value." },
 
 	{ "get_serial_number",
 	  (PyCFunction) pyscca_volume_information_get_serial_number,
@@ -74,7 +74,7 @@ PyGetSetDef pyscca_volume_information_object_get_set_definitions[] = {
 	{ "creation_time",
 	  (getter) pyscca_volume_information_get_creation_time,
 	  (setter) 0,
-	  "The creation date and time.",
+	  "The volume creation date and time.",
 	  NULL },
 
 	{ "serial_number",
@@ -241,7 +241,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a volume information object
+/* Initializes a volume information object
  * Returns 0 if successful or -1 on error
  */
 int pyscca_volume_information_init(
@@ -341,7 +341,7 @@ void pyscca_volume_information_free(
 	 (PyObject*) pyscca_volume_information );
 }
 
-/* Retrieves the creation date and time
+/* Retrieves the volume creation date and time
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_volume_information_get_creation_time(
@@ -379,7 +379,7 @@ PyObject *pyscca_volume_information_get_creation_time(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve creation date and time.",
+		 "%s: unable to retrieve volume creation date and time.",
 		 function );
 
 		libcerror_error_free(
@@ -400,7 +400,7 @@ PyObject *pyscca_volume_information_get_creation_time(
 	return( datetime_object );
 }
 
-/* Retrieves the creation date and time as an integer
+/* Retrieves the volume creation date and time as an integer
  * Returns a Python object if successful or NULL on error
  */
 PyObject *pyscca_volume_information_get_creation_time_as_integer(
@@ -438,7 +438,7 @@ PyObject *pyscca_volume_information_get_creation_time_as_integer(
 		pyscca_error_raise(
 		 error,
 		 PyExc_IOError,
-		 "%s: unable to retrieve creation date and time.",
+		 "%s: unable to retrieve volume creation date and time.",
 		 function );
 
 		libcerror_error_free(

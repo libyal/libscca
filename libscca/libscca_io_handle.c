@@ -1587,7 +1587,7 @@ int libscca_io_handle_read_volumes_information(
 				 number_of_file_references );
 			}
 #endif
-			if( ( number_of_file_references > ( file_references_size / 8 ) )
+			if( ( number_of_file_references > ( ( file_references_size - 8 ) / 8 ) )
 			 || ( number_of_file_references > ( volumes_information_size / 8 ) )
 			 || ( file_references_offset >= ( volumes_information_size - ( (size_t) number_of_file_references * 8 ) ) ) )
 			{
@@ -1603,7 +1603,19 @@ int libscca_io_handle_read_volumes_information(
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
-				for( file_references_index = 1;
+				if( io_handle->format_version >= 23 )
+				{
+					byte_stream_copy_to_uint64_little_endian(
+					 &( volumes_information_data[ file_references_offset ] ),
+					 value_64bit );
+					libcnotify_printf(
+					 "%s: unknown\t\t\t\t: 0x%08" PRIx64 "\n",
+					 function,
+					 value_64bit );
+
+					file_references_offset += 8;
+				}
+				for( file_references_index = 0;
 				     file_references_index < number_of_file_references;
 				     file_references_index++ )
 				{
@@ -1628,7 +1640,7 @@ int libscca_io_handle_read_volumes_information(
 						 value_64bit & 0xffffffffffffUL,
 						 value_64bit >> 48 );
 					}
-					file_references_offset += 4;
+					file_references_offset += 8;
 				}
 				libcnotify_printf(
 				 "\n" );

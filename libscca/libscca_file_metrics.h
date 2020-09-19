@@ -59,7 +59,7 @@ struct libscca_internal_file_metrics
 	 */
 	uint32_t flags;
 
-	/* The NTFS file reference
+	/* The file reference
 	 */
 	uint64_t file_reference;
 

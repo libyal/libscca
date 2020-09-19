@@ -224,7 +224,7 @@ on_error:
 	return( NULL );
 }
 
-/* Intializes a volumes object
+/* Initializes a volumes object
  * Returns 0 if successful or -1 on error
  */
 int pyscca_volumes_init(

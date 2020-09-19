@@ -11,11 +11,10 @@ Analysis of SCCA
 A Windows Prefetch File (PF) is used by Microsoft Windows to improve Windows
 and application start-up performance by loading application data into memory
 before it is demanded. This specification is based on earlier work on the
-format and was complimented by reverse engineering.
+format and was enhanced by analyzing test data.
 
-This document is intended as a working document for the Windows Prefetch File
-(PF) format specification. Which should allow existing Open Source forensic
-tooling to be able to process this file type.
+This document is intended as a working document of the data format specification
+for the libscca project.
 
 [preface]
 == Document information
@@ -64,6 +63,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.16 | J.B. Metz | March 2019 | Format changes.
 | 0.0.17 | J.B. Metz | June 2019 | Additional information regarding Windows 10 1903 v30 variant 2.
 | 0.0.18 | J.B. Metz | February 2020 | Cleaned up notes.
+| 0.0.19 | J.B. Metz | September 2020 | Cleaned up notes.
 |===
 
 :numbered:
@@ -150,7 +150,12 @@ The same applies to directories.
 
 == Common data structures
 
-=== [[ntfs_file_reference]]The NTFS file reference
+=== [[file_reference]]The file reference
+
+Windows uses the file reference to represents a specific file system entry such
+as a MFT entry on NTFS. Individual file systems are represented differently.
+
+==== NTFS file reference
 
 The NTFS file reference is 8 bytes of size and consists of:
 
@@ -160,6 +165,9 @@ The NTFS file reference is 8 bytes of size and consists of:
 | 0 | 6 | | MFT entry index
 | 6 | 2 | | Sequence number
 |===
+
+[NOTE]
+It is unknown if the Prefetch file support non-NTFS file references.
 
 == Compressed Prefetch file - MAM file format
 
@@ -427,8 +435,8 @@ Does not include the end-of-string character
 | 20 | 4 | | [yellow-background]*Unknown (Flags?)* +
 [yellow-background]*Seen: 0x00000001, 0x00000002, 0x00000003, 0x00000200, 0x00000202*
 | 24 | 8 | | File reference +
-Contains an NTFS file reference of the file corresponding to the filename string or 0 if not set +
-See section: <<ntfs_file_reference,The NTFS file reference>>
+Contains a file reference of the file corresponding to the filename string or 0 if not set +
+See section: <<file_reference,The file reference>>
 |===
 
 The entries with a bold offset and size were changed since version 17.
@@ -642,8 +650,8 @@ The file references - version 17 are variable of size and consists of:
 | 0 | 4 | 1 | [yellow-background]*Unknown (Version?)*
 | 4 | 4 | | Number of file references
 | 8 | ... | | Array of file references +
-Contains an NTFS file reference or 0 if not set +
-See section: <<ntfs_file_reference,The NTFS file reference>>
+Contains a file reference or 0 if not set +
+See section: <<file_reference,The file reference>>
 |===
 
 [yellow-background]*First 8 bytes of the array not used? Remnant data or volume identifier?*
@@ -660,9 +668,10 @@ The file references - version 23 are variable of size and consists of:
 | Offset | Size | Value | Description
 | 0 | 4 | 3 | [yellow-background]*Unknown (Version?)*
 | 4 | 4 | | Number of file references
-| 8 | ... | | Array of file references +
-Contains an NTFS file reference or 0 if not set +
-See section: <<ntfs_file_reference,The NTFS file reference>>
+| 8 | 8 | | [yellow-background]*Unknown*
+| 1 | ... | | Array of file references +
+Contains a file reference or 0 if not set +
+See section: <<file_reference,The file reference>>
 |===
 
 [yellow-background]*First 8 bytes of the array not used? Remnant data or volume identifier?*
@@ -672,10 +681,17 @@ See section: <<ntfs_file_reference,The NTFS file reference>>
 The file references - version 26 appears to be similar to the file references -
 version 23.
 
+[NOTE]
+The sequence number of the NTFS file references does no longer appear to be set.
+
 ===== File references - version 30
 
 The file references - version 30 appears to be similar to the file references -
 version 23.
+
+[NOTE]
+The file references do no longer appear to be set in recent versions of Windows
+10.
 
 ==== Directory strings
 
@@ -802,6 +818,26 @@ but the prefetch hash appears to be calculated using "\DEVICE\HARDDISKVOLUME#".
 
 [yellow-background]*TODO: describe UNC path*
 
+==== Notes: /prefetch flag
+
+From: http://blogs.msdn.com/b/ryanmy/archive/2005/05/25/421882.aspx
+
+....
+The /prefetch:# flag is looked at by the OS when we create the process --
+however, it has one (and only one) purpose.  We add the passed number to the
+hash.  Why?  WMP is a multipurpose application and may do many different
+things.
+....
+
+It appears that the following are equivalent on Windows 10 1903 and 2004:
+
+* Notepad.exe
+* Notepad.exe /prefetch:0
+* Notepad.exe /prefetch:9
+
+So that /prefetch:[0-8] only seem to be the supported values and the /prefetch:9
+and larger are equivalent to /prefetch:0
+
 === Notes
 
 ....
@@ -834,90 +870,7 @@ return (abs (RNDM_CONSTANT * ConvKey)% RNDM_PRIME);
 }
 ....
 
-== Notes
-
 http://social.technet.microsoft.com/Forums/windowsserver/en-US/ca451db2-762b-44b7-a100-9d0d6a4230d7/server-2008-r2-and-superfetch?forum=windowsserver2008r2general
-
-=== /prefetch flag
-
-From: http://blogs.msdn.com/b/ryanmy/archive/2005/05/25/421882.aspx
-....
-In the meantime, I want to defuse a long-standing controversy -- the /prefetch
-flag.
-
-   With modern computing, the absolute worst thing you can ever do for
-performance is having to touch the hard drive -- or any non-memory storage for
-that matter.  The fastest hard drives on earth are still horridly slow compared
-to a PC's main memory; even with solid state drives, in order to access the
-drive, one has to jump into system code and drivers, and this will push your
-own program's code out of the CPU's L2 cache.  (This is called a locality
-loss.)  There's two typical reasons one has to touch the disk -- the first is
-when the application requests it explicitly (Word asks the OS to load blog.doc
-into memory), and the other is a "hard fault" -- when the application tries to
-use memory that has been paged out to disk via "virtual memory" and needs to be
-paged back in.
-
-   Now, imagine that a DVD player program always starts playback by loading a
-DLL to decode MPEG-2 video.  Wouldn't it be nice if we could attempt to
-pre-load the MPEG-2 DLL whenever we loaded the DVD player's EXE?  That way,
-when it tries to run code on that DLL, one doesn't have to hard fault and go to
-disk for it!   This is what a prefetcher does: it tracks what code pages are
-used by an application, and the next time that application loads, it loads
-those pages in advance as soon as it's got some idle time.  A prefetcher was
-added to Windows in XP, and is vastly improved in Windows Longhorn.
-
-   XP systems have a Prefetch directory underneath the windows root directory,
-full of .pf files -- these are lists of pages to load.  The file names are
-generated from hashing the EXE to load -- whenever you load the EXE, we hash,
-see if there's a matching (exename)-(hash).pf file in the prefetch directory,
-and if so we load those pages.  (If it doesn't exist, we track what pages it
-loads, create that file, and pick a handful of them to save to it.)  So, first
-off, it is a bad idea to periodically clean out that folder as some tech sites
-suggest.  For one thing, XP will just re-create that data anyways; secondly, it
-trims the files anyways if there's ever more than 128 of them so that it
-doesn't needlessly consume space.  So not only is deleting the directory
-totally unnecessary, but you're also putting a temporary dent in your PC's
-performance.
-
-   Secondly, one can specify a /prefetch:# flag when launching an app.  Many
-people have noticed that auto-generated shortcuts to Windows Media Player do
-this, and the number varies depending on what it does.  For example, the
-shortcut used by the shell when you double-click a WMV file to play it has one
-prefetch number; the auto-run shortcut to play or rip music that appears when
-you insert a music CD have other numbers.  Some sites have guessed that this
-switch turns on prefetching, and suggest that you add that to every executable
-you care about -- this has appeared on so many, many, many sites to be urban
-legend.  Other sites write this off as garbage and guess that it's a switch
-specific to Media Player, guessing from references to prefetching in the
-Windows driver subsystem.  Both guesses are incorrect.
-
-   The /prefetch:# flag is looked at by the OS when we create the process --
-however, it has one (and only one) purpose.  We add the passed number to the
-hash.  Why?  WMP is a multipurpose application and may do many different
-things.  The DLLs and code that it touches will be very different when playing
-a WMV than when playing a DVD, or when ripping a CD, or when listening to a
-Shoutcast stream, or any of the other things that WMP can do.  If we only had
-one hash for WMP, then the prefetch would only be correct for one such use.
-Having incorrect prefetch data would not be a fatal error -- it'd just load
-pages into memory that'd never get used, and then get swapped back out to disk
-as soon as possible.  Still, it's counterproductive.  By specifying a
-/prefetch:# flag with a different number for each "mode" that WMP can do, each
-mode gets its own separate hash file, and thus we properly prefetch.  (This
-behavior isn't specific to WMP -- it does the same for any app.)
-   This flag is looked at when we create the first thread in the process, but
-it is not removed by CreateProcess from the command line, so any app that
-chokes on unrecognized command line parameters will not work with it.  This is
-why so many people notice that Kazaa and other apps crash or otherwise refuse
-to start when it's added.  Of course, WMP knows that it may be there, and just
-silently ignores its existence.
-
-   I suspect that the "add /prefetch:1 to make rocket go now" urban legend will
-never die, though.  I know that at least one major company ships products with
-it in their shortcuts, without ever asking us... just for good measure, I
-guess.  :-P  All it does is change your hash number -- the OS is doing exactly
-the same thing it did before, and just saving the prefetch pages to a different
-file.
-....
 
 :numbered!:
 [appendix]

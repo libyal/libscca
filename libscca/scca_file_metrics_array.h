@@ -93,7 +93,7 @@ struct scca_file_metrics_array_entry_v23
 	 */
 	uint8_t flags[ 4 ];
 
-	/* The NTFS file reference
+	/* The file reference
 	 * Consists of 8 bytes
 	 */
 	uint8_t file_reference[ 8 ];
