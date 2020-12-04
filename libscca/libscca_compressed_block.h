@@ -55,7 +55,7 @@ int libscca_compressed_block_free(
      libscca_compressed_block_t **compressed_block,
      libcerror_error_t **error );
 
-ssize_t libscca_compressed_block_read(
+ssize_t libscca_compressed_block_read_file_io_handle(
          libscca_compressed_block_t *compressed_block,
          libbfio_handle_t *file_io_handle,
          off64_t compressed_block_offset,

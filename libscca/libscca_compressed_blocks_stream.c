@@ -265,6 +265,8 @@ ssize_t libscca_compressed_blocks_stream_data_handle_read_segment_data(
 
 		return( -1 );
 	}
+	data_handle->current_offset += read_count;
+
 	return( read_count );
 }
 

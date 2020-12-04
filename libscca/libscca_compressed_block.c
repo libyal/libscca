@@ -198,7 +198,7 @@ int libscca_compressed_block_free(
 /* Reads a compressed block
  * Returns the number of bytes of read on success or -1 on error
  */
-ssize_t libscca_compressed_block_read(
+ssize_t libscca_compressed_block_read_file_io_handle(
          libscca_compressed_block_t *compressed_block,
          libbfio_handle_t *file_io_handle,
          off64_t compressed_block_offset,
@@ -206,7 +206,7 @@ ssize_t libscca_compressed_block_read(
          libcerror_error_t **error )
 {
 	uint8_t *compressed_data      = NULL;
-	static char *function         = "libscca_compressed_block_read";
+	static char *function         = "libscca_compressed_block_read_file_io_handle";
 	size_t uncompressed_data_size = 0;
 	ssize_t read_count            = 0;
 
@@ -233,22 +233,6 @@ ssize_t libscca_compressed_block_read(
 
 		return( -1 );
 	}
-	if( libbfio_handle_seek_offset(
-	     file_io_handle,
-	     compressed_block_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek compressed block offset: %" PRIi64 ".",
-		 function,
-		 compressed_block_offset );
-
-		goto on_error;
-	}
 	compressed_data = (uint8_t *) memory_allocate(
 	                               sizeof( uint8_t ) * compressed_block_size );
 
@@ -258,15 +242,18 @@ ssize_t libscca_compressed_block_read(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_MEMORY,
 		 LIBCERROR_MEMORY_ERROR_INSUFFICIENT,
-		 "%s: unable to create compressed data.",
-		 function );
+		 "%s: unable to create compressed data at offset: %" PRIi64 " (0x%08" PRIx64 ").",
+		 function,
+		 compressed_block_offset,
+		 compressed_block_offset );
 
 		goto on_error;
 	}
-	read_count = libbfio_handle_read_buffer(
+	read_count = libbfio_handle_read_buffer_at_offset(
 		      file_io_handle,
 		      compressed_data,
 		      compressed_block_size,
+		      compressed_block_offset,
 		      error );
 
 	if( read_count == -1 )
@@ -422,7 +409,7 @@ int libscca_compressed_block_read_element_data(
 
 		goto on_error;
 	}
-	read_count = libscca_compressed_block_read(
+	read_count = libscca_compressed_block_read_file_io_handle(
 	              compressed_block,
 	              file_io_handle,
 	              compressed_block_offset,

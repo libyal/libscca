@@ -1205,6 +1205,20 @@ int libscca_file_open_read(
 			goto on_error;
 		}
 	}
+	if( libfdata_stream_get_size(
+	     internal_file->uncompressed_data_stream,
+	     &file_size,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve uncompressed data stream size.",
+		 function );
+
+		goto on_error;
+	}
 	if( libscca_file_header_initialize(
 	     &( internal_file->file_header ),
 	     error ) != 1 )
@@ -1238,20 +1252,6 @@ int libscca_file_open_read(
 	if( internal_file->io_handle->uncompressed_data_size != internal_file->file_header->file_size )
 	{
 /* TODO flag mismatch and file as corrupted? */
-	}
-	if( libfdata_stream_get_size(
-	     internal_file->uncompressed_data_stream,
-	     &file_size,
-	     error ) != 1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to retrieve uncompressed data stream size.",
-		 function );
-
-		goto on_error;
 	}
 #if defined( HAVE_DEBUG_OUTPUT )
 	if( libcnotify_verbose != 0 )

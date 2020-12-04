@@ -30,7 +30,11 @@
 
 #include <libscca/extern.h>
 
+#if defined( __CYGWIN__ ) || defined( __MINGW32__ )
+#define LIBSCCA_EXTERN_VARIABLE	extern
+#else
 #define LIBSCCA_EXTERN_VARIABLE	LIBSCCA_EXTERN
+#endif
 
 #else
 #define LIBSCCA_EXTERN		/* extern */
