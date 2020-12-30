@@ -349,26 +349,12 @@ int libscca_file_header_read_data_stream(
 		 function );
 	}
 #endif
-	if( libfdata_stream_seek_offset(
-	     data_stream,
-	     0,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek file header offset: 0 (0x00000000).",
-		 function );
-
-		return( -1 );
-	}
-	read_count = libfdata_stream_read_buffer(
+	read_count = libfdata_stream_read_buffer_at_offset(
 	              data_stream,
 	              (intptr_t *) file_io_handle,
 	              file_header_data,
 	              sizeof( scca_file_header_t ),
+	              0,
 	              0,
 	              error );
 
@@ -378,7 +364,7 @@ int libscca_file_header_read_data_stream(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read file header data.",
+		 "%s: unable to read file header data at offset: 0 (0x00000000).",
 		 function );
 
 		return( -1 );

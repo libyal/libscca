@@ -506,32 +506,6 @@ int libscca_filename_strings_read_stream(
 
 		return( -1 );
 	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: reading filename strings at offset: %" PRIu32 " (0x%08" PRIx32 ")\n",
-		 function,
-		 filename_strings_offset,
-		 filename_strings_offset );
-	}
-#endif
-	if( libfdata_stream_seek_offset(
-	     uncompressed_data_stream,
-	     (off64_t) filename_strings_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek filename strings offset: %" PRIu32 ".",
-		 function,
-		 filename_strings_offset );
-
-		goto on_error;
-	}
 	filename_strings_data = (uint8_t *) memory_allocate(
 	                                     sizeof( uint8_t ) * filename_strings_size );
 
@@ -546,11 +520,22 @@ int libscca_filename_strings_read_stream(
 
 		goto on_error;
 	}
-	read_count = libfdata_stream_read_buffer(
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: reading filename strings at offset: %" PRIu32 " (0x%08" PRIx32 ")\n",
+		 function,
+		 filename_strings_offset,
+		 filename_strings_offset );
+	}
+#endif
+	read_count = libfdata_stream_read_buffer_at_offset(
 	              uncompressed_data_stream,
 	              (intptr_t *) file_io_handle,
 	              filename_strings_data,
 	              (size_t) filename_strings_size,
+	              (off64_t) filename_strings_offset,
 	              0,
 	              error );
 
@@ -560,8 +545,10 @@ int libscca_filename_strings_read_stream(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read filename strings data.",
-		 function );
+		 "%s: unable to read filename strings data at offset: %" PRIu32 " (0x%08" PRIx32 ").",
+		 function,
+		 filename_strings_offset,
+		 filename_strings_offset );
 
 		goto on_error;
 	}

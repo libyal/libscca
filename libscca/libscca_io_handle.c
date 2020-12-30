@@ -582,32 +582,6 @@ int libscca_io_handle_read_file_metrics_array(
 
 		return( -1 );
 	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: reading file metrics array at offset: %" PRIu32 " (0x%08" PRIx32 ")\n",
-		 function,
-		 file_offset,
-		 file_offset );
-	}
-#endif
-	if( libfdata_stream_seek_offset(
-	     uncompressed_data_stream,
-	     (off64_t) file_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek file metrics array offset: %" PRIu32 ".",
-		 function,
-		 file_offset );
-
-		goto on_error;
-	}
 	read_size = number_of_entries * entry_data_size;
 
 	file_metrics_array_data = (uint8_t *) memory_allocate(
@@ -624,11 +598,22 @@ int libscca_io_handle_read_file_metrics_array(
 
 		goto on_error;
 	}
-	read_count = libfdata_stream_read_buffer(
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: reading file metrics array at offset: %" PRIu32 " (0x%08" PRIx32 ")\n",
+		 function,
+		 file_offset,
+		 file_offset );
+	}
+#endif
+	read_count = libfdata_stream_read_buffer_at_offset(
 	              uncompressed_data_stream,
 	              (intptr_t *) file_io_handle,
 	              file_metrics_array_data,
 	              read_size,
+	              (off64_t) file_offset,
 	              0,
 	              error );
 
@@ -638,8 +623,10 @@ int libscca_io_handle_read_file_metrics_array(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read file metrics array data.",
-		 function );
+		 "%s: unable to read file metrics array data at offset: %" PRIu32 " (0x%08" PRIx32 ").",
+		 function,
+		 file_offset,
+		 file_offset );
 
 		goto on_error;
 	}
@@ -802,32 +789,6 @@ int libscca_io_handle_read_trace_chain_array(
 
 		return( -1 );
 	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: reading trace chain array at offset: %" PRIu32 " (0x%08" PRIx32 ")\n",
-		 function,
-		 file_offset,
-		 file_offset );
-	}
-#endif
-	if( libfdata_stream_seek_offset(
-	     uncompressed_data_stream,
-	     (off64_t) file_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek trace chain array offset: %" PRIu32 ".",
-		 function,
-		 file_offset );
-
-		goto on_error;
-	}
 	read_size = number_of_entries * entry_data_size;
 
 	trace_chain_array_data = (uint8_t *) memory_allocate(
@@ -844,11 +805,22 @@ int libscca_io_handle_read_trace_chain_array(
 
 		goto on_error;
 	}
-	read_count = libfdata_stream_read_buffer(
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: reading trace chain array at offset: %" PRIu32 " (0x%08" PRIx32 ")\n",
+		 function,
+		 file_offset,
+		 file_offset );
+	}
+#endif
+	read_count = libfdata_stream_read_buffer_at_offset(
 	              uncompressed_data_stream,
 	              (intptr_t *) file_io_handle,
 	              trace_chain_array_data,
 	              read_size,
+	              (off64_t) file_offset,
 	              0,
 	              error );
 
@@ -858,8 +830,10 @@ int libscca_io_handle_read_trace_chain_array(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read trace chain array data.",
-		 function );
+		 "%s: unable to read trace chain array data at offset: %" PRIu32 " (0x%08" PRIx32 ").",
+		 function,
+		 file_offset,
+		 file_offset );
 
 		goto on_error;
 	}
@@ -1093,33 +1067,6 @@ int libscca_io_handle_read_volumes_information(
 
 		return( -1 );
 	}
-#if defined( HAVE_DEBUG_OUTPUT )
-	if( libcnotify_verbose != 0 )
-	{
-		libcnotify_printf(
-		 "%s: reading volumes information at offset: %" PRIi32 " (0x%08" PRIx32 ")\n",
-		 function,
-		 volumes_information_offset,
-		 volumes_information_offset );
-	}
-#endif
-	if( libfdata_stream_seek_offset(
-	     uncompressed_data_stream,
-	     (off64_t) volumes_information_offset,
-	     SEEK_SET,
-	     error ) == -1 )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_IO,
-		 LIBCERROR_IO_ERROR_SEEK_FAILED,
-		 "%s: unable to seek volumes information offset: %" PRIi32 " (0x%08" PRIx32 ").",
-		 function,
-		 volumes_information_offset,
-		 volumes_information_offset );
-
-		goto on_error;
-	}
 	volumes_information_data = (uint8_t *) memory_allocate(
 	                                        sizeof( uint8_t ) * volumes_information_size );
 
@@ -1134,11 +1081,22 @@ int libscca_io_handle_read_volumes_information(
 
 		goto on_error;
 	}
-	read_count = libfdata_stream_read_buffer(
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: reading volumes information at offset: %" PRIi32 " (0x%08" PRIx32 ")\n",
+		 function,
+		 volumes_information_offset,
+		 volumes_information_offset );
+	}
+#endif
+	read_count = libfdata_stream_read_buffer_at_offset(
 	              uncompressed_data_stream,
 	              (intptr_t *) file_io_handle,
 	              volumes_information_data,
 	              volumes_information_size,
+	              (off64_t) volumes_information_offset,
 	              0,
 	              error );
 
@@ -1148,8 +1106,10 @@ int libscca_io_handle_read_volumes_information(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_IO,
 		 LIBCERROR_IO_ERROR_READ_FAILED,
-		 "%s: unable to read volumes information data.",
-		 function );
+		 "%s: unable to read volumes information data at offset: %" PRIi32 " (0x%08" PRIx32 ").",
+		 function,
+		 volumes_information_offset,
+		 volumes_information_offset );
 
 		goto on_error;
 	}
