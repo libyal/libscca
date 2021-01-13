@@ -1,7 +1,7 @@
 /*
  * Input/Output (IO) handle functions
  *
- * Copyright (C) 2011-2020, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2021, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -1002,7 +1002,6 @@ int libscca_io_handle_read_volumes_information(
 	uint32_t directory_string_index                           = 0;
 	uint32_t directory_string_offset                          = 0;
 	uint32_t directory_strings_array_offset                   = 0;
-	uint32_t file_references_index                            = 0;
 	uint32_t file_references_offset                           = 0;
 	uint32_t file_references_size                             = 0;
 	uint32_t number_of_directory_strings                      = 0;
@@ -1016,6 +1015,7 @@ int libscca_io_handle_read_volumes_information(
 #if defined( HAVE_DEBUG_OUTPUT )
 	uint64_t value_64bit                                      = 0;
 	uint32_t value_32bit                                      = 0;
+	uint32_t file_references_index                            = 0;
 #endif
 
 	if( io_handle == NULL )
@@ -1650,19 +1650,20 @@ int libscca_io_handle_read_volumes_information(
 				if( libcnotify_verbose != 0 )
 				{
 					libcnotify_printf(
-					 "%s: directory string: %" PRIu32 " data offset: 0x%08" PRIzx "\n",
+					 "%s: directory string: %" PRIu32 " data offset\t\t: 0x%08" PRIzx "\n",
 					 function,
 					 directory_string_index,
 					 directory_string_offset );
 
 					libcnotify_printf(
-					 "%s: directory string: %" PRIu32 " number of characters: %" PRIu16 " (%" PRIu32 ")\n",
+					 "%s: directory string: %" PRIu32 " number of characters\t: %" PRIu16 " (%" PRIu32 ")\n",
 					 function,
 					 directory_string_index,
 					 number_of_characters,
 					 ( (uint32_t) number_of_characters * 2 ) + 2 );
 				}
-#endif
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
+
 				directory_string_offset += 2;
 
 				if( number_of_characters > ( ( volumes_information_size - 2 - directory_string_offset ) / 2 ) )
@@ -1691,9 +1692,12 @@ int libscca_io_handle_read_volumes_information(
 					libcnotify_print_data(
 					 &( volumes_information_data[ directory_string_offset ] ),
 					 (size_t) directory_string_size,
-					 0 );
+					 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 				}
 #endif
+#ifdef TODO
+/* TODO disabled for now, is causing delays with the OSSFuzz tests */
+
 				if( libfvalue_value_append_entry_data(
 				     volume_information->directory_strings,
 				     &entry_index,
@@ -1711,6 +1715,7 @@ int libscca_io_handle_read_volumes_information(
 
 					goto on_error;
 				}
+#endif /* TODO */
 				directory_string_offset += directory_string_size;
 
 				directory_string_index++;

@@ -1,4 +1,5 @@
 TODO:
+* move directory strings to a separate structure without the overhead of libfvalue_value_append_entry_data
 * add API functions
   - get file size ?
   - file metrics
