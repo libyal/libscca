@@ -39,7 +39,7 @@
 
 #include "../sccatools/sccatools_output.h"
 
-/* Tests the sccatools_output_initialize and function
+/* Tests the sccatools_output_initialize function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_tools_output_initialize(

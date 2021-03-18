@@ -33,13 +33,55 @@
 
 #include "../sccatools/sccatools_signal.h"
 
-void scca_test_tools_signal_handler(
+void scca_test_tools_signal_handler_function(
       sccatools_signal_t signal SCCA_TEST_ATTRIBUTE_UNUSED )
 {
 	SCCA_TEST_UNREFERENCED_PARAMETER( signal )
 }
 
-/* Tests the sccatools_signal_attach and function
+#if defined( WINAPI )
+
+/* Tests the sccatools_signal_handler function
+ * Returns 1 if successful or 0 if not
+ */
+int scca_test_tools_signal_handler(
+     void )
+{
+	BOOL result = 0;
+
+	/* Test regular cases
+	 */
+	result = sccatools_signal_handler(
+	          CTRL_C_EVENT );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 (int) TRUE );
+
+	result = sccatools_signal_handler(
+	          CTRL_LOGOFF_EVENT );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 (int) FALSE );
+
+	return( 1 );
+
+on_error:
+	return( 0 );
+}
+
+#if defined( _MSC_VER )
+
+	/* TODO add tests for sccatools_signal_initialize_memory_debug */
+
+#endif /* defined( _MSC_VER ) */
+
+#endif /* defined( WINAPI ) */
+
+/* Tests the sccatools_signal_attach function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_tools_signal_attach(
@@ -48,8 +90,10 @@ int scca_test_tools_signal_attach(
 	libcerror_error_t *error = NULL;
 	int result               = 0;
 
+	/* Test regular cases
+	 */
 	result = sccatools_signal_attach(
-	          scca_test_tools_signal_handler,
+	          scca_test_tools_signal_handler_function,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -60,6 +104,24 @@ int scca_test_tools_signal_attach(
 	SCCA_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
+
+	/* Test error cases
+	 */
+	result = sccatools_signal_attach(
+	          NULL,
+	          &error );
+
+	SCCA_TEST_ASSERT_EQUAL_INT(
+	 "result",
+	 result,
+	 -1 );
+
+	SCCA_TEST_ASSERT_IS_NOT_NULL(
+	 "error",
+	 error );
+
+	libcerror_error_free(
+	 &error );
 
 	return( 1 );
 
@@ -72,7 +134,7 @@ on_error:
 	return( 0 );
 }
 
-/* Tests the sccatools_signal_detach and function
+/* Tests the sccatools_signal_detach function
  * Returns 1 if successful or 0 if not
  */
 int scca_test_tools_signal_detach(
@@ -81,6 +143,8 @@ int scca_test_tools_signal_detach(
 	libcerror_error_t *error = NULL;
 	int result               = 0;
 
+	/* Test regular cases
+	 */
 	result = sccatools_signal_detach(
 	          &error );
 
@@ -121,13 +185,17 @@ int main(
 
 #if defined( WINAPI )
 
-	/* TODO add tests for sccatools_signal_handler */
-#endif
+	SCCA_TEST_RUN(
+	 "sccatools_signal_handler",
+	 scca_test_tools_signal_handler )
 
-#if defined( WINAPI ) && defined( _MSC_VER )
+#if defined( _MSC_VER )
 
 	/* TODO add tests for sccatools_signal_initialize_memory_debug */
-#endif
+
+#endif /* defined( _MSC_VER ) */
+
+#endif /* defined( WINAPI ) */
 
 	SCCA_TEST_RUN(
 	 "sccatools_signal_attach",
