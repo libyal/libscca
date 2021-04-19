@@ -38,15 +38,16 @@ class FileTypeTests(unittest.TestCase):
 
   def test_open(self):
     """Tests the open function."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
 
     with self.assertRaises(IOError):
-      scca_file.open(unittest.source)
+      scca_file.open(test_source)
 
     scca_file.close()
 
@@ -54,19 +55,20 @@ class FileTypeTests(unittest.TestCase):
       scca_file.open(None)
 
     with self.assertRaises(ValueError):
-      scca_file.open(unittest.source, mode="w")
+      scca_file.open(test_source, mode="w")
 
   def test_open_file_object(self):
     """Tests the open_file_object function."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
-    if not os.path.isfile(unittest.source):
+    if not os.path.isfile(test_source):
       raise unittest.SkipTest("source not a regular file")
 
     scca_file = pyscca.file()
 
-    with open(unittest.source, "rb") as file_object:
+    with open(test_source, "rb") as file_object:
 
       scca_file.open_file_object(file_object)
 
@@ -83,7 +85,8 @@ class FileTypeTests(unittest.TestCase):
 
   def test_close(self):
     """Tests the close function."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
@@ -93,21 +96,22 @@ class FileTypeTests(unittest.TestCase):
 
   def test_open_close(self):
     """Tests the open and close functions."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       return
 
     scca_file = pyscca.file()
 
     # Test open and close.
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
     scca_file.close()
 
     # Test open and close a second time to validate clean up on close.
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
     scca_file.close()
 
-    if os.path.isfile(unittest.source):
-      with open(unittest.source, "rb") as file_object:
+    if os.path.isfile(test_source):
+      with open(test_source, "rb") as file_object:
 
         # Test open_file_object and close.
         scca_file.open_file_object(file_object)
@@ -124,12 +128,13 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_format_version(self):
     """Tests the get_format_version function and format_version property."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
 
     format_version = scca_file.get_format_version()
     self.assertIsNotNone(format_version)
@@ -140,12 +145,13 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_executable_filename(self):
     """Tests the get_executable_filename function and executable_filename property."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
 
     executable_filename = scca_file.get_executable_filename()
     self.assertIsNotNone(executable_filename)
@@ -156,12 +162,13 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_prefetch_hash(self):
     """Tests the get_prefetch_hash function and prefetch_hash property."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
 
     prefetch_hash = scca_file.get_prefetch_hash()
     self.assertIsNotNone(prefetch_hash)
@@ -172,12 +179,13 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_run_count(self):
     """Tests the get_run_count function and run_count property."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
 
     run_count = scca_file.get_run_count()
     self.assertIsNotNone(run_count)
@@ -188,12 +196,13 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_number_of_file_metrics_entries(self):
     """Tests the get_number_of_file_metrics_entries function and number_of_file_metrics_entries property."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
 
     number_of_file_metrics_entries = scca_file.get_number_of_file_metrics_entries()
     self.assertIsNotNone(number_of_file_metrics_entries)
@@ -204,12 +213,13 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_number_of_filenames(self):
     """Tests the get_number_of_filenames function and number_of_filenames property."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
 
     number_of_filenames = scca_file.get_number_of_filenames()
     self.assertIsNotNone(number_of_filenames)
@@ -220,12 +230,13 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_number_of_volumes(self):
     """Tests the get_number_of_volumes function and number_of_volumes property."""
-    if not unittest.source:
+    test_source = unittest.source
+    if not test_source:
       raise unittest.SkipTest("missing source")
 
     scca_file = pyscca.file()
 
-    scca_file.open(unittest.source)
+    scca_file.open(test_source)
 
     number_of_volumes = scca_file.get_number_of_volumes()
     self.assertIsNotNone(number_of_volumes)
