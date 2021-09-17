@@ -413,6 +413,15 @@ void pyscca_file_free(
 
 		return;
 	}
+	if( pyscca_file->file_io_handle != NULL )
+	{
+		if( pyscca_file_close(
+		     pyscca_file,
+		     NULL ) == NULL )
+		{
+			return;
+		}
+	}
 	if( pyscca_file->file != NULL )
 	{
 		Py_BEGIN_ALLOW_THREADS
