@@ -29,17 +29,6 @@ Requires: libscca = %{version}-%{release}
 %description -n libscca-devel
 Header files and libraries for developing applications for libscca.
 
-%package -n libscca-python2
-Obsoletes: libscca-python < %{version}
-Provides: libscca-python = %{version}
-Summary: Python 2 bindings for libscca
-Group: System Environment/Libraries
-Requires: libscca = %{version}-%{release} python2
-BuildRequires: python2-devel
-
-%description -n libscca-python2
-Python 2 bindings for libscca
-
 %package -n libscca-python3
 Summary: Python 3 bindings for libscca
 Group: System Environment/Libraries
@@ -61,7 +50,7 @@ Several tools for reading Windows Prefetch Files (PF)
 %setup -q
 
 %build
-%configure --prefix=/usr --libdir=%{_libdir} --mandir=%{_mandir} --enable-python2 --enable-python3
+%configure --prefix=/usr --libdir=%{_libdir} --mandir=%{_mandir} --enable-python3
 make %{?_smp_mflags}
 
 %install
@@ -96,14 +85,6 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libscca.pc
 %{_includedir}/*
 %{_mandir}/man3/*
-
-%files -n libscca-python2
-%defattr(644,root,root,755)
-%license COPYING COPYING.LESSER
-%doc AUTHORS README
-%{_libdir}/python2*/site-packages/*.a
-%{_libdir}/python2*/site-packages/*.la
-%{_libdir}/python2*/site-packages/*.so
 
 %files -n libscca-python3
 %defattr(644,root,root,755)
