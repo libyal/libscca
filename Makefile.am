@@ -38,7 +38,6 @@ DPKG_FILES = \
 	dpkg/rules \
 	dpkg/libscca.install \
 	dpkg/libscca-dev.install \
-	dpkg/libscca-python.install \
 	dpkg/libscca-python3.install \
 	dpkg/libscca-tools.install \
 	dpkg/source/format
