@@ -312,7 +312,7 @@ The entries with a bold offset and size were changed since version 17.
 
 ==== File information - version 26
 
-The file information - version 26 is 224 bytes of size and consists of:
+The file information - version 26 is 220 bytes of size and consists of:
 
 [cols="1,1,1,5",options="header"]
 |===
@@ -340,7 +340,7 @@ The first FILETIME is the most recent run time
 [yellow-background]*Seen: 1, 2, 7*
 | *132* | *4* | | [yellow-background]*Unknown* +
 [yellow-background]*Seen: 0, 3*
-| *136* | *88* | | [yellow-background]*Unknown (Empty values)*
+| *136* | *84* | | [yellow-background]*Unknown (Empty values)*
 |===
 
 The entries with a bold offset and size were changed since version 23.
@@ -355,7 +355,7 @@ There are multiple variants of file information - version 30
 
 ===== File information - version 30 - variant 2
 
-The file information - version 30 - variant 2 is 224 bytes of size and consists of:
+The file information - version 30 - variant 2 is 212 bytes of size and consists of:
 
 [cols="1,1,1,5",options="header"]
 |===
@@ -383,7 +383,9 @@ The first FILETIME is the most recent run time
 [yellow-background]*Seen: 1*
 | *124* | *4* | | [yellow-background]*Unknown* +
 [yellow-background]*Seen: 3*
-| *128* | *88* | | [yellow-background]*Unknown (Empty values)*
+| *128* | *4* | | *Hash string offset*
+| *132* | *4* | | *Hash string size*
+| *136* | *76* | | [yellow-background]*Unknown (Empty values)*
 |===
 
 The entries with a bold offset and size were changed since version 26 (or
