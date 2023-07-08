@@ -350,12 +350,12 @@ The entries with a bold offset and size were changed since version 23.
 [NOTE]
 There are multiple variants of file information - version 30
 
-* Variant 1, that is 220/228 bytes in size (depending on the presence of hash string section) and appears to be similar to the file information version 26.
+* Variant 1, that is 220/212 bytes in size (depending on the presence of hash string section) and appears to be similar to the file information version 26.
 * Variant 2, that is 212 bytes in size.
 
 ==== File information - version 30 - variant 1
 
-The file information - version 30 - variant 1 is 220/228 bytes of size and consists of:
+The file information - version 30 - variant 1 is 220/212 bytes of size and consists of:
 
 [cols="1,1,1,5",options="header"]
 |===
