@@ -411,13 +411,13 @@ The offset is relative to the start of the file
 | 44 | 8 x 8 = 64 | | Last run time(s) +
 Contains FILETIMEs, or 0 if not set +
 The first FILETIME is the most recent run time
-| 108 | 8 | | [yellow-background]*Unknown* +
+| *108* | *8* | | [yellow-background]*Unknown* +
 [yellow-background]*Mostly empty values but seem to get filled the run after the 8 last run times have been filled.* +
 [yellow-background]*Could be remnant values.*
-| 116 | 4 | | Run count
-| 120 | 4 | | [yellow-background]*Unknown* +
+| *116* | *4* | | *Run count*
+| *120* | *4* | | [yellow-background]*Unknown* +
 [yellow-background]*Seen: 1*
-| 124 | 4 | | [yellow-background]*Unknown* +
+| *124* | *4* | | [yellow-background]*Unknown* +
 [yellow-background]*Seen: 3*
 | *128* | *4* | | *Hash string offset* +
 The offset is relative to the start of the file
