@@ -419,9 +419,9 @@ The first FILETIME is the most recent run time
 [yellow-background]*Seen: 1*
 | 124 | 4 | | [yellow-background]*Unknown* +
 [yellow-background]*Seen: 3*
-| 128 | 4 | | Hash string offset +
+| *128* | *4* | | *Hash string offset* +
 The offset is relative to the start of the file
-| 132 | 4 | | Hash string size
+| *132* | *4* | | *Hash string size*
 | *136* | *76* | | [yellow-background]*Unknown (Empty values)*
 |===
 
