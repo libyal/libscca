@@ -548,9 +548,7 @@ int libscca_file_information_read_data(
 			 80,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
-		else if( ( io_handle->format_version == 26 )
-		      || ( ( io_handle->format_version == 30 )
-		       &&  ( file_information->metrics_array_offset == 0x00000130 ) ) )
+		else if( io_handle->format_version == 26 )
 		{
 			byte_stream_copy_to_uint32_little_endian(
 			 ( (scca_file_information_v26_t *) data )->unknown5a,
@@ -573,7 +571,34 @@ int libscca_file_information_read_data(
 			 function );
 			libcnotify_print_data(
 			 ( (scca_file_information_v26_t *) data )->unknown6,
-			 88,
+			 84,
+			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
+		}
+		else if( ( io_handle->format_version == 30 )
+		      && ( file_information->metrics_array_offset == 0x00000130 ) )
+		{
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_information_v30_1_t *) data )->unknown5a,
+			 value_32bit );
+			libcnotify_printf(
+			 "%s: unknown5a\t\t\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_information_v30_1_t *) data )->unknown5b,
+			 value_32bit );
+			libcnotify_printf(
+			 "%s: unknown5b\t\t\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			libcnotify_printf(
+			 "%s: unknown6:\n",
+			 function );
+			libcnotify_print_data(
+			 ( (scca_file_information_v30_1_t *) data )->unknown6,
+			 84,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
 		else if( ( io_handle->format_version == 30 )
@@ -600,7 +625,7 @@ int libscca_file_information_read_data(
 			 function );
 			libcnotify_print_data(
 			 ( (scca_file_information_v30_2_t *) data )->unknown6,
-			 88,
+			 84,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
 	}
