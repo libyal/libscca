@@ -28,6 +28,7 @@
 #include <wide_string.h>
 
 #include "info_handle.h"
+#include "path_string.h"
 #include "sccainput.h"
 #include "sccatools_libcerror.h"
 #include "sccatools_libfdatetime.h"
@@ -455,6 +456,76 @@ on_error:
 	return( -1 );
 }
 
+/* Prints a file entry name
+ * Returns 1 if successful or -1 on error
+ */
+int info_handle_name_value_fprint(
+     info_handle_t *info_handle,
+     const system_character_t *value_string,
+     size_t value_string_length,
+     libcerror_error_t **error )
+{
+	system_character_t *escaped_value_string = NULL;
+	static char *function                    = "info_handle_name_value_fprint";
+	size_t escaped_value_string_size         = 0;
+
+	if( info_handle == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_ARGUMENTS,
+		 LIBCERROR_ARGUMENT_ERROR_INVALID_VALUE,
+		 "%s: invalid info handle.",
+		 function );
+
+		return( -1 );
+	}
+	if( path_string_copy_from_file_entry_path(
+	     &escaped_value_string,
+	     &escaped_value_string_size,
+	     value_string,
+	     value_string_length,
+	     error ) != 1 )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_COPY_FAILED,
+		 "%s: unable to copy path from file entry path.",
+		 function );
+
+		goto on_error;
+	}
+	if( escaped_value_string == NULL )
+	{
+		libcerror_error_set(
+		 error,
+		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
+		 "%s: missing escaped value string.",
+		 function );
+
+		goto on_error;
+	}
+	fprintf(
+	 info_handle->notify_stream,
+	 "%" PRIs_SYSTEM "",
+	 escaped_value_string );
+
+	memory_free(
+	 escaped_value_string );
+
+	return( 1 );
+
+on_error:
+	if( escaped_value_string != NULL )
+	{
+		memory_free(
+		 escaped_value_string );
+	}
+	return( -1 );
+}
+
 /* Prints the file information
  * Returns 1 if successful or -1 on error
  */
@@ -597,8 +668,26 @@ int info_handle_file_fprint(
 		}
 		fprintf(
 		 info_handle->notify_stream,
-		 "\tExecutable filename\t\t: %" PRIs_SYSTEM "\n",
-		 value_string );
+		 "\tExecutable filename\t\t: " );
+
+		if( info_handle_name_value_fprint(
+		     info_handle,
+		     value_string,
+		     value_string_size - 1,
+		     error ) != 1 )
+		{
+			libcerror_error_set(
+			 error,
+			 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+			 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+			 "%s: unable to print executable filename string.",
+			 function );
+
+			goto on_error;
+		}
+		fprintf(
+		 info_handle->notify_stream,
+		 "\n" );
 
 		memory_free(
 		 value_string );
@@ -796,9 +885,27 @@ int info_handle_file_fprint(
 			}
 			fprintf(
 			 info_handle->notify_stream,
-			 "\tFilename: %d\t\t\t: %" PRIs_SYSTEM "\n",
-			 filename_index + 1,
-			 value_string );
+			 "\tFilename: %d\t\t\t: ",
+			 filename_index + 1 );
+
+			if( info_handle_name_value_fprint(
+			     info_handle,
+			     value_string,
+			     value_string_size - 1,
+			     error ) != 1 )
+			{
+				libcerror_error_set(
+				 error,
+				 LIBCERROR_ERROR_DOMAIN_RUNTIME,
+				 LIBCERROR_RUNTIME_ERROR_PRINT_FAILED,
+				 "%s: unable to print executable filename string.",
+				 function );
+
+				goto on_error;
+			}
+			fprintf(
+			 info_handle->notify_stream,
+			 "\n" );
 
 			memory_free(
 			 value_string );

@@ -65,6 +65,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.18 | J.B. Metz | February 2020 | Cleaned up notes.
 | 0.0.19 | J.B. Metz | September 2020 | Cleaned up notes.
 | 0.0.20 | N. Suthar | July 2023 | Corrections and additional information regarding unknown "hash string" section.
+| 0.0.21 | J.B. Metz | July 2023 | Additional information regarding encoding of filenames.
 |===
 
 :numbered:
@@ -236,6 +237,10 @@ This value should correspond with the hash in the Prefetch filename
 The executable filename will store a maximum of 29 characters. Dependent on the
 Windows version the unused bytes of the executable filename can contain remnant
 data. Windows 8.1 seems to fill the unused bytes with 0-byte values.
+
+[NOTE]
+The filename is not strict UTF-16 since it allows for unpaired surrogates, such
+as "U+d800" and "U+dc00".
 
 ==== Format version
 
@@ -557,6 +562,10 @@ The directory strings consists of:
 
 A filename string is an UTF-16 little-endian strings with end-of-string character.
 
+[NOTE]
+A filename string is not strict UTF-16 since it allows for unpaired surrogates,
+such as "U+d800" and "U+dc00".
+
 [yellow-background]*Is the the array followed by alignment padding? If so what
 is the size of the alignment,16-byte? Seen values ranging from 6 to 2 bytes.*
 
@@ -746,6 +755,10 @@ The directory string entry is variable of size and consists of:
 The value does not include the end-of-string character.
 | 2 | ... | | Array of UTF-16 little-endian strings with end-of-string character
 |===
+
+[NOTE]
+A directory string is not strict UTF-16 since it allows for unpaired surrogates,
+such as "U+d800" and "U+dc00".
 
 == [[calculating_prefetch_hash]]Calculating the prefetch hash
 

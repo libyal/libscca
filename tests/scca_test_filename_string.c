@@ -1,5 +1,5 @@
 /*
- * Library file_information type testing program
+ * Library filename_string type testing program
  *
  * Copyright (C) 2011-2023, Joachim Metz <joachim.metz@gmail.com>
  *
@@ -33,24 +33,27 @@
 #include "scca_test_memory.h"
 #include "scca_test_unused.h"
 
-#include "../libscca/libscca_file_information.h"
+#include "../libscca/libscca_filename_string.h"
 
 #if defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT )
 
-/* Tests the libscca_file_information_initialize function
+/* Tests the libscca_filename_string_initialize function
  * Returns 1 if successful or 0 if not
  */
-int scca_test_file_information_initialize(
+int scca_test_filename_string_initialize(
      void )
 {
 	libcerror_error_t *error                     = NULL;
-	libscca_file_information_t *file_information = NULL;
+	libscca_filename_string_t *filename_string = NULL;
 	int result                                   = 0;
 
-	/* Test file_information initialization
+	/* Test filename_string initialization
 	 */
-	result = libscca_file_information_initialize(
-	          &file_information,
+	result = libscca_filename_string_initialize(
+	          &filename_string,
+	          0,
+	          NULL,
+	          0,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -59,15 +62,15 @@ int scca_test_file_information_initialize(
 	 1 );
 
 	SCCA_TEST_ASSERT_IS_NOT_NULL(
-	 "file_information",
-	 file_information );
+	 "filename_string",
+	 filename_string );
 
 	SCCA_TEST_ASSERT_IS_NULL(
 	 "error",
 	 error );
 
-	result = libscca_file_information_free(
-	          &file_information,
+	result = libscca_filename_string_free(
+	          &filename_string,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -76,8 +79,8 @@ int scca_test_file_information_initialize(
 	 1 );
 
 	SCCA_TEST_ASSERT_IS_NULL(
-	 "file_information",
-	 file_information );
+	 "filename_string",
+	 filename_string );
 
 	SCCA_TEST_ASSERT_IS_NULL(
 	 "error",
@@ -85,8 +88,11 @@ int scca_test_file_information_initialize(
 
 	/* Test error cases
 	 */
-	result = libscca_file_information_initialize(
+	result = libscca_filename_string_initialize(
 	          NULL,
+	          0,
+	          NULL,
+	          0,
 	          &error );
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
@@ -101,13 +107,16 @@ int scca_test_file_information_initialize(
 	libcerror_error_free(
 	 &error );
 
-	file_information = (libscca_file_information_t *) 0x12345678UL;
+	filename_string = (libscca_filename_string_t *) 0x12345678UL;
 
-	result = libscca_file_information_initialize(
-	          &file_information,
+	result = libscca_filename_string_initialize(
+	          &filename_string,
+	          0,
+	          NULL,
+	          0,
 	          &error );
 
-	file_information = NULL;
+	filename_string = NULL;
 
 	SCCA_TEST_ASSERT_EQUAL_INT(
 	 "result",
@@ -123,22 +132,25 @@ int scca_test_file_information_initialize(
 
 #if defined( HAVE_SCCA_TEST_MEMORY )
 
-	/* Test libscca_file_information_initialize with malloc failing
+	/* Test libscca_filename_string_initialize with malloc failing
 	 */
 	scca_test_malloc_attempts_before_fail = 0;
 
-	result = libscca_file_information_initialize(
-	          &file_information,
+	result = libscca_filename_string_initialize(
+	          &filename_string,
+	          0,
+	          NULL,
+	          0,
 	          &error );
 
 	if( scca_test_malloc_attempts_before_fail != -1 )
 	{
 		scca_test_malloc_attempts_before_fail = -1;
 
-		if( file_information != NULL )
+		if( filename_string != NULL )
 		{
-			libscca_file_information_free(
-			 &file_information,
+			libscca_filename_string_free(
+			 &filename_string,
 			 NULL );
 		}
 	}
@@ -150,8 +162,8 @@ int scca_test_file_information_initialize(
 		 -1 );
 
 		SCCA_TEST_ASSERT_IS_NULL(
-		 "file_information",
-		 file_information );
+		 "filename_string",
+		 filename_string );
 
 		SCCA_TEST_ASSERT_IS_NOT_NULL(
 		 "error",
@@ -160,22 +172,25 @@ int scca_test_file_information_initialize(
 		libcerror_error_free(
 		 &error );
 	}
-	/* Test libscca_file_information_initialize with memset failing
+	/* Test libscca_filename_string_initialize with memset failing
 	 */
 	scca_test_memset_attempts_before_fail = 0;
 
-	result = libscca_file_information_initialize(
-	          &file_information,
+	result = libscca_filename_string_initialize(
+	          &filename_string,
+	          0,
+	          NULL,
+	          0,
 	          &error );
 
 	if( scca_test_memset_attempts_before_fail != -1 )
 	{
 		scca_test_memset_attempts_before_fail = -1;
 
-		if( file_information != NULL )
+		if( filename_string != NULL )
 		{
-			libscca_file_information_free(
-			 &file_information,
+			libscca_filename_string_free(
+			 &filename_string,
 			 NULL );
 		}
 	}
@@ -187,8 +202,8 @@ int scca_test_file_information_initialize(
 		 -1 );
 
 		SCCA_TEST_ASSERT_IS_NULL(
-		 "file_information",
-		 file_information );
+		 "filename_string",
+		 filename_string );
 
 		SCCA_TEST_ASSERT_IS_NOT_NULL(
 		 "error",
@@ -207,19 +222,19 @@ on_error:
 		libcerror_error_free(
 		 &error );
 	}
-	if( file_information != NULL )
+	if( filename_string != NULL )
 	{
-		libscca_file_information_free(
-		 &file_information,
+		libscca_filename_string_free(
+		 &filename_string,
 		 NULL );
 	}
 	return( 0 );
 }
 
-/* Tests the libscca_file_information_free function
+/* Tests the libscca_filename_string_free function
  * Returns 1 if successful or 0 if not
  */
-int scca_test_file_information_free(
+int scca_test_filename_string_free(
      void )
 {
 	libcerror_error_t *error = NULL;
@@ -227,7 +242,7 @@ int scca_test_file_information_free(
 
 	/* Test error cases
 	 */
-	result = libscca_file_information_free(
+	result = libscca_filename_string_free(
 	          NULL,
 	          &error );
 
@@ -274,12 +289,12 @@ int main(
 #if defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT )
 
 	SCCA_TEST_RUN(
-	 "libscca_file_information_initialize",
-	 scca_test_file_information_initialize );
+	 "libscca_filename_string_initialize",
+	 scca_test_filename_string_initialize );
 
 	SCCA_TEST_RUN(
-	 "libscca_file_information_free",
-	 scca_test_file_information_free );
+	 "libscca_filename_string_free",
+	 scca_test_filename_string_free );
 
 #endif /* defined( __GNUC__ ) && !defined( LIBSCCA_DLL_IMPORT ) */
 

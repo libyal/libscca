@@ -34,6 +34,7 @@ libscca_la_SOURCES = \
 	libscca_file_header.c libscca_file_header.h \
 	libscca_file_information.c libscca_file_information.h \
 	libscca_file_metrics.c libscca_file_metrics.h \
+	libscca_filename_string.c libscca_filename_string.h \
 	libscca_filename_strings.c libscca_filename_strings.h \
 	libscca_io_handle.c libscca_io_handle.h \
 	libscca_libbfio.h \

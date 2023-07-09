@@ -19,8 +19,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#if !defined( _LIBSCCA_INTERNAL_FILE_METRICS_H )
-#define _LIBSCCA_INTERNAL_FILE_METRICS_H
+#if !defined( _LIBSCCA_FILE_METRICS_H )
+#define _LIBSCCA_FILE_METRICS_H
 
 #include <common.h>
 #include <types.h>
@@ -125,5 +125,5 @@ int libscca_file_metrics_get_file_reference(
 }
 #endif
 
-#endif /* !defined( _LIBSCCA_INTERNAL_FILE_METRICS_H ) */
+#endif /* !defined( _LIBSCCA_FILE_METRICS_H ) */
 

@@ -1185,8 +1185,8 @@ int libscca_io_handle_read_volumes_information(
 			libcnotify_printf(
 			 "%s: reading volume information at offset: %" PRIi32 " (0x%08" PRIx32 ")\n",
 			 function,
-			 volume_information_offset,
-			 volume_information_offset );
+			 volumes_information_offset + volume_information_offset,
+			 volumes_information_offset + volume_information_offset );
 		}
 #endif
 		volume_information_data = &( volumes_information_data[ volume_information_offset ] );

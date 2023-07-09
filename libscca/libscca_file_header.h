@@ -78,6 +78,28 @@ int libscca_file_header_read_data_stream(
      libbfio_handle_t *file_io_handle,
      libcerror_error_t **error );
 
+int libscca_file_header_get_utf8_executable_filename_size(
+     libscca_file_header_t *file_header,
+     size_t *utf8_string_size,
+     libcerror_error_t **error );
+
+int libscca_file_header_get_utf8_executable_filename(
+     libscca_file_header_t *file_header,
+     uint8_t *utf8_string,
+     size_t utf8_string_size,
+     libcerror_error_t **error );
+
+int libscca_file_header_get_utf16_executable_filename_size(
+     libscca_file_header_t *file_header,
+     size_t *utf16_string_size,
+     libcerror_error_t **error );
+
+int libscca_file_header_get_utf16_executable_filename(
+     libscca_file_header_t *file_header,
+     uint16_t *utf16_string,
+     size_t utf16_string_size,
+     libcerror_error_t **error );
+
 #if defined( __cplusplus )
 }
 #endif

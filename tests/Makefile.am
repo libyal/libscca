@@ -52,12 +52,14 @@ check_PROGRAMS = \
 	scca_test_file_header \
 	scca_test_file_information \
 	scca_test_file_metrics \
+	scca_test_filename_string \
 	scca_test_filename_strings \
 	scca_test_io_handle \
 	scca_test_notify \
 	scca_test_support \
 	scca_test_tools_info_handle \
 	scca_test_tools_output \
+	scca_test_tools_path_string \
 	scca_test_tools_signal \
 	scca_test_volume_information
 
@@ -146,6 +148,18 @@ scca_test_file_metrics_LDADD = \
 	../libscca/libscca.la \
 	@LIBCERROR_LIBADD@
 
+scca_test_filename_string_SOURCES = \
+	scca_test_filename_string.c \
+	scca_test_libcerror.h \
+	scca_test_libscca.h \
+	scca_test_macros.h \
+	scca_test_memory.c scca_test_memory.h \
+	scca_test_unused.h
+
+scca_test_filename_string_LDADD = \
+	../libscca/libscca.la \
+	@LIBCERROR_LIBADD@
+
 scca_test_filename_strings_SOURCES = \
 	scca_test_filename_strings.c \
 	scca_test_libcerror.h \
@@ -209,6 +223,7 @@ scca_test_support_LDADD = \
 
 scca_test_tools_info_handle_SOURCES = \
 	../sccatools/info_handle.c ../sccatools/info_handle.h \
+	../sccatools/path_string.c ../sccatools/path_string.h \
 	../sccatools/sccainput.c ../sccatools/sccainput.h \
 	scca_test_libcerror.h \
 	scca_test_macros.h \
@@ -231,6 +246,19 @@ scca_test_tools_output_SOURCES = \
 	scca_test_unused.h
 
 scca_test_tools_output_LDADD = \
+	../libscca/libscca.la \
+	@LIBCERROR_LIBADD@
+
+scca_test_tools_path_string_SOURCES = \
+	../sccatools/path_string.c ../sccatools/path_string.h \
+	scca_test_libcerror.h \
+	scca_test_libcpath.h \
+	scca_test_macros.h \
+	scca_test_tools_path_string.c \
+	scca_test_unused.h
+
+scca_test_tools_path_string_LDADD = \
+	@LIBUNA_LIBADD@ \
 	../libscca/libscca.la \
 	@LIBCERROR_LIBADD@
 

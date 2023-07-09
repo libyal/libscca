@@ -6,7 +6,7 @@ $ExitSuccess = 0
 $ExitFailure = 1
 $ExitIgnore = 77
 
-$LibraryTests = "compressed_block error file_header file_information file_metrics filename_strings io_handle notify volume_information"
+$LibraryTests = "compressed_block error file_header file_information file_metrics filename_string filename_strings io_handle notify volume_information"
 $LibraryTestsWithInput = "file support"
 $OptionSets = ""
 

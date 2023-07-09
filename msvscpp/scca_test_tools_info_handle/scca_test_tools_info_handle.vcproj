@@ -180,6 +180,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\sccatools\path_string.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\sccatools\sccainput.c"
 				>
 			</File>
@@ -199,6 +203,10 @@
 			>
 			<File
 				RelativePath="..\..\sccatools\info_handle.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\sccatools\path_string.h"
 				>
 			</File>
 			<File

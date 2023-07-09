@@ -22,12 +22,14 @@ MSVSCPP_FILES = \
 	scca_test_file_header/scca_test_file_header.vcproj \
 	scca_test_file_information/scca_test_file_information.vcproj \
 	scca_test_file_metrics/scca_test_file_metrics.vcproj \
+	scca_test_filename_string/scca_test_filename_string.vcproj \
 	scca_test_filename_strings/scca_test_filename_strings.vcproj \
 	scca_test_io_handle/scca_test_io_handle.vcproj \
 	scca_test_notify/scca_test_notify.vcproj \
 	scca_test_support/scca_test_support.vcproj \
 	scca_test_tools_info_handle/scca_test_tools_info_handle.vcproj \
 	scca_test_tools_output/scca_test_tools_output.vcproj \
+	scca_test_tools_path_string/scca_test_tools_path_string.vcproj \
 	scca_test_tools_signal/scca_test_tools_signal.vcproj \
 	scca_test_volume_information/scca_test_volume_information.vcproj \
 	sccainfo/sccainfo.vcproj \

@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\libscca\libscca_filename_string.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\libscca\libscca_filename_strings.c"
 				>
 			</File>
@@ -273,6 +277,10 @@
 			</File>
 			<File
 				RelativePath="..\..\libscca\libscca_file_metrics.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\libscca\libscca_filename_string.h"
 				>
 			</File>
 			<File

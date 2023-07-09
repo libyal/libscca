@@ -1620,6 +1620,7 @@ int libscca_file_get_format_version(
 }
 
 /* Retrieves the size of a specific UTF-8 encoded executable filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -1644,22 +1645,8 @@ int libscca_file_get_utf8_executable_filename_size(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( internal_file->file_header == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal file - missing file header.",
-		 function );
-
-		return( -1 );
-	}
-/* TODO add function to file header */
-	if( libuna_utf8_string_size_from_utf16_stream(
-	     internal_file->file_header->executable_filename,
-	     internal_file->file_header->executable_filename_size,
-	     LIBUNA_ENDIAN_LITTLE,
+	if( libscca_file_header_get_utf8_executable_filename_size(
+	     internal_file->file_header,
 	     utf8_string_size,
 	     error ) != 1 )
 	{
@@ -1667,7 +1654,7 @@ int libscca_file_get_utf8_executable_filename_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to determine size of UTF-8 executable filename string.",
+		 "%s: unable to retrieve UTF-8 executable filename size.",
 		 function );
 
 		return( -1 );
@@ -1676,6 +1663,7 @@ int libscca_file_get_utf8_executable_filename_size(
 }
 
 /* Retrieves a specific UTF-8 encoded executable filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -1701,31 +1689,17 @@ int libscca_file_get_utf8_executable_filename(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( internal_file->file_header == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal file - missing file header.",
-		 function );
-
-		return( -1 );
-	}
-/* TODO add function to file header */
-	if( libuna_utf8_string_copy_from_utf16_stream(
-	     (libuna_utf8_character_t *) utf8_string,
+	if( libscca_file_header_get_utf8_executable_filename(
+	     internal_file->file_header,
+	     utf8_string,
 	     utf8_string_size,
-	     internal_file->file_header->executable_filename,
-	     internal_file->file_header->executable_filename_size,
-	     LIBUNA_ENDIAN_LITTLE,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set UTF-8 executable filename string.",
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-8 executable filename.",
 		 function );
 
 		return( -1 );
@@ -1734,6 +1708,7 @@ int libscca_file_get_utf8_executable_filename(
 }
 
 /* Retrieves the size of a specific UTF-16 encoded executable filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -1758,22 +1733,8 @@ int libscca_file_get_utf16_executable_filename_size(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( internal_file->file_header == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal file - missing file header.",
-		 function );
-
-		return( -1 );
-	}
-/* TODO add function to file header */
-	if( libuna_utf16_string_size_from_utf16_stream(
-	     internal_file->file_header->executable_filename,
-	     internal_file->file_header->executable_filename_size,
-	     LIBUNA_ENDIAN_LITTLE,
+	if( libscca_file_header_get_utf16_executable_filename_size(
+	     internal_file->file_header,
 	     utf16_string_size,
 	     error ) != 1 )
 	{
@@ -1781,7 +1742,7 @@ int libscca_file_get_utf16_executable_filename_size(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
 		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
-		 "%s: unable to determine size of UTF-16 executable filename string.",
+		 "%s: unable to retrieve UTF-16 executable filename size.",
 		 function );
 
 		return( -1 );
@@ -1790,6 +1751,7 @@ int libscca_file_get_utf16_executable_filename_size(
 }
 
 /* Retrieves a specific UTF-16 encoded executable filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -1815,31 +1777,17 @@ int libscca_file_get_utf16_executable_filename(
 	}
 	internal_file = (libscca_internal_file_t *) file;
 
-	if( internal_file->file_header == NULL )
-	{
-		libcerror_error_set(
-		 error,
-		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_MISSING,
-		 "%s: invalid internal file - missing file header.",
-		 function );
-
-		return( -1 );
-	}
-/* TODO add function to file header */
-	if( libuna_utf16_string_copy_from_utf16_stream(
-	     (libuna_utf16_character_t *) utf16_string,
+	if( libscca_file_header_get_utf16_executable_filename(
+	     internal_file->file_header,
+	     utf16_string,
 	     utf16_string_size,
-	     internal_file->file_header->executable_filename,
-	     internal_file->file_header->executable_filename_size,
-	     LIBUNA_ENDIAN_LITTLE,
 	     error ) != 1 )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_SET_FAILED,
-		 "%s: unable to set UTF-16 executable filename string.",
+		 LIBCERROR_RUNTIME_ERROR_GET_FAILED,
+		 "%s: unable to retrieve UTF-16 executable filename.",
 		 function );
 
 		return( -1 );
@@ -2164,6 +2112,7 @@ int libscca_file_get_number_of_filenames(
 }
 
 /* Retrieves the size of a specific UTF-8 encoded filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -2209,6 +2158,7 @@ int libscca_file_get_utf8_filename_size(
 }
 
 /* Retrieves a specific UTF-8 encoded filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -2256,6 +2206,7 @@ int libscca_file_get_utf8_filename(
 }
 
 /* Retrieves the size of a specific UTF-16 encoded filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -2301,6 +2252,7 @@ int libscca_file_get_utf16_filename_size(
 }
 
 /* Retrieves a specific UTF-16 encoded filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */

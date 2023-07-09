@@ -7,7 +7,7 @@ EXIT_SUCCESS=0;
 EXIT_FAILURE=1;
 EXIT_IGNORE=77;
 
-LIBRARY_TESTS="compressed_block error file_header file_information file_metrics filename_strings io_handle notify volume_information";
+LIBRARY_TESTS="compressed_block error file_header file_information file_metrics filename_string filename_strings io_handle notify volume_information";
 LIBRARY_TESTS_WITH_INPUT="file support";
 OPTION_SETS="";
 

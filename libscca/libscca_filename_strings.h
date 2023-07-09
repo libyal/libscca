@@ -29,7 +29,6 @@
 #include "libscca_libcdata.h"
 #include "libscca_libcerror.h"
 #include "libscca_libfdata.h"
-#include "libscca_libfvalue.h"
 
 #if defined( __cplusplus )
 extern "C" {
@@ -39,18 +38,18 @@ typedef struct libscca_filename_strings libscca_filename_strings_t;
 
 struct libscca_filename_strings
 {
-	/* The offsets array
+	/* The data
 	 */
-	libcdata_array_t *offsets_array;
+	uint8_t *data;
 
-	/* The filenames strings value
+	/* The data size
 	 */
-	libfvalue_value_t *strings;
+	size_t data_size;
+
+	/* The strings array
+	 */
+	libcdata_array_t *strings_array;
 };
-
-int libscca_filename_string_offset_free(
-     uint32_t **filename_string_offset,
-     libcerror_error_t **error );
 
 int libscca_filename_strings_initialize(
      libscca_filename_strings_t **filename_strings,

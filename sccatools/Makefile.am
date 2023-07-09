@@ -20,6 +20,7 @@ bin_PROGRAMS = \
 
 sccainfo_SOURCES = \
 	info_handle.c info_handle.h \
+	path_string.c path_string.h \
 	sccainfo.c \
 	sccainput.c sccainput.h \
 	sccatools_getopt.c sccatools_getopt.h \
@@ -36,6 +37,7 @@ sccainfo_SOURCES = \
 	sccatools_unused.h
 
 sccainfo_LDADD = \
+	@LIBUNA_LIBADD@ \
 	@LIBFDATETIME_LIBADD@ \
 	@LIBCNOTIFY_LIBADD@ \
 	@LIBCLOCALE_LIBADD@ \

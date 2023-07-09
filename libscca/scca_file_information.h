@@ -347,10 +347,20 @@ struct scca_file_information_v30_1
 	 */
 	uint8_t unknown5b[ 4 ];
 
-	/* Unknown
-	 * Consists of 84 bytes
+	/* Hash string offset
+	 * Consists of 4 bytes
 	 */
-	uint8_t unknown6[ 84 ];
+	uint8_t hash_string_offset[ 4 ];
+
+	/* Hash string size
+	 * Consists of 4 bytes
+	 */
+	uint8_t hash_string_size[ 4 ];
+
+	/* Unknown
+	 * Consists of 76 bytes
+	 */
+	uint8_t unknown6[ 76 ];
 };
 
 typedef struct scca_file_information_v30_2 scca_file_information_v30_2_t;
@@ -433,10 +443,20 @@ struct scca_file_information_v30_2
 	 */
 	uint8_t unknown5b[ 4 ];
 
-	/* Unknown
-	 * Consists of 84 bytes
+	/* Hash string offset
+	 * Consists of 4 bytes
 	 */
-	uint8_t unknown6[ 84 ];
+	uint8_t hash_string_offset[ 4 ];
+
+	/* Hash string size
+	 * Consists of 4 bytes
+	 */
+	uint8_t hash_string_size[ 4 ];
+
+	/* Unknown
+	 * Consists of 76 bytes
+	 */
+	uint8_t unknown6[ 76 ];
 };
 
 #if defined( __cplusplus )

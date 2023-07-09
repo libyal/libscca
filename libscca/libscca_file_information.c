@@ -593,12 +593,28 @@ int libscca_file_information_read_data(
 			 function,
 			 value_32bit );
 
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_information_v30_1_t *) data )->hash_string_offset,
+			 value_32bit );
+			libcnotify_printf(
+			 "%s: hash string offset\t\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_information_v30_1_t *) data )->hash_string_size,
+			 value_32bit );
+			libcnotify_printf(
+			 "%s: hash string size\t\t\t: %" PRIu32 "\n",
+			 function,
+			 value_32bit );
+
 			libcnotify_printf(
 			 "%s: unknown6:\n",
 			 function );
 			libcnotify_print_data(
 			 ( (scca_file_information_v30_1_t *) data )->unknown6,
-			 84,
+			 76,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
 		else if( ( io_handle->format_version == 30 )
@@ -620,12 +636,28 @@ int libscca_file_information_read_data(
 			 function,
 			 value_32bit );
 
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_information_v30_2_t *) data )->hash_string_offset,
+			 value_32bit );
+			libcnotify_printf(
+			 "%s: hash string offset\t\t\t: 0x%08" PRIx32 "\n",
+			 function,
+			 value_32bit );
+
+			byte_stream_copy_to_uint32_little_endian(
+			 ( (scca_file_information_v30_2_t *) data )->hash_string_size,
+			 value_32bit );
+			libcnotify_printf(
+			 "%s: hash string size\t\t\t: %" PRIu32 "\n",
+			 function,
+			 value_32bit );
+
 			libcnotify_printf(
 			 "%s: unknown6:\n",
 			 function );
 			libcnotify_print_data(
 			 ( (scca_file_information_v30_2_t *) data )->unknown6,
-			 84,
+			 76,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
 	}

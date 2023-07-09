@@ -270,6 +270,7 @@ int libscca_file_get_format_version(
      libscca_error_t **error );
 
 /* Retrieves the size of a specific UTF-8 encoded executable filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -280,6 +281,7 @@ int libscca_file_get_utf8_executable_filename_size(
      libscca_error_t **error );
 
 /* Retrieves a specific UTF-8 encoded executable filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -291,6 +293,7 @@ int libscca_file_get_utf8_executable_filename(
      libscca_error_t **error );
 
 /* Retrieves the size of a specific UTF-16 encoded executable filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -301,6 +304,7 @@ int libscca_file_get_utf16_executable_filename_size(
      libscca_error_t **error );
 
 /* Retrieves a specific UTF-16 encoded executable filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -372,6 +376,7 @@ int libscca_file_get_number_of_filenames(
      libscca_error_t **error );
 
 /* Retrieves the size of a specific UTF-8 encoded filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -383,6 +388,7 @@ int libscca_file_get_utf8_filename_size(
      libscca_error_t **error );
 
 /* Retrieves a specific UTF-8 encoded filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -395,6 +401,7 @@ int libscca_file_get_utf8_filename(
      libscca_error_t **error );
 
 /* Retrieves the size of a specific UTF-16 encoded filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -406,6 +413,7 @@ int libscca_file_get_utf16_filename_size(
      libscca_error_t **error );
 
 /* Retrieves a specific UTF-16 encoded filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -449,6 +457,7 @@ int libscca_file_metrics_free(
      libscca_error_t **error );
 
 /* Retrieves the size of the UTF-8 encoded filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -459,6 +468,7 @@ int libscca_file_metrics_get_utf8_filename_size(
      libscca_error_t **error );
 
 /* Retrieves the UTF-8 encoded filename
+ * This function uses UTF-8 RFC 2279 (or 6-byte UTF-8) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -470,6 +480,7 @@ int libscca_file_metrics_get_utf8_filename(
      libscca_error_t **error );
 
 /* Retrieves the size of the UTF-16 encoded filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The returned size includes the end of string character
  * Returns 1 if successful or -1 on error
  */
@@ -480,6 +491,7 @@ int libscca_file_metrics_get_utf16_filename_size(
      libscca_error_t **error );
 
 /* Retrieves the UTF-16 encoded filename
+ * This function uses UCS-2 (with surrogates) to support characters outside Unicode
  * The size should include the end of string character
  * Returns 1 if successful or -1 on error
  */
