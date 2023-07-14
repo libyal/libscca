@@ -34,7 +34,9 @@ BUILT_SOURCES = \
 	pyscca_libcerror.h \
 	pyscca_libclocale.h \
 	pyscca_libscca.h \
+	pyscca_libuna.h \
 	pyscca_python.h \
+	pyscca_string.c pyscca_string.h \
 	pyscca_unused.h \
 	pyscca_volume_information.c pyscca_volume_information.h \
 	pyscca_volumes.c pyscca_volumes.h

@@ -38,6 +38,7 @@
 #include "pyscca_libcerror.h"
 #include "pyscca_libscca.h"
 #include "pyscca_python.h"
+#include "pyscca_string.h"
 #include "pyscca_unused.h"
 #include "pyscca_volume_information.h"
 #include "pyscca_volumes.h"
@@ -574,8 +575,14 @@ PyObject *pyscca_file_open(
 		PyErr_Clear();
 
 #if defined( HAVE_WIDE_SYSTEM_CHARACTER )
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+		filename_wide = (wchar_t *) PyUnicode_AsWideCharString(
+		                             string_object,
+		                             NULL );
+#else
 		filename_wide = (wchar_t *) PyUnicode_AsUnicode(
 		                             string_object );
+#endif
 		Py_BEGIN_ALLOW_THREADS
 
 		result = libscca_file_open_wide(
@@ -585,6 +592,11 @@ PyObject *pyscca_file_open(
 		          &error );
 
 		Py_END_ALLOW_THREADS
+
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+		PyMem_Free(
+		 filename_wide );
+#endif
 #else
 		utf8_string_object = PyUnicode_AsUTF8String(
 		                      string_object );
@@ -976,7 +988,6 @@ PyObject *pyscca_file_get_executable_filename(
 {
 	PyObject *string_object  = NULL;
 	libcerror_error_t *error = NULL;
-	const char *errors       = NULL;
 	static char *function    = "pyscca_file_get_executable_filename";
 	char *utf8_string        = NULL;
 	size_t utf8_string_size  = 0;
@@ -1037,6 +1048,8 @@ PyObject *pyscca_file_get_executable_filename(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
+	/* Using RFC 2279 UTF-8 to support unpaired UTF-16 surrogates
+	 */
 	result = libscca_file_get_utf8_executable_filename(
 	          pyscca_file->file,
 	          (uint8_t *) utf8_string,
@@ -1058,14 +1071,20 @@ PyObject *pyscca_file_get_executable_filename(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
-	 * the end of string character is part of the string
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+	string_object = pyscca_string_new_from_utf8_rfc2279(
+			 (uint8_t *) utf8_string,
+			 utf8_string_size );
+#else
+	/* Pass the string length to PyUnicode_DecodeUTF8
+	 * otherwise it makes the end of string character is part
+	 * of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
 	                 utf8_string,
 	                 (Py_ssize_t) utf8_string_size - 1,
-	                 errors );
-
+	                 NULL );
+#endif
 	if( string_object == NULL )
 	{
 		PyErr_Format(
@@ -1624,7 +1643,6 @@ PyObject *pyscca_file_get_filename_by_index(
 	PyObject *string_object  = NULL;
 	libcerror_error_t *error = NULL;
 	uint8_t *utf8_string     = NULL;
-	const char *errors       = NULL;
 	static char *function    = "pyscca_file_get_filename_by_index";
 	size_t utf8_string_size  = 0;
 	int result               = 0;
@@ -1684,6 +1702,8 @@ PyObject *pyscca_file_get_filename_by_index(
 	}
 	Py_BEGIN_ALLOW_THREADS
 
+	/* Using RFC 2279 UTF-8 to support unpaired UTF-16 surrogates
+	 */
 	result = libscca_file_get_utf8_filename(
 	          ( (pyscca_file_t *) pyscca_file )->file,
 	          filename_index,
@@ -1707,14 +1727,20 @@ PyObject *pyscca_file_get_filename_by_index(
 
 		goto on_error;
 	}
-	/* Pass the string length to PyUnicode_DecodeUTF8 otherwise it makes
-	 * the end of string character is part of the string
+#if PY_MAJOR_VERSION >= 3 && PY_MINOR_VERSION >= 3
+	string_object = pyscca_string_new_from_utf8_rfc2279(
+			 utf8_string,
+			 utf8_string_size );
+#else
+	/* Pass the string length to PyUnicode_DecodeUTF8
+	 * otherwise it makes the end of string character is part
+	 * of the string
 	 */
 	string_object = PyUnicode_DecodeUTF8(
 	                 (char *) utf8_string,
 	                 (Py_ssize_t) utf8_string_size - 1,
-	                 errors );
-
+	                 NULL );
+#endif
 	if( string_object == NULL )
 	{
 		PyErr_Format(

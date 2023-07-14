@@ -206,6 +206,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pyscca\pyscca_string.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pyscca\pyscca_volume_information.c"
 				>
 			</File>
@@ -272,7 +276,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\pyscca\pyscca_libuna.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\pyscca\pyscca_python.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\pyscca\pyscca_string.h"
 				>
 			</File>
 			<File

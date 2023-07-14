@@ -329,7 +329,6 @@ PyObject *pyscca_file_metrics_get_filename(
 {
 	PyObject *string_object  = NULL;
 	libcerror_error_t *error = NULL;
-	const char *errors       = NULL;
 	static char *function    = "pyscca_file_metrics_get_filename";
 	char *utf8_string        = NULL;
 	size_t utf8_string_size  = 0;
@@ -417,7 +416,7 @@ PyObject *pyscca_file_metrics_get_filename(
 	string_object = PyUnicode_DecodeUTF8(
 	                 utf8_string,
 	                 (Py_ssize_t) utf8_string_size - 1,
-	                 errors );
+	                 NULL );
 
 	if( string_object == NULL )
 	{

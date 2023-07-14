@@ -260,13 +260,14 @@ int libscca_filename_strings_read_data(
 
 		return( -1 );
 	}
-	if( data_size > (size_t) SSIZE_MAX )
+	if( ( data_size < 2 )
+	 || ( data_size > (size_t) SSIZE_MAX ) )
 	{
 		libcerror_error_set(
 		 error,
 		 LIBCERROR_ERROR_DOMAIN_RUNTIME,
-		 LIBCERROR_RUNTIME_ERROR_VALUE_EXCEEDS_MAXIMUM,
-		 "%s: invalid data size value exceeds maximum.",
+		 LIBCERROR_RUNTIME_ERROR_VALUE_OUT_OF_BOUNDS,
+		 "%s: invalid data size value out of bounds.",
 		 function );
 
 		return( -1 );
@@ -285,7 +286,7 @@ int libscca_filename_strings_read_data(
 
 		goto on_error;
 	}
-	while( last_data_offset < data_size )
+	while( last_data_offset < ( data_size - 1 ) )
 	{
 		if( filename_strings_index > LIBSCCA_MAXIMUM_NUMBER_OF_FILENAME_STRINGS )
 		{
@@ -299,7 +300,7 @@ int libscca_filename_strings_read_data(
 			goto on_error;
 		}
 		for( data_offset = last_data_offset;
-		     data_offset < data_size;
+		     data_offset < ( data_size - 1 );
 		     data_offset += 2 )
 		{
 			if( ( data[ data_offset ] == 0 )

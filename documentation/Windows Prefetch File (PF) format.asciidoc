@@ -432,6 +432,11 @@ The offset is relative to the start of the file
 
 The entries with a bold offset and size were changed since version 30 - variant 1.
 
+=== Hash string
+
+[yellow-background]*TODO: rename to something more appropriate*
+[yellow-background]*TODO: describe possible strings array*
+
 === File metrics array
 
 The file metrics array consists of entries containing metrics about the files
