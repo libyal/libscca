@@ -1,6 +1,6 @@
 [metadata]
 name = libscca-python
-version = 20231018
+version = @VERSION@
 description = Python bindings module for libscca
 long_description = Python bindings module for libscca
 author = Joachim Metz

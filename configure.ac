@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
  [libscca],
- [20230908],
+ [20231018],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -203,6 +203,7 @@ AC_CONFIG_FILES([dpkg/changelog])
 AC_CONFIG_FILES([libscca/libscca.rc])
 AC_CONFIG_FILES([libscca.pc])
 AC_CONFIG_FILES([libscca.spec])
+AC_CONFIG_FILES([setup.cfg])
 dnl Generate a source configuration file
 AC_CONFIG_HEADERS([common/config.h])
 
