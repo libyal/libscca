@@ -40,7 +40,7 @@ void (*sccatools_signal_signal_handler)( sccatools_signal_t ) = NULL;
 /* Signal handler for Ctrl+C or Ctrl+Break signals
  */
 BOOL WINAPI sccatools_signal_handler(
-             unsigned long signal )
+             sccatools_signal_t signal )
 {
 	static char *function = "sccatools_signal_handler";
 
@@ -112,7 +112,7 @@ int sccatools_signal_attach(
 	sccatools_signal_signal_handler = signal_handler;
 
 	if( SetConsoleCtrlHandler(
-	     sccatools_signal_handler,
+	     (PHANDLER_ROUTINE) sccatools_signal_handler,
 	     TRUE ) == 0 )
 	{
 		libcerror_error_set(
@@ -179,7 +179,7 @@ int sccatools_signal_detach(
 	static char *function = "sccatools_signal_detach";
 
 	if( SetConsoleCtrlHandler(
-	     sccatools_signal_handler,
+	     (PHANDLER_ROUTINE) sccatools_signal_handler,
 	     FALSE ) == 0 )
 	{
 		libcerror_error_set(

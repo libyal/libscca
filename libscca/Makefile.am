@@ -88,11 +88,13 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libscca_definitions.h
-	/bin/rm -f libscca.rc
-	/bin/rm -f Makefile
+	-rm -f libscca_definitions.h
+	-rm -f libscca.rc
+	-rm -f Makefile
 
-splint:
+sources-local: $(BUILT_SOURCES)
+
+splint-local:
 	@echo "Running splint on libscca ..."
 	-splint -preproc -redef $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(libscca_la_SOURCES)
 

@@ -19,9 +19,9 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 distclean: clean
-	/bin/rm -f libscca.h
-	/bin/rm -f libscca/definitions.h
-	/bin/rm -f libscca/features.h
-	/bin/rm -f libscca/types.h
-	/bin/rm -f Makefile
+	-rm -f libscca.h
+	-rm -f libscca/definitions.h
+	-rm -f libscca/features.h
+	-rm -f libscca/types.h
+	-rm -f Makefile
 

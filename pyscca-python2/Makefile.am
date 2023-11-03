@@ -68,8 +68,8 @@ MAINTAINERCLEANFILES = \
 	Makefile.in
 
 clean-local:
-	/bin/rm -f pyscca*.[ch]
+	-rm -f pyscca*.[ch]
 
 distclean: clean
-	/bin/rm -f Makefile
+	-rm -f Makefile
 
