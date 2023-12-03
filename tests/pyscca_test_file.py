@@ -38,7 +38,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_open(self):
     """Tests the open function."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -59,7 +59,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_open_file_object(self):
     """Tests the open_file_object function."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -85,7 +85,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_close(self):
     """Tests the close function."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -96,7 +96,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_open_close(self):
     """Tests the open and close functions."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       return
 
@@ -128,7 +128,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_format_version(self):
     """Tests the get_format_version function and format_version property."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -145,7 +145,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_executable_filename(self):
     """Tests the get_executable_filename function and executable_filename property."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -162,7 +162,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_prefetch_hash(self):
     """Tests the get_prefetch_hash function and prefetch_hash property."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -179,7 +179,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_run_count(self):
     """Tests the get_run_count function and run_count property."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -196,7 +196,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_number_of_file_metrics_entries(self):
     """Tests the get_number_of_file_metrics_entries function and number_of_file_metrics_entries property."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -213,7 +213,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_number_of_filenames(self):
     """Tests the get_number_of_filenames function and number_of_filenames property."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 
@@ -230,7 +230,7 @@ class FileTypeTests(unittest.TestCase):
 
   def test_get_number_of_volumes(self):
     """Tests the get_number_of_volumes function and number_of_volumes property."""
-    test_source = unittest.source
+    test_source = getattr(unittest, "source", None)
     if not test_source:
       raise unittest.SkipTest("missing source")
 

@@ -21,8 +21,6 @@ SUBDIRS = \
 	libscca \
 	sccatools \
 	pyscca \
-	pyscca-python2 \
-	pyscca-python3 \
 	po \
 	manuals \
 	tests \

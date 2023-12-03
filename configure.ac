@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
  [libscca],
- [20231103],
+ [20231203],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
@@ -119,7 +119,7 @@ dnl Check if libscca Python bindings (pyscca) required headers and functions are
 AX_PYTHON_CHECK_ENABLE
 
 AS_IF(
-  [test "x${ac_cv_enable_python}" != xno || test "x${ac_cv_enable_python2}" != xno || test "x${ac_cv_enable_python3}" != xno],
+  [test "x${ac_cv_enable_python}" != xno],
   [dnl Headers included in pyscca/pyscca_error.c
   AC_CHECK_HEADERS([stdarg.h varargs.h])
 
@@ -183,8 +183,6 @@ AC_CONFIG_FILES([libfvalue/Makefile])
 AC_CONFIG_FILES([libfwnt/Makefile])
 AC_CONFIG_FILES([libscca/Makefile])
 AC_CONFIG_FILES([pyscca/Makefile])
-AC_CONFIG_FILES([pyscca-python2/Makefile])
-AC_CONFIG_FILES([pyscca-python3/Makefile])
 AC_CONFIG_FILES([sccatools/Makefile])
 AC_CONFIG_FILES([po/Makefile.in])
 AC_CONFIG_FILES([po/Makevars])
