@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
  [libscca],
- [20240120],
+ [20240215],
  [joachim.metz@gmail.com])
 
 AC_CONFIG_SRCDIR(
