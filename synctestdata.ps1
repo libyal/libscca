@@ -16,7 +16,7 @@ If (-Not (Test-Path "${TestInputDirectory}\${TestSet}"))
 }
 ForEach ($TestFile in ${TestFiles} -split " ")
 {
-	$Url = "https://github.com/log2timeline/dfwinreg/blob/main/test_data/${TestFile}?raw=true"
+	$Url = "https://github.com/log2timeline/dfwinreg/blob/main/test_data/winprefetch/${TestFile}?raw=true"
 
 	Invoke-WebRequest -Uri ${Url} -OutFile "${TestInputDirectory}\${TestSet}\${TestFile}"
 }
