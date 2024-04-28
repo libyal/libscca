@@ -15,13 +15,11 @@ EXTRA_DIST = \
 	libscca/features.h.in \
 	libscca/types.h.in
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	libscca.h \
+	libscca/definitions.h \
+	libscca/features.h \
+	libscca/types.h \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f libscca.h
-	-rm -f libscca/definitions.h
-	-rm -f libscca/features.h
-	-rm -f libscca/types.h
-	-rm -f Makefile
 

@@ -6,9 +6,7 @@ EXTRA_DIST = \
 	sccainfo.1 \
 	libscca.3
 
-MAINTAINERCLEANFILES = \
+DISTCLEANFILES = \
+	Makefile \
 	Makefile.in
-
-distclean: clean
-	-rm -f Makefile
 

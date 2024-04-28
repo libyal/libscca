@@ -132,6 +132,7 @@ stamp-h[1-9]
 /sccatools/sccainfo
 /tests/*.exe
 /tests/input
+/tests/notify_stream.log
 /tests/scca_test_compressed_block
 /tests/scca_test_error
 /tests/scca_test_file
