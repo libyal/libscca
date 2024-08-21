@@ -453,15 +453,16 @@ The file metrics array entry - version 17 is 20 bytes in size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | 4 | | [yellow-background]*Unknown (Prefetch start time in ms?)* +
-[yellow-background]*Could be the index into the trace chain array as well, is this relationship implicit or explicit?*
-| 4 | 4 | | [yellow-background]*Unknown (Prefetch duration in ms?)* +
-[yellow-background]*Could be the number of entries in the trace chain as well, is this relationship implicit or explicit?*
+| 0 | 4 | | Trace chain index
+| 4 | 4 | | Number of trace entries
 | 8 | 4 | | Filename string offset +
 The offset is relative to the start of the filename strings
 | 12 | 4 | | Filename string number of characters +
 Does not include the end-of-string character
-| 16 | 4 | | [yellow-background]*Unknown (Flags?)*
+| 16 | 4 | | Flags: +
+0x0200 load into executable memory +
+0x0002 load as resource +
+0x0001 don't prefetch
 |===
 
 ==== File metrics array entry - version 23
@@ -471,17 +472,17 @@ The file metrics array entry - version 23 is 32 bytes in size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | 4 | | [yellow-background]*Unknown (Prefetch start time in ms?)* +
-[yellow-background]*Could be the index into the trace chain array as well, is this relationship implicit or explicit?*
-| 4 | 4 | | [yellow-background]*Unknown (Prefetch duration in ms?)* +
-[yellow-background]*Could be the number of entries in the trace chain as well, is this relationship implicit or explicit?*
-| *8* | *4* | | [yellow-background]*Unknown (Average prefetch duration in ms?)*
+| 0 | 4 | | Trace chain index
+| 4 | 4 | | Number of trace entries
+| *8* | *4* | | Number of blocks to prefetch
 | 12 | 4 | | Filename string offset +
 The offset is relative to the start of the filename strings
 | 16 | 4 | | Filename string number of characters +
 Does not include the end-of-string character
-| 20 | 4 | | [yellow-background]*Unknown (Flags?)* +
-[yellow-background]*Seen: 0x00000001, 0x00000002, 0x00000003, 0x00000200, 0x00000202*
+| 20 | 4 | | Flags: +
+0x0200 load into executable memory +
+0x0002 load as resource +
+0x0001 don't prefetch
 | 24 | 8 | | File reference +
 Contains a file reference of the file corresponding to the filename string or 0 if not set +
 See section: <<file_reference,The file reference>>
@@ -523,12 +524,15 @@ Contains the next trace chain array entry index in the chain, where the first en
 | 4 | 4 | | Total block load count +
 Total number of blocks loaded (or fetched) +
 The block size 512k (512 x 1024) bytes
-| 8 | 1 | | [yellow-background]*Unknown* +
-[yellow-background]*Seen: 0x02, 0x03, 0x04, 0x08, 0x0a*
+| 8 | 1 | | Flags +
+0x02 Load into executable memory +
+0x04 Load as resource +
+0x01 Should not be prefetched. The block should be pulled from disk +
+0x08 Must be prefetched
 | 9 | 1 | | [yellow-background]*Unknown (Sample duration in ms?)* +
 [yellow-background]*Seen: 1*
-| 10 | 2 | | [yellow-background]*Unknown* +
-[yellow-background]*Seen: 0x0001, 0xffff, etc.*
+| 10 | 1 | | Block used bitfield: Stores whether the block was used in each of the last eight runs (1 bit each)
+| 11 | 1 | | Block prefetch bitfield: Stores whether the block was prefetched in each of the last eight runs (1 bit each)
 |===
 
 ==== Trace chain array entry - version 23
@@ -551,12 +555,15 @@ The trace chain array entry - version 30 is 8 bytes in size and consists of:
 | 0 | 4 | | Total block load count +
 Total number of blocks loaded (or fetched) +
 The block size 512k (512 x 1024) bytes
-| 4 | 1 | | [yellow-background]*Unknown* +
-[yellow-background]*Seen: 0x02, 0x03, 0x04, 0x08, 0x0a*
+| 4 | 1 | | Flags +
+0x02 Load into executable memory +
+0x04 Load as resource +
+0x01 Should not be prefetched. The block should be pulled from disk +
+0x08 Must be prefetched
 | 5 | 1 | | [yellow-background]*Unknown (Sample duration in ms?)* +
 [yellow-background]*Seen: 1*
-| 6 | 2 | | [yellow-background]*Unknown* +
-[yellow-background]*Seen: 0x0001, 0xffff, etc.*
+| 6 | 1 | | Block used bitfield: Stores whether the block was used in each of the last eight runs (1 bit each)
+| 7 | 1 | | Block prefetch bitfield: Stores whether the block was prefetched in each of the last eight runs (1 bit each)
 |===
 
 === Filename strings
