@@ -555,7 +555,8 @@ int libscca_io_handle_read_file_metrics_array(
 	}
 	else if( ( io_handle->format_version == 23 )
 	      || ( io_handle->format_version == 26 )
-	      || ( io_handle->format_version == 30 ) )
+	      || ( io_handle->format_version == 30 )
+	      || ( io_handle->format_version == 31 ) )
 	{
 		entry_data_size = sizeof( scca_file_metrics_array_entry_v23_t );
 	}
@@ -762,7 +763,8 @@ int libscca_io_handle_read_trace_chain_array(
 	{
 		entry_data_size = sizeof( scca_trace_chain_array_entry_v17_t );
 	}
-	else if( io_handle->format_version == 30 )
+	else if( ( io_handle->format_version == 30 )
+	      || ( io_handle->format_version == 31 ) )
 	{
 		entry_data_size = sizeof( scca_trace_chain_array_entry_v30_t );
 	}
@@ -1032,7 +1034,8 @@ int libscca_io_handle_read_volumes_information(
 	if( ( io_handle->format_version != 17 )
 	 && ( io_handle->format_version != 23 )
 	 && ( io_handle->format_version != 26 )
-	 && ( io_handle->format_version != 30 ) )
+	 && ( io_handle->format_version != 30 )
+	 && ( io_handle->format_version != 31 ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -1135,7 +1138,8 @@ int libscca_io_handle_read_volumes_information(
 	{
 		volume_information_size = sizeof( scca_volume_information_v23_t );
 	}
-	else if( io_handle->format_version == 30 )
+	else if( ( io_handle->format_version == 30 )
+	      || ( io_handle->format_version == 31 ) )
 	{
 		volume_information_size = sizeof( scca_volume_information_v30_t );
 	}
@@ -1335,7 +1339,8 @@ int libscca_io_handle_read_volumes_information(
 				 function,
 				 value_32bit );
 			}
-			else if( io_handle->format_version == 30 )
+			else if( ( io_handle->format_version == 30 )
+			      || ( io_handle->format_version == 31 ) )
 			{
 				libcnotify_printf(
 				 "%s: unknown2:\n",

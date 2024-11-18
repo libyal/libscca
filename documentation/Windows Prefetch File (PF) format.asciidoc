@@ -52,8 +52,8 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.5 | J.B. Metz | April 2014 | Additional information regarding volumes information and file references.
 | 0.0.6 | J.B. Metz | June 2014 | Additional information regarding the file metrics array section with thanks to J. Schneider for pointing me to additional values in the X-Ways output.
 | 0.0.7 | J.B. Metz | June 2014 | Additional information regarding the file metrics section. Added information about the trace chains array.
-| 0.0.8 | J.B. Metz | June 2014 | Thanks to M. Seyer providing a sample that indicates that the v23 and v26 file metrics entry are the same.
-| 0.0.9 | J.B. Metz | June 2014 | Revisited the v17 file metrics entry with thanks to T. Olson.
+| 0.0.8 | J.B. Metz | June 2014 | Thanks to M. Seyer providing a sample that indicates that the format version 23 and 26 file metrics entry are the same.
+| 0.0.9 | J.B. Metz | June 2014 | Revisited the format version 17 file metrics entry with thanks to T. Olson.
 | 0.0.10 | J.B. Metz | June 2015 | Switched to asciidoc format.
 | 0.0.11 | J.B. Metz | June 2015 | Additional information regarding Windows 10 compressed Prefetch files with thanks to F. Picasso.
 | 0.0.12 | J.B. Metz | December 2015 | Small changes.
@@ -61,11 +61,12 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.14 | J.B. Metz | January 2016 | Additional information regarding Prefetch file from an NTFS ADS with thanks to S. Gillespie.
 | 0.0.15 | J.B. Metz | November 2016 | Changes regarding compression.
 | 0.0.16 | J.B. Metz | March 2019 | Format changes.
-| 0.0.17 | J.B. Metz | June 2019 | Additional information regarding Windows 10 1903 v30 variant 2.
+| 0.0.17 | J.B. Metz | June 2019 | Additional information regarding Windows 10 1903 format version 30 variant 2.
 | 0.0.18 | J.B. Metz | February 2020 | Cleaned up notes.
 | 0.0.19 | J.B. Metz | September 2020 | Cleaned up notes.
 | 0.0.20 | N. Suthar | July 2023 | Corrections and additional information regarding unknown "hash string" section.
 | 0.0.21 | J.B. Metz | July 2023 | Additional information regarding encoding of filenames.
+| 0.0.22 | J.B. Metz | November 2024 | Additional information about Windows 11 format version 31, with thanks to M. Dal Cero.
 |===
 
 :numbered:
@@ -113,6 +114,7 @@ information within this document:
 * Windows 8.1
 * Windows 10 1809
 * Windows 10 1903
+* Windows 11 24H2
 
 === Prefetch files
 
@@ -251,6 +253,7 @@ as "U+d800" and "U+dc00".
 | 23 | Used in: Windows Vista, Windows 7
 | 26 | Used in: Windows 8.1
 | 30 | Used in: Windows 10
+| 31 | Used in: Windows 11
 |===
 
 === File information
@@ -432,6 +435,11 @@ The offset is relative to the start of the file
 
 The entries with a bold offset and size were changed since version 30 - variant 1.
 
+===== File information - version 31
+
+The file information - version 31 appears to be similar to the file information
+version 30 - variant 2.
+
 === Hash string
 
 [yellow-background]*TODO: rename to something more appropriate*
@@ -499,6 +507,11 @@ metrics array entry - version 23.
 The file metrics array entry - version 30 appears to be similar to the file
 metrics array entry - version 23.
 
+==== File metrics array entry - version 31
+
+The file metrics array entry - version 31 appears to be similar to the file
+metrics array entry - version 23.
+
 === Trace chains array
 
 A trace chain is similar to a File Allocation Table (FAT) chain where the array
@@ -558,6 +571,11 @@ The block size 512k (512 x 1024) bytes
 | 6 | 2 | | [yellow-background]*Unknown* +
 [yellow-background]*Seen: 0x0001, 0xffff, etc.*
 |===
+
+==== Trace chain array entry - version 31
+
+The trace chain array entry - version 31 appears to be similar to the trace
+chain array entry - version 30.
 
 === Filename strings
 
@@ -685,6 +703,11 @@ Contains a FILETIME
 
 The entries with a bold offset and size were changed since version 23.
 
+===== Volume information entry - version 31
+
+The volume information entry - version 31 appears to be similar to the volume
+information entry - version 30.
+
 ==== Volume device path
 
 The volume device path is a UTF-16 little-endian string with end-of-string
@@ -744,6 +767,11 @@ version 23.
 [NOTE]
 The file references do no longer appear to be set in recent versions of Windows
 10.
+
+===== File references - version 31
+
+The file references - version 31 appears to be similar to the file references -
+version 23.
 
 ==== Directory strings
 

@@ -185,7 +185,8 @@ int libscca_file_information_read_data(
 	if( ( io_handle->format_version != 17 )
 	 && ( io_handle->format_version != 23 )
 	 && ( io_handle->format_version != 26 )
-	 && ( io_handle->format_version != 30 ) )
+	 && ( io_handle->format_version != 30 )
+	 && ( io_handle->format_version != 31 ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -250,8 +251,9 @@ int libscca_file_information_read_data(
 	{
 		file_information_data_size = sizeof( scca_file_information_v26_t );
 	}
-	else if( ( io_handle->format_version == 30 )
-	      && ( file_information->metrics_array_offset == 0x00000128 ) )
+	else if( ( ( io_handle->format_version == 30 )
+	       &&  ( file_information->metrics_array_offset == 0x00000128 ) )
+	      || ( io_handle->format_version == 31 ) )
 	{
 		file_information_data_size = sizeof( scca_file_information_v30_2_t );
 	}
@@ -335,7 +337,8 @@ int libscca_file_information_read_data(
 			 file_information->last_run_time[ last_run_time_index ] );
 		}
 		else if( ( io_handle->format_version == 26 )
-		      || ( io_handle->format_version == 30 ) )
+		      || ( io_handle->format_version == 30 )
+		      || ( io_handle->format_version == 31 ) )
 		{
 			byte_stream_copy_to_uint64_little_endian(
 			 &( ( (scca_file_information_v26_t *) data )->last_run_time[ last_run_time_index * 8 ] ),
@@ -362,8 +365,9 @@ int libscca_file_information_read_data(
 		 ( (scca_file_information_v26_t *) data )->run_count,
 		 file_information->run_count );
 	}
-	else if( ( io_handle->format_version == 30 )
-	      && ( file_information->metrics_array_offset == 0x00000128 ) )
+	else if( ( ( io_handle->format_version == 30 )
+	       &&  ( file_information->metrics_array_offset == 0x00000128 ) )
+	      || ( io_handle->format_version == 31 ) )
 	{
 		byte_stream_copy_to_uint32_little_endian(
 		 ( (scca_file_information_v30_2_t *) data )->run_count,
@@ -454,7 +458,8 @@ int libscca_file_information_read_data(
 					  error );
 			}
 			else if( ( io_handle->format_version == 26 )
-			      || ( io_handle->format_version == 30 ) )
+			      || ( io_handle->format_version == 30 )
+			      || ( io_handle->format_version == 31 ) )
 			{
 				result = libscca_debug_print_filetime_value(
 					  function,
@@ -504,8 +509,9 @@ int libscca_file_information_read_data(
 			 16,
 			 0 );
 		}
-		else if( ( io_handle->format_version == 30 )
-		      && ( file_information->metrics_array_offset == 0x00000128 ) )
+		else if( ( ( io_handle->format_version == 30 )
+		       &&  ( file_information->metrics_array_offset == 0x00000128 ) )
+		      || ( io_handle->format_version == 31 ) )
 		{
 			libcnotify_print_data(
 			 ( (scca_file_information_v30_2_t *) data )->unknown4,
@@ -617,8 +623,9 @@ int libscca_file_information_read_data(
 			 76,
 			 LIBCNOTIFY_PRINT_DATA_FLAG_GROUP_DATA );
 		}
-		else if( ( io_handle->format_version == 30 )
-		      && ( file_information->metrics_array_offset == 0x00000128 ) )
+		else if( ( ( io_handle->format_version == 30 )
+		       && ( file_information->metrics_array_offset == 0x00000128 ) )
+		      || ( io_handle->format_version == 31 ) )
 		{
 			byte_stream_copy_to_uint32_little_endian(
 			 ( (scca_file_information_v30_2_t *) data )->unknown5a,
@@ -706,7 +713,8 @@ int libscca_file_information_read_stream(
 	if( ( io_handle->format_version != 17 )
 	 && ( io_handle->format_version != 23 )
 	 && ( io_handle->format_version != 26 )
-	 && ( io_handle->format_version != 30 ) )
+	 && ( io_handle->format_version != 30 )
+	 && ( io_handle->format_version != 31 ) )
 	{
 		libcerror_error_set(
 		 error,
@@ -726,7 +734,8 @@ int libscca_file_information_read_stream(
 		file_information_data_size = sizeof( scca_file_information_v23_t );
 	}
 	else if( ( io_handle->format_version == 26 )
-	      || ( io_handle->format_version == 30 ) )
+	      || ( io_handle->format_version == 30 )
+	      || ( io_handle->format_version == 31 ) )
 	{
 		file_information_data_size = sizeof( scca_file_information_v26_t );
 	}

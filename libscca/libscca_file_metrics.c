@@ -227,7 +227,8 @@ int libscca_file_metrics_read_data(
 	}
 	else if( ( io_handle->format_version == 23 )
 	      || ( io_handle->format_version == 26 )
-	      || ( io_handle->format_version == 30 ) )
+	      || ( io_handle->format_version == 30 )
+	      || ( io_handle->format_version == 31 ) )
 	{
 		file_metrics_data_size = sizeof( scca_file_metrics_array_entry_v23_t );
 	}
@@ -296,7 +297,8 @@ int libscca_file_metrics_read_data(
 	}
 	else if( ( io_handle->format_version == 23 )
 	      || ( io_handle->format_version == 26 )
-	      || ( io_handle->format_version == 30 ) )
+	      || ( io_handle->format_version == 30 )
+	      || ( io_handle->format_version == 31 ) )
 	{
 		byte_stream_copy_to_uint32_little_endian(
 		 ( (scca_file_metrics_array_entry_v23_t *) data )->filename_string_offset,
@@ -327,7 +329,8 @@ int libscca_file_metrics_read_data(
 
 		if( ( io_handle->format_version == 23 )
 		 || ( io_handle->format_version == 26 )
-		 || ( io_handle->format_version == 30 ) )
+		 || ( io_handle->format_version == 30 )
+		 || ( io_handle->format_version == 31 ) )
 		{
 			byte_stream_copy_to_uint32_little_endian(
 			 ( (scca_file_metrics_array_entry_v23_t *) data )->average_duration,
@@ -350,7 +353,8 @@ int libscca_file_metrics_read_data(
 		}
 		else if( ( io_handle->format_version == 23 )
 		      || ( io_handle->format_version == 26 )
-		      || ( io_handle->format_version == 30 ) )
+		      || ( io_handle->format_version == 30 )
+		      || ( io_handle->format_version == 31 ) )
 		{
 			byte_stream_copy_to_uint32_little_endian(
 			 ( (scca_file_metrics_array_entry_v23_t *) data )->filename_string_numbers_of_characters,
