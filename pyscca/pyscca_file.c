@@ -1,7 +1,7 @@
 /*
  * Python object wrapper of libscca_file_t
  *
- * Copyright (C) 2011-2024, Joachim Metz <joachim.metz@gmail.com>
+ * Copyright (C) 2011-2025, Joachim Metz <joachim.metz@gmail.com>
  *
  * Refer to AUTHORS for acknowledgements.
  *
@@ -87,7 +87,7 @@ PyMethodDef pyscca_file_object_methods[] = {
 	{ "get_format_version",
 	  (PyCFunction) pyscca_file_get_format_version,
 	  METH_NOARGS,
-	  "get_format_version() -> Integer or None\n"
+	  "get_format_version() -> Integer\n"
 	  "\n"
 	  "Retrieves the format version." },
 
@@ -122,14 +122,14 @@ PyMethodDef pyscca_file_object_methods[] = {
 	{ "get_run_count",
 	  (PyCFunction) pyscca_file_get_run_count,
 	  METH_NOARGS,
-	  "get_run_count() -> Integer or None\n"
+	  "get_run_count() -> Integer\n"
 	  "\n"
 	  "Retrieves the run count." },
 
 	{ "get_number_of_file_metrics_entries",
 	  (PyCFunction) pyscca_file_get_number_of_file_metrics_entries,
 	  METH_NOARGS,
-	  "get_number_of_file_metrics_entries() -> Integer or None\n"
+	  "get_number_of_file_metrics_entries() -> Integer\n"
 	  "\n"
 	  "Retrieves the number of file metrics entries." },
 
@@ -143,7 +143,7 @@ PyMethodDef pyscca_file_object_methods[] = {
 	{ "get_number_of_filenames",
 	  (PyCFunction) pyscca_file_get_number_of_filenames,
 	  METH_NOARGS,
-	  "get_number_of_filenames() -> Integer or None\n"
+	  "get_number_of_filenames() -> Integer\n"
 	  "\n"
 	  "Retrieves the number of filenames." },
 
@@ -157,7 +157,7 @@ PyMethodDef pyscca_file_object_methods[] = {
 	{ "get_number_of_volumes",
 	  (PyCFunction) pyscca_file_get_number_of_volumes,
 	  METH_NOARGS,
-	  "get_number_of_volumes() -> Integer or None\n"
+	  "get_number_of_volumes() -> Integer\n"
 	  "\n"
 	  "Retrieves the number of volumes." },
 
@@ -798,7 +798,7 @@ PyObject *pyscca_file_open_file_object(
 		 "%s: invalid file - file IO handle already set.",
 		 function );
 
-		goto on_error;
+		return( NULL );
 	}
 	if( pyscca_file_object_initialize(
 	     &( pyscca_file->file_io_handle ),
@@ -911,7 +911,7 @@ PyObject *pyscca_file_close(
 		{
 			pyscca_error_raise(
 			 error,
-			 PyExc_IOError,
+			 PyExc_MemoryError,
 			 "%s: unable to free libbfio file IO handle.",
 			 function );
 
