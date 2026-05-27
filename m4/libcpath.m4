@@ -1,6 +1,6 @@
 dnl Checks for libcpath required headers and functions
 dnl
-dnl Version: 20240518
+dnl Version: 20260526
 
 dnl Function to detect if libcpath is available
 dnl ac_libcpath_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
@@ -133,26 +133,26 @@ AC_DEFUN([AX_LIBCPATH_CHECK_FUNC_MKDIR],
         [[mkdir( "", 0 )]] )],
         [AC_MSG_RESULT(
           [with additional mode argument])
-        ac_cv_cv_mkdir_mode=yes],
-        [ac_cv_cv_mkdir_mode=no])
+        ac_cv_mkdir_mode=yes],
+        [ac_cv_mkdir_mode=no])
 
     AS_IF(
-      [test "x$ac_cv_cv_mkdir_mode" = xno],
+      [test "x$ac_cv_mkdir_mode" = xno],
       [AC_LINK_IFELSE(
         [AC_LANG_PROGRAM(
           [[#include <io.h>]],
           [[mkdir( "" )]] )],
         [AC_MSG_RESULT(
           [with single argument])
-        ac_cv_cv_mkdir=yes],
-        [ac_cv_cv_mkdir=no])
+        ac_cv_mkdir=yes],
+        [ac_cv_mkdir=no])
       ])
 
     AC_LANG_POP(C)
     CFLAGS="$SAVE_CFLAGS"
 
     AS_IF(
-      [test "x$ac_cv_cv_mkdir_mode" = xno && test "x$ac_cv_cv_mkdir" = xno],
+      [test "x$ac_cv_mkdir_mode" = xno && test "x$ac_cv_mkdir" = xno],
       [AC_MSG_WARN(
         [unknown])
       ac_cv_func_mkdir=no])
@@ -166,7 +166,7 @@ AC_DEFUN([AX_LIBCPATH_CHECK_FUNC_MKDIR],
       ])
 
     AS_IF(
-      [test "x$ac_cv_cv_mkdir_mode" = xyes],
+      [test "x$ac_cv_mkdir_mode" = xyes],
       [AC_DEFINE(
         [HAVE_MKDIR_MODE],
         [1],

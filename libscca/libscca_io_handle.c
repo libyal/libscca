@@ -732,16 +732,15 @@ int libscca_io_handle_read_trace_chain_array(
      uint32_t number_of_entries,
      libcerror_error_t **error )
 {
-	uint8_t *entry_data             = NULL;
 	uint8_t *trace_chain_array_data = NULL;
 	static char *function           = "libscca_io_handle_read_trace_chain_array";
 	size_t entry_data_size          = 0;
 	size_t read_size                = 0;
 	ssize_t read_count              = 0;
 	uint32_t entry_index            = 0;
-	uint32_t next_table_index       = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
+	uint8_t *entry_data             = NULL;
 	uint32_t value_32bit            = 0;
 	uint16_t value_16bit            = 0;
 #endif
@@ -850,9 +849,8 @@ int libscca_io_handle_read_trace_chain_array(
 		 read_size,
 		 0 );
 	}
-#endif
 	entry_data = trace_chain_array_data;
-
+#endif
 	for( entry_index = 0;
 	     entry_index < number_of_entries;
 	     entry_index++ )
@@ -904,28 +902,28 @@ int libscca_io_handle_read_trace_chain_array(
 			}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
 		}
+#if defined( HAVE_DEBUG_OUTPUT )
 		else if( entry_data_size == 12 )
 		{
-			byte_stream_copy_to_uint32_little_endian(
-			 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->next_array_entry_index,
-			 next_table_index );
-
-#if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
-				if( next_table_index == 0xffffffffUL )
+				byte_stream_copy_to_uint32_little_endian(
+				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->next_array_entry_index,
+				 value_32bit );
+
+				if( value_32bit == 0xffffffffUL )
 				{
 					libcnotify_printf(
 					 "%s: next table index\t\t: 0x%08" PRIx32 "\n",
 					 function,
-					 next_table_index );
+					 value_32bit );
 				}
 				else
 				{
 					libcnotify_printf(
 					 "%s: next table index\t\t: %" PRIu32 "\n",
 					 function,
-					 next_table_index );
+					 value_32bit );
 				}
 				byte_stream_copy_to_uint32_little_endian(
 				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->total_block_load_count,
@@ -954,16 +952,15 @@ int libscca_io_handle_read_trace_chain_array(
 				 function,
 				 value_16bit );
 			}
-#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 		}
-#if defined( HAVE_DEBUG_OUTPUT )
 		if( libcnotify_verbose != 0 )
 		{
 			libcnotify_printf(
 			 "\n" );
 		}
-#endif
 		entry_data += entry_data_size;
+
+#endif /* defined( HAVE_DEBUG_OUTPUT ) */
 	}
 	memory_free(
 	 trace_chain_array_data );
@@ -1008,7 +1005,6 @@ int libscca_io_handle_read_volumes_information(
 	uint32_t file_references_size                             = 0;
 	uint32_t number_of_directory_strings                      = 0;
 	uint32_t number_of_file_references                        = 0;
-	uint32_t version                                          = 0;
 	uint32_t volume_index                                     = 0;
 	uint32_t volume_information_offset                        = 0;
 	uint16_t number_of_characters                             = 0;
@@ -1513,24 +1509,19 @@ int libscca_io_handle_read_volumes_information(
 			}
 #endif
 			byte_stream_copy_to_uint32_little_endian(
-			 &( volumes_information_data[ file_references_offset ] ),
-			 version );
-
-			file_references_offset += 4;
-
-			byte_stream_copy_to_uint32_little_endian(
-			 &( volumes_information_data[ file_references_offset ] ),
+			 &( volumes_information_data[ file_references_offset + 4 ] ),
 			 number_of_file_references );
-
-			file_references_offset += 4;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 			if( libcnotify_verbose != 0 )
 			{
+				byte_stream_copy_to_uint32_little_endian(
+				 &( volumes_information_data[ file_references_offset ] ),
+				 value_32bit );
 				libcnotify_printf(
 				 "%s: version\t\t\t\t: %" PRIu32 "\n",
 				 function,
-				 version );
+				 value_32bit );
 
 				libcnotify_printf(
 				 "%s: number of file references\t\t: %" PRIu32 "\n",
@@ -1538,6 +1529,8 @@ int libscca_io_handle_read_volumes_information(
 				 number_of_file_references );
 			}
 #endif
+			file_references_offset += 8;
+
 			if( ( number_of_file_references > ( ( file_references_size - 8 ) / 8 ) )
 			 || ( number_of_file_references > ( volumes_information_size / 8 ) )
 			 || ( file_references_offset >= ( volumes_information_size - ( (size_t) number_of_file_references * 8 ) ) ) )

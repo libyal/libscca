@@ -31,14 +31,17 @@
  */
 #if defined( LIBSCCA_DLL_EXPORT )
 #define LIBSCCA_EXTERN __declspec(dllexport)
+#define LIBSCCA_EXTERN_VARIABLE extern __declspec(dllexport)
 
 #elif defined( LIBSCCA_DLL_IMPORT )
-#define LIBSCCA_EXTERN extern __declspec(dllimport)
+#define LIBSCCA_EXTERN __declspec(dllimport)
+#define LIBSCCA_EXTERN_VARIABLE extern __declspec(dllimport)
 
 #else
 #define LIBSCCA_EXTERN extern
+#define LIBSCCA_EXTERN_VARIABLE extern
 
-#endif
+#endif /* defined( LIBSCCA_DLL_EXPORT ) */
 
 #endif /* !defined( _LIBSCCA_EXTERN_H ) */
 

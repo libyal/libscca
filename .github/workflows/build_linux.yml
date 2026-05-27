@@ -1,6 +1,8 @@
 # Build from source on Linux.
 name: build_linux
-on: [push, pull_request]
+on:
+  pull_request:
+  push:
 permissions: read-all
 jobs:
   build:
@@ -33,7 +35,7 @@ jobs:
     - uses: actions/checkout@v6
     - name: Install build dependencies
       run: |
-        sudo apt-get -y install autoconf automake autopoint build-essential git libtool pkg-config
+        sudo apt -y install autoconf automake autopoint build-essential git libtool pkg-config
     - name: Download test data
       run: |
         if test -x "synctestdata.sh"; then ./synctestdata.sh; fi
@@ -57,7 +59,7 @@ jobs:
     - uses: actions/checkout@v6
     - name: Install build dependencies
       run: |
-        sudo apt-get -y install autoconf automake autopoint build-essential git libtool pkg-config
+        sudo apt -y install autoconf automake autopoint build-essential git libtool pkg-config
     - name: Download test data
       run: |
         if test -x "synctestdata.sh"; then ./synctestdata.sh; fi
@@ -83,8 +85,8 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo add-apt-repository universe &&
-        sudo apt-get update &&
-        sudo apt-get -y install autoconf automake autopoint build-essential git libtool pkg-config python3-dev
+        sudo apt update &&
+        sudo apt -y install autoconf automake autopoint build-essential git libtool pkg-config python3-dev
     - name: Download test data
       run: |
         if test -x "synctestdata.sh"; then ./synctestdata.sh; fi
@@ -111,8 +113,8 @@ jobs:
     - name: Install build dependencies
       run: |
         sudo add-apt-repository universe &&
-        sudo apt-get update &&
-        sudo apt-get -y install autoconf automake autopoint build-essential git libtool pkg-config python3 python3-build python3-dev
+        sudo apt update &&
+        sudo apt -y install autoconf automake autopoint build-essential git libtool pkg-config python3 python3-build python3-dev
     - name: Building from source
       env:
         CC: ${{ matrix.compiler }}
@@ -136,7 +138,7 @@ jobs:
     - uses: actions/checkout@v6
     - name: Install build dependencies
       run: |
-        sudo apt-get -y install autoconf automake autopoint build-essential git libtool pkg-config
+        sudo apt -y install autoconf automake autopoint build-essential git libtool pkg-config
     - name: Download test data
       run: |
         if test -x "synctestdata.sh"; then ./synctestdata.sh; fi
@@ -163,7 +165,7 @@ jobs:
     - uses: actions/checkout@v6
     - name: Install build dependencies
       run: |
-        sudo apt-get -y install curl autoconf automake autopoint build-essential git libtool pkg-config
+        sudo apt -y install curl autoconf automake autopoint build-essential git libtool pkg-config
     - name: Download test data
       run: |
         if test -x "synctestdata.sh"; then ./synctestdata.sh; fi

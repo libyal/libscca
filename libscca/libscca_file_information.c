@@ -151,12 +151,12 @@ int libscca_file_information_read_data(
 {
 	static char *function             = "libscca_file_information_read_data";
 	size_t file_information_data_size = 0;
-	int last_run_time_index           = 0;
-	int number_of_last_run_times      = 0;
 
 #if defined( HAVE_DEBUG_OUTPUT )
 	uint64_t value_64bit              = 0;
 	uint32_t value_32bit              = 0;
+	int last_run_time_index           = 0;
+	int number_of_last_run_times      = 0;
 	int result                        = 0;
 #endif
 
@@ -312,38 +312,55 @@ int libscca_file_information_read_data(
 	 ( (scca_file_information_v17_t *) data )->volumes_information_size,
 	 file_information->volumes_information_size );
 
-	if( io_handle->format_version < 26 )
+	if( io_handle->format_version == 17 )
 	{
-		number_of_last_run_times = 1;
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v17_t *) data )->last_run_time[ 0 ] ),
+		 file_information->last_run_time[ 0 ] );
 	}
-	else
+	else if( io_handle->format_version == 23 )
 	{
-		number_of_last_run_times = 8;
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v23_t *) data )->last_run_time[ 0 ] ),
+		 file_information->last_run_time[ 0 ] );
 	}
-	for( last_run_time_index = 0;
-	     last_run_time_index < number_of_last_run_times;
-	     last_run_time_index++ )
+	else if( ( io_handle->format_version == 26 )
+	      || ( io_handle->format_version == 30 )
+	      || ( io_handle->format_version == 31 ) )
 	{
-		if( io_handle->format_version == 17 )
-		{
-			byte_stream_copy_to_uint64_little_endian(
-			 &( ( (scca_file_information_v17_t *) data )->last_run_time[ last_run_time_index * 8 ] ),
-			 file_information->last_run_time[ last_run_time_index ] );
-		}
-		else if( io_handle->format_version == 23 )
-		{
-			byte_stream_copy_to_uint64_little_endian(
-			 &( ( (scca_file_information_v23_t *) data )->last_run_time[ last_run_time_index * 8 ] ),
-			 file_information->last_run_time[ last_run_time_index ] );
-		}
-		else if( ( io_handle->format_version == 26 )
-		      || ( io_handle->format_version == 30 )
-		      || ( io_handle->format_version == 31 ) )
-		{
-			byte_stream_copy_to_uint64_little_endian(
-			 &( ( (scca_file_information_v26_t *) data )->last_run_time[ last_run_time_index * 8 ] ),
-			 file_information->last_run_time[ last_run_time_index ] );
-		}
+		/* Keep this an unrolled loop to prevent aggressive loop optimization removing it
+		 */
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v26_t *) data )->last_run_time[ 0 ] ),
+		 file_information->last_run_time[ 0 ] );
+
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v26_t *) data )->last_run_time[ 8 ] ),
+		 file_information->last_run_time[ 1 ] );
+
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v26_t *) data )->last_run_time[ 16 ] ),
+		 file_information->last_run_time[ 2 ] );
+
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v26_t *) data )->last_run_time[ 24 ] ),
+		 file_information->last_run_time[ 3 ] );
+
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v26_t *) data )->last_run_time[ 32 ] ),
+		 file_information->last_run_time[ 4 ] );
+
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v26_t *) data )->last_run_time[ 40 ] ),
+		 file_information->last_run_time[ 5 ] );
+
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v26_t *) data )->last_run_time[ 48 ] ),
+		 file_information->last_run_time[ 6 ] );
+
+		byte_stream_copy_to_uint64_little_endian(
+		 &( ( (scca_file_information_v26_t *) data )->last_run_time[ 56 ] ),
+		 file_information->last_run_time[ 7 ] );
 	}
 	if( io_handle->format_version == 17 )
 	{
@@ -430,6 +447,14 @@ int libscca_file_information_read_data(
 			 "%s: unknown3c\t\t\t\t: 0x%08" PRIx64 "\n",
 			 function,
 			 value_64bit );
+		}
+		if( io_handle->format_version < 26 )
+		{
+			number_of_last_run_times = 1;
+		}
+		else
+		{
+			number_of_last_run_times = 8;
 		}
 		for( last_run_time_index = 0;
 		     last_run_time_index < number_of_last_run_times;
