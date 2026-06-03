@@ -1,6 +1,6 @@
 dnl Checks for libcpath required headers and functions
 dnl
-dnl Version: 20260526
+dnl Version: 20260527
 
 dnl Function to detect if libcpath is available
 dnl ac_libcpath_dummy is used to prevent AC_CHECK_LIB adding unnecessary -l<library> arguments
@@ -162,7 +162,7 @@ AC_DEFUN([AX_LIBCPATH_CHECK_FUNC_MKDIR],
       [AC_DEFINE(
         [HAVE_MKDIR],
         [1],
-        [Define to 1 if you have the mkdir function.])
+        [Define to 1 if you have the `mkdir' function.])
       ])
 
     AS_IF(

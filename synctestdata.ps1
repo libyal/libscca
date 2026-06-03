@@ -1,11 +1,11 @@
 # Script that synchronizes the local test data
 #
-# Version: 20251217
+# Version: 20260531
 
 $Repository = "log2timeline/plaso"
 $TestDataPath = "test_data/winprefetch"
 $TestSet = "public"
-$TestInputDirectory = "tests/input"
+$TestInputDirectory = "tests\input"
 $TestFiles = "CMD.EXE-087B4001.pf PING.EXE-B29F6629.pf TASKHOST.EXE-3AE259FC.pf WUAUCLT.EXE-830BCC14.pf"
 
 If (-Not (Test-Path ${TestInputDirectory}))

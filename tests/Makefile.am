@@ -21,6 +21,10 @@ AM_CPPFLAGS = \
 	@PTHREAD_CPPFLAGS@ \
 	@LIBSCCA_DLL_IMPORT@
 
+AM_TESTS_ENVIRONMENT = \
+	export PYTHON="@PYTHON@"; \
+	export TESTS_USE_WINAPI="@TESTS_USE_WINAPI@";
+
 if HAVE_PYTHON_TESTS
 TESTS_PYSCCA = \
 	test_python_module.sh
@@ -247,7 +251,8 @@ scca_test_tools_output_SOURCES = \
 
 scca_test_tools_output_LDADD = \
 	../libscca/libscca.la \
-	@LIBCERROR_LIBADD@
+	@LIBCERROR_LIBADD@ \
+	@LIBINTL@
 
 scca_test_tools_path_string_SOURCES = \
 	../sccatools/path_string.c ../sccatools/path_string.h \

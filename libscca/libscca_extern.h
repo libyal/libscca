@@ -24,6 +24,19 @@
 
 #include <common.h>
 
+#if !defined( __CYGWIN__ ) && !defined( _WIN32 ) && defined( __has_attribute )
+#if __has_attribute( visibility )
+#define LIBSCCA_INTERNAL	__attribute__((visibility("hidden"))) extern
+
+#else
+#define LIBSCCA_INTERNAL	extern
+
+#endif /* __has_attribute( visibility ) */
+#else
+#define LIBSCCA_INTERNAL	extern
+
+#endif /* !defined( __CYGWIN__ ) && !defined( _WIN32 ) && defined( __has_attribute ) */
+
 /* Define HAVE_LOCAL_LIBSCCA for local use of libscca
  */
 #if !defined( HAVE_LOCAL_LIBSCCA )
@@ -32,7 +45,7 @@
 
 #else
 #define LIBSCCA_EXTERN		/* extern */
-#define LIBSCCA_EXTERN_VARIABLE	extern
+#define LIBSCCA_EXTERN_VARIABLE	LIBSCCA_INTERNAL
 
 #endif /* !defined( HAVE_LOCAL_LIBSCCA ) */
 
