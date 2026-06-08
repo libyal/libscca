@@ -319,7 +319,7 @@ int libscca_filename_strings_read_data(
 			libcnotify_printf(
 			 "%s: filename strings entry: %d data offset: 0x%08" PRIzx "\n",
 			 function,
-			 filename_strings_index, 
+			 filename_strings_index,
 			 last_data_offset );
 
 			libcnotify_printf(
