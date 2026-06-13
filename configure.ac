@@ -2,8 +2,8 @@ AC_PREREQ([2.71])
 
 AC_INIT(
   [libscca],
-  [20260608],
-  [joachim.metz@gmail.com])
+  [20260613],
+  [https://github.com/libyal/libscca/issues])
 
 AC_CONFIG_SRCDIR(
   [include/libscca.h.in])
@@ -12,6 +12,8 @@ AM_INIT_AUTOMAKE([gnu 1.6 tar-ustar])
 AM_EXTRA_RECURSIVE_TARGETS([sources splint])
 
 AC_CONFIG_MACRO_DIR([m4])
+
+AC_CONFIG_TESTDIR([tests])
 
 dnl Check for host type
 AC_CANONICAL_HOST
@@ -211,6 +213,8 @@ AC_CONFIG_FILES([libscca/libscca.rc])
 AC_CONFIG_FILES([libscca.pc])
 AC_CONFIG_FILES([libscca.spec])
 AC_CONFIG_FILES([pyproject.toml])
+dnl Generate test configuration files
+AC_CONFIG_FILES([tests/atlocal])
 dnl Generate a source configuration file
 AC_CONFIG_HEADERS([common/config.h])
 
