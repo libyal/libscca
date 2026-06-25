@@ -1,12 +1,12 @@
-.Dd March 14, 2019
-.Dt sccainfo
-.Os libscca
+.Dd June 25, 2026
+.Dt SCCAINFO 1
+.Os
 .Sh NAME
 .Nm sccainfo
 .Nd determines information about a Windows Prefetch File (PF)
 .Sh SYNOPSIS
 .Nm sccainfo
-.Op Fl ahvV
+.Op Fl hvV
 .Ar source
 .Sh DESCRIPTION
 .Nm sccainfo
@@ -24,8 +24,6 @@ is the source file.
 .Pp
 The options are as follows:
 .Bl -tag -width Ds
-.It Fl a
-shows allocation information
 .It Fl h
 shows this help
 .It Fl v
@@ -47,14 +45,17 @@ Windows Prefetch File (PF) information:
 
 .Ed
 .Sh DIAGNOSTICS
-Errors, verbose and debug output are printed to stderr when verbose output \-v is enabled.
+Errors, verbose and debug output are printed to stderr when verbose output \
+\-v is enabled.
 Verbose and debug output are only printed when enabled at compilation.
+.Sh AUTHORS
+.An Joachim Metz <joachim.metz@gmail.com>
 .Sh BUGS
-Please report bugs of any kind to <joachim.metz@gmail.com> or on the project website:
-https://github.com/libyal/libscca/
-.Sh AUTHOR
-These man pages were written by Joachim Metz.
+Please report bugs of any kind on the project issue tracker: \
+https://github.com/libyal/libscca/issues
 .Sh COPYRIGHT
 Copyright (C) 2011-2026, Joachim Metz <joachim.metz@gmail.com>.
-This is free software; see the source for copying conditions. There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-.Sh SEE ALSO
+.sp
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A \
+PARTICULAR PURPOSE.
