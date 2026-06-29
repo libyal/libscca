@@ -31,7 +31,7 @@ for the libscca project.
 == License
 
 ....
-Copyright (C) 2011-2023, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2011-2026, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
@@ -67,6 +67,7 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.20 | N. Suthar | July 2023 | Corrections and additional information regarding unknown "hash string" section.
 | 0.0.21 | J.B. Metz | July 2023 | Additional information regarding encoding of filenames.
 | 0.0.22 | J.B. Metz | November 2024 | Additional information about Windows 11 format version 31, with thanks to M. Dal Cero.
+| 0.0.23 | J.B. Metz | June 026 | Additional information about Windows 8.0
 |===
 
 :numbered:
@@ -89,7 +90,7 @@ A PF consist of the following distinguishable elements:
 ** [yellow-background]*trailing data (alignment padding?)*
 
 As of Windows 10 the PF is stored in compressed form in a MAM file similar to
-SuperFetch. Also see: https://github.com/libyal/libagdb/blob/master/documentation/Windows%20SuperFetch%20(DB)%20format.asciidoc[[LIBAGDB\]].
+SuperFetch. Also see: https://github.com/libyal/libagdb/blob/main/documentation/Windows%20SuperFetch%20(DB)%20format.asciidoc[[LIBAGDB\]].
 
 [cols="1,5",options="header"]
 |===
@@ -109,7 +110,7 @@ information within this document:
 * Windows Vista (SP0)
 * [yellow-background]*TODO: Windows 2008*
 * Windows 7 (SP0)
-* [yellow-background]*TODO: Windows 8*
+* Windows 8.0
 * [yellow-background]*TODO: Windows 2012*
 * Windows 8.1
 * Windows 10 1809
@@ -209,7 +210,7 @@ The compressed block is variable of size and consists of:
 |===
 
 For more information about LZXPRESS Huffman see:
-https://github.com/libyal/libfwnt/blob/master/documentation/Compression%20methods.asciidoc[LIBFWNT\]].
+https://github.com/libyal/libfwnt/blob/main/documentation/Compression%20methods.asciidoc[LIBFWNT\]].
 
 == Uncompressed Prefetch file
 
@@ -251,7 +252,7 @@ as "U+d800" and "U+dc00".
 | Value | Description
 | 17 | Used in: Windows XP, Windows 2003
 | 23 | Used in: Windows Vista, Windows 7
-| 26 | Used in: Windows 8.1
+| 26 | Used in: Windows 8.0 and 8.1
 | 30 | Used in: Windows 10
 | 31 | Used in: Windows 11
 |===
