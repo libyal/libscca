@@ -43,13 +43,13 @@ struct libscca_internal_file_metrics
 	 */
 	libscca_filename_strings_t *filename_strings;
 
-	/* The start time
+	/* The trace chain index
 	 */
-	uint32_t start_time;
+	uint32_t trace_chain_index;
 
-	/* The duration
+	/* The number of trace chain entries
 	 */
-	uint32_t duration;
+	uint32_t number_of_trace_chain_entries;
 
 	/* The filename string offset
 	 */

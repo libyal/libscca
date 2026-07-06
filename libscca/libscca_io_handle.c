@@ -538,6 +538,10 @@ int libscca_io_handle_read_file_metrics_array(
 	uint32_t file_metrics_entry_index    = 0;
 	int entry_index                      = 0;
 
+#if defined( HAVE_DEBUG_OUTPUT )
+	uint32_t last_trace_chain_index      = 0;
+#endif
+
 	if( io_handle == NULL )
 	{
 		libcerror_error_set(
@@ -683,6 +687,17 @@ int libscca_io_handle_read_file_metrics_array(
 		}
 		entry_data += entry_data_size;
 
+#if defined( HAVE_DEBUG_OUTPUT )
+		if( ( (libscca_internal_file_metrics_t *) file_metrics )->trace_chain_index != last_trace_chain_index )
+		{
+			libcnotify_printf(
+			 "%s: trace chain index out of sequence: %" PRIu32 " (expected: %" PRIu32 ")\n",
+			 function,
+			 ( (libscca_internal_file_metrics_t *) file_metrics )->trace_chain_index,
+			 last_trace_chain_index );
+		}
+		last_trace_chain_index = ( (libscca_internal_file_metrics_t *) file_metrics )->trace_chain_index + ( (libscca_internal_file_metrics_t *) file_metrics )->number_of_trace_chain_entries;
+#endif
 		if( libcdata_array_append_entry(
 		     file_metrics_array,
 		     &entry_index,
@@ -742,7 +757,6 @@ int libscca_io_handle_read_trace_chain_array(
 #if defined( HAVE_DEBUG_OUTPUT )
 	uint8_t *entry_data             = NULL;
 	uint32_t value_32bit            = 0;
-	uint16_t value_16bit            = 0;
 #endif
 
 	if( io_handle == NULL )
@@ -851,6 +865,18 @@ int libscca_io_handle_read_trace_chain_array(
 	}
 	entry_data = trace_chain_array_data;
 #endif
+#if defined( HAVE_DEBUG_OUTPUT )
+	if( libcnotify_verbose != 0 )
+	{
+		libcnotify_printf(
+		 "%s: number of trace chain entries\t: %" PRIu32 "\n",
+		 function,
+		 number_of_entries );
+
+		libcnotify_printf(
+		 "\n" );
+	}
+#endif
 	for( entry_index = 0;
 	     entry_index < number_of_entries;
 	     entry_index++ )
@@ -883,22 +909,24 @@ int libscca_io_handle_read_trace_chain_array(
 				 (uint64_t) value_32bit * 512 * 1024 );
 
 				libcnotify_printf(
-				 "%s: unknown1\t\t\t: 0x%02" PRIx8 "\n",
+				 "%s: flags\t\t\t\t: 0x%02" PRIx8 "\n",
 				 function,
-				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->unknown1 );
+				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->flags );
 
 				libcnotify_printf(
 				 "%s: unknown2\t\t\t: 0x%02" PRIx8 "\n",
 				 function,
 				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->unknown2 );
 
-				byte_stream_copy_to_uint16_little_endian(
-				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->unknown3,
-				 value_16bit );
 				libcnotify_printf(
-				 "%s: unknown3\t\t\t: 0x%04" PRIx16 "\n",
+				 "%s: block used bits\t\t: 0x%02" PRIx8 "\n",
 				 function,
-				 value_16bit );
+				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->block_used_bits );
+
+				libcnotify_printf(
+				 "%s: block prefeched bits\t\t: 0x%02" PRIx8 "\n",
+				 function,
+				 ( (scca_trace_chain_array_entry_v30_t *) entry_data )->block_prefetched_bits );
 			}
 #endif /* defined( HAVE_DEBUG_OUTPUT ) */
 		}
@@ -935,22 +963,24 @@ int libscca_io_handle_read_trace_chain_array(
 				 (uint64_t) value_32bit * 512 * 1024 );
 
 				libcnotify_printf(
-				 "%s: unknown1\t\t\t: 0x%02" PRIx8 "\n",
+				 "%s: flags\t\t\t\t: 0x%02" PRIx8 "\n",
 				 function,
-				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->unknown1 );
+				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->flags );
 
 				libcnotify_printf(
 				 "%s: unknown2\t\t\t: 0x%02" PRIx8 "\n",
 				 function,
 				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->unknown2 );
 
-				byte_stream_copy_to_uint16_little_endian(
-				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->unknown3,
-				 value_16bit );
 				libcnotify_printf(
-				 "%s: unknown3\t\t\t: 0x%04" PRIx16 "\n",
+				 "%s: block used bits\t\t: 0x%02" PRIx8 "\n",
 				 function,
-				 value_16bit );
+				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->block_used_bits );
+
+				libcnotify_printf(
+				 "%s: block prefeched bits\t\t: 0x%02" PRIx8 "\n",
+				 function,
+				 ( (scca_trace_chain_array_entry_v17_t *) entry_data )->block_prefetched_bits );
 			}
 		}
 		if( libcnotify_verbose != 0 )

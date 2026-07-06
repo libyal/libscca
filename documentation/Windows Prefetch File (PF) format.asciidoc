@@ -67,7 +67,8 @@ in the section entitled "GNU Free Documentation License".
 | 0.0.20 | N. Suthar | July 2023 | Corrections and additional information regarding unknown "hash string" section.
 | 0.0.21 | J.B. Metz | July 2023 | Additional information regarding encoding of filenames.
 | 0.0.22 | J.B. Metz | November 2024 | Additional information about Windows 11 format version 31, with thanks to M. Dal Cero.
-| 0.0.23 | J.B. Metz | June 026 | Additional information about Windows 8.0
+| 0.0.23 | J.B. Metz | June 2026 | Additional information about Windows 8.0
+| 0.0.24 | J.B. Metz | July 2026 | Additional information about metrics and traces with thanks to S. Garcés Marín and J. Habben
 |===
 
 :numbered:
@@ -462,15 +463,13 @@ The file metrics array entry - version 17 is 20 bytes in size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | 4 | | [yellow-background]*Unknown (Prefetch start time in ms?)* +
-[yellow-background]*Could be the index into the trace chain array as well, is this relationship implicit or explicit?*
-| 4 | 4 | | [yellow-background]*Unknown (Prefetch duration in ms?)* +
-[yellow-background]*Could be the number of entries in the trace chain as well, is this relationship implicit or explicit?*
+| 0 | 4 | | Trace chain index
+| 4 | 4 | | Number of trace entries
 | 8 | 4 | | Filename string offset +
 The offset is relative to the start of the filename strings
 | 12 | 4 | | Filename string number of characters +
 Does not include the end-of-string character
-| 16 | 4 | | [yellow-background]*Unknown (Flags?)*
+| 16 | 4 | | <<file_metrics_flags,File metric flags>>
 |===
 
 ==== File metrics array entry - version 23
@@ -480,17 +479,14 @@ The file metrics array entry - version 23 is 32 bytes in size and consists of:
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
-| 0 | 4 | | [yellow-background]*Unknown (Prefetch start time in ms?)* +
-[yellow-background]*Could be the index into the trace chain array as well, is this relationship implicit or explicit?*
-| 4 | 4 | | [yellow-background]*Unknown (Prefetch duration in ms?)* +
-[yellow-background]*Could be the number of entries in the trace chain as well, is this relationship implicit or explicit?*
-| *8* | *4* | | [yellow-background]*Unknown (Average prefetch duration in ms?)*
+| 0 | 4 | | Trace chain index
+| 4 | 4 | | Number of trace entries
+| *8* | *4* | | Number of blocks to prefetch
 | 12 | 4 | | Filename string offset +
 The offset is relative to the start of the filename strings
 | 16 | 4 | | Filename string number of characters +
 Does not include the end-of-string character
-| 20 | 4 | | [yellow-background]*Unknown (Flags?)* +
-[yellow-background]*Seen: 0x00000001, 0x00000002, 0x00000003, 0x00000200, 0x00000202*
+| 20 | 4 | | <<file_metrics_flags,File metric flags>>
 | 24 | 8 | | File reference +
 Contains a file reference of the file corresponding to the filename string or 0 if not set +
 See section: <<file_reference,The file reference>>
@@ -512,6 +508,16 @@ metrics array entry - version 23.
 
 The file metrics array entry - version 31 appears to be similar to the file
 metrics array entry - version 23.
+
+==== [[file_metric_flags]]File metrics flags
+
+[cols="1,1,5",options="header"]
+|===
+| Value | Identifier | Description
+| 0x00000001 | | Do not prefetch
+| 0x00000002 | | Load as resource
+| | |
+| 0x00000200 | | Load as executable
 
 === Trace chains array
 
@@ -537,12 +543,11 @@ Contains the next trace chain array entry index in the chain, where the first en
 | 4 | 4 | | Total block load count +
 Total number of blocks loaded (or fetched) +
 The block size 512k (512 x 1024) bytes
-| 8 | 1 | | [yellow-background]*Unknown* +
-[yellow-background]*Seen: 0x02, 0x03, 0x04, 0x08, 0x0a*
+| 8 | 1 | | <<trace_chain_flags,Trace chain flags>>
 | 9 | 1 | | [yellow-background]*Unknown (Sample duration in ms?)* +
-[yellow-background]*Seen: 1*
-| 10 | 2 | | [yellow-background]*Unknown* +
-[yellow-background]*Seen: 0x0001, 0xffff, etc.*
+[yellow-background]*Seen: 0x00, 0x01, 0x08*
+| 10 | 1 | | Block used bits, which indicates whether the block was used in each of the last 8 runs (1 bit each)
+| 11 | 1 | | Block prefetched bits, which indicates whether the block was prefetched in each of the last 8 runs (1 bit each)
 |===
 
 ==== Trace chain array entry - version 23
@@ -565,18 +570,27 @@ The trace chain array entry - version 30 is 8 bytes in size and consists of:
 | 0 | 4 | | Total block load count +
 Total number of blocks loaded (or fetched) +
 The block size 512k (512 x 1024) bytes
-| 4 | 1 | | [yellow-background]*Unknown* +
-[yellow-background]*Seen: 0x02, 0x03, 0x04, 0x08, 0x0a*
+| 4 | 1 | | <<trace_chain_flags,Trace chain flags>>
 | 5 | 1 | | [yellow-background]*Unknown (Sample duration in ms?)* +
 [yellow-background]*Seen: 1*
-| 6 | 2 | | [yellow-background]*Unknown* +
-[yellow-background]*Seen: 0x0001, 0xffff, etc.*
+| 6 | 1 | | Block used bits, which indicates whether the block was used in each of the last 8 runs (1 bit each)
+| 7 | 1 | | Block prefetched bits, which indicates whether the block was prefetched in each of the last 8 runs (1 bit each)
 |===
 
 ==== Trace chain array entry - version 31
 
 The trace chain array entry - version 31 appears to be similar to the trace
 chain array entry - version 30.
+
+==== [[trace_chain_flags]]Trace chain flags
+
+[cols="1,1,5",options="header"]
+|===
+| Value | Identifier | Description
+| 0x01 | | Do not prefetch, read from disk
+| 0x02 | | Load as executable
+| 0x04 | | Load as resource
+| 0x08 | | Must be prefetched
 
 === Filename strings
 

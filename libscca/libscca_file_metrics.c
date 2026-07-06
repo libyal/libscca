@@ -278,12 +278,12 @@ int libscca_file_metrics_read_data(
 	}
 #endif
 	byte_stream_copy_to_uint32_little_endian(
-	 ( (scca_file_metrics_array_entry_v17_t *) data )->start_time,
-	 internal_file_metrics->start_time );
+	 ( (scca_file_metrics_array_entry_v17_t *) data )->trace_chain_index,
+	 internal_file_metrics->trace_chain_index );
 
 	byte_stream_copy_to_uint32_little_endian(
-	 ( (scca_file_metrics_array_entry_v17_t *) data )->duration,
-	 internal_file_metrics->duration );
+	 ( (scca_file_metrics_array_entry_v17_t *) data )->number_of_trace_chain_entries,
+	 internal_file_metrics->number_of_trace_chain_entries );
 
 	if( io_handle->format_version == 17 )
 	{
@@ -318,14 +318,14 @@ int libscca_file_metrics_read_data(
 	if( libcnotify_verbose != 0 )
 	{
 		libcnotify_printf(
-		 "%s: start time\t\t\t\t: %" PRIu32 " ms\n",
+		 "%s: trace chain index\t\t\t: %" PRIu32 "\n",
 		 function,
-		 internal_file_metrics->start_time );
+		 internal_file_metrics->trace_chain_index );
 
 		libcnotify_printf(
-		 "%s: duration\t\t\t\t: %" PRIu32 " ms\n",
+		 "%s: number of trace chain entries\t\t: %" PRIu32 "\n",
 		 function,
-		 internal_file_metrics->duration );
+		 internal_file_metrics->number_of_trace_chain_entries );
 
 		if( ( io_handle->format_version == 23 )
 		 || ( io_handle->format_version == 26 )
@@ -333,10 +333,10 @@ int libscca_file_metrics_read_data(
 		 || ( io_handle->format_version == 31 ) )
 		{
 			byte_stream_copy_to_uint32_little_endian(
-			 ( (scca_file_metrics_array_entry_v23_t *) data )->average_duration,
+			 ( (scca_file_metrics_array_entry_v23_t *) data )->number_of_blocks_to_prefetch,
 			 value_32bit );
 			libcnotify_printf(
-			 "%s: average duration\t\t\t: %" PRIu32 " ms\n",
+			 "%s: number of blocks to prefetch\t: %" PRIu32 " ms\n",
 			 function,
 			 value_32bit );
 		}

@@ -33,15 +33,15 @@ typedef struct scca_file_metrics_array_entry_v17 scca_file_metrics_array_entry_v
 
 struct scca_file_metrics_array_entry_v17
 {
-	/* The start time
+	/* The trace chain index
 	 * Consists of 4 bytes
 	 */
-	uint8_t start_time[ 4 ];
+	uint8_t trace_chain_index[ 4 ];
 
-	/* The duration time
+	/* The number of trace chain entries
 	 * Consists of 4 bytes
 	 */
-	uint8_t duration[ 4 ];
+	uint8_t number_of_trace_chain_entries[ 4 ];
 
 	/* The filename strings offset
 	 * Consists of 4 bytes
@@ -63,20 +63,20 @@ typedef struct scca_file_metrics_array_entry_v23 scca_file_metrics_array_entry_v
 
 struct scca_file_metrics_array_entry_v23
 {
-	/* The start time
+	/* The trace chain index
 	 * Consists of 4 bytes
 	 */
-	uint8_t start_time[ 4 ];
+	uint8_t trace_chain_index[ 4 ];
 
-	/* The duration time
+	/* The number of trace chain entries
 	 * Consists of 4 bytes
 	 */
-	uint8_t duration[ 4 ];
+	uint8_t number_of_trace_chain_entries[ 4 ];
 
-	/* The average duration time
+	/* The number of block to prefetch
 	 * Consists of 4 bytes
 	 */
-	uint8_t average_duration[ 4 ];
+	uint8_t number_of_blocks_to_prefetch[ 4 ];
 
 	/* The filename string offset
 	 * Consists of 4 bytes

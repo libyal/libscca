@@ -43,20 +43,25 @@ struct scca_trace_chain_array_entry_v17
 	 */
 	uint8_t total_block_load_count[ 4 ];
 
-	/* Unknown
+	/* Flags
 	 * Consists of 1 byte
 	 */
-	uint8_t unknown1;
+	uint8_t flags;
 
 	/* Unknown
 	 * Consists of 1 byte
 	 */
 	uint8_t unknown2;
 
-	/* Unknown
-	 * Consists of 2 bytes
+	/* Block used bits
+	 * Consists of 1 byte
 	 */
-	uint8_t unknown3[ 2 ];
+	uint8_t block_used_bits;
+
+	/* Block prefetched bits
+	 * Consists of 1 byte
+	 */
+	uint8_t block_prefetched_bits;
 };
 
 typedef struct scca_trace_chain_array_entry_v30 scca_trace_chain_array_entry_v30_t;
@@ -68,20 +73,25 @@ struct scca_trace_chain_array_entry_v30
 	 */
 	uint8_t total_block_load_count[ 4 ];
 
-	/* Unknown
+	/* Flags
 	 * Consists of 1 byte
 	 */
-	uint8_t unknown1;
+	uint8_t flags;
 
 	/* Unknown
 	 * Consists of 1 byte
 	 */
 	uint8_t unknown2;
 
-	/* Unknown
-	 * Consists of 2 bytes
+	/* Block used bits
+	 * Consists of 1 byte
 	 */
-	uint8_t unknown3[ 2 ];
+	uint8_t block_used_bits;
+
+	/* Block prefetched bits
+	 * Consists of 1 byte
+	 */
+	uint8_t block_prefetched_bits;
 };
 
 #if defined( __cplusplus )
