@@ -2,7 +2,7 @@ AC_PREREQ([2.71])
 
 AC_INIT(
   [libscca],
-  [20260706],
+  [20260915],
   [https://github.com/libyal/libscca/issues])
 
 AC_CONFIG_SRCDIR(
