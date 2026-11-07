@@ -47,8 +47,16 @@ int LLVMFuzzerTestOneInput(
      const uint8_t *data,
      size_t size )
 {
-	libbfio_handle_t *file_io_handle = NULL;
-	libscca_file_t *file             = NULL;
+	uint8_t utf8_string[ 512 ];
+	uint16_t utf16_string[ 256 ];
+
+	libbfio_handle_t *file_io_handle   = NULL;
+	libscca_file_t *file               = NULL;
+	size_t utf8_string_size            = 0;
+	size_t utf16_string_size           = 0;
+	uint32_t value_32bit               = 0;
+	uint64_t value_64bit               = 0;
+	int number_of_filenames            = 0;
 
 	if( libbfio_memory_range_initialize(
 	     &file_io_handle,
@@ -78,6 +86,109 @@ int LLVMFuzzerTestOneInput(
 	{
 		goto on_error_libscca;
 	}
+	if( libscca_file_get_format_version(
+	     file,
+	     &value_32bit,
+	     NULL ) != 1 )
+	{
+		goto on_error_libscca;
+	}
+	if( libscca_file_get_utf8_executable_filename_size(
+	     file,
+	     &utf8_string_size,
+	     NULL ) != 1 )
+	{
+		goto on_error_libscca;
+	}
+	if( libscca_file_get_utf8_executable_filename(
+	     file,
+	     utf8_string,
+	     512,
+	     NULL ) != 1 )
+	{
+		goto on_error_libscca;
+	}
+	if( libscca_file_get_utf16_executable_filename_size(
+	     file,
+	     &utf16_string_size,
+	     NULL ) != 1 )
+	{
+		goto on_error_libscca;
+	}
+	if( libscca_file_get_utf16_executable_filename(
+	     file,
+	     utf16_string,
+	     256,
+	     NULL ) != 1 )
+	{
+		goto on_error_libscca;
+	}
+	if( libscca_file_get_prefetch_hash(
+	     file,
+	     &value_32bit,
+	     NULL ) != 1 )
+	{
+		goto on_error_libscca;
+	}
+	if( libscca_file_get_run_count(
+	     file,
+	     &value_32bit,
+	     NULL ) != 1 )
+	{
+		goto on_error_libscca;
+	}
+	if( libscca_file_get_last_run_time(
+	     file,
+	     0,
+	     &value_64bit,
+	     NULL ) != 1 )
+	{
+		goto on_error_libscca;
+	}
+	if( libscca_file_get_number_of_filenames(
+	     file,
+	     &number_of_filenames,
+	     NULL ) != 1 )
+	{
+		goto on_error_libscca;
+	}
+	if( number_of_filenames > 0 )
+	{
+		if( libscca_file_get_utf8_filename_size(
+		     file,
+		     0,
+		     &utf8_string_size,
+		     NULL ) != 1 )
+		{
+			goto on_error_libscca;
+		}
+		if( libscca_file_get_utf8_filename(
+		     file,
+		     0,
+		     utf8_string,
+		     512,
+		     NULL ) != 1 )
+		{
+			goto on_error_libscca;
+		}
+		if( libscca_file_get_utf16_filename_size(
+		     file,
+		     0,
+		     &utf16_string_size,
+		     NULL ) != 1 )
+		{
+			goto on_error_libscca;
+		}
+		if( libscca_file_get_utf16_filename(
+		     file,
+		     0,
+		     utf16_string,
+		     256,
+		     NULL ) != 1 )
+		{
+			goto on_error_libscca;
+		}
+	}
 	libscca_file_close(
 	 file,
 	 NULL );
@@ -96,4 +207,3 @@ on_error_libbfio:
 }
 
 } /* extern "C" */
-
